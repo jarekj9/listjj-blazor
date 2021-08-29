@@ -1,0 +1,41 @@
+@inherits LayoutComponentBase
+@inject NavigationManager MyNavigationManager
+
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<div class="page">
+    <div class="main">
+        <div class="top-row px-4">
+
+            <AuthorizeView>
+                <Authorized>
+                    Hello, @context.User.Identity.Name!
+                    <a href="Identity/Account/Logout">Log out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="Identity/Account/Register">Register</a>
+                    <a href="Identity/Account/Login">Log in</a>
+                </NotAuthorized>
+            </AuthorizeView>
+
+
+            <nav class="navbar navbar-expand-sm navbar-light bg-light">
+                <span class="nav-item" >
+                    <a class="nav-link" href="/list">Items </a>
+                </span>
+                <span class="nav-item">
+                    <a class="nav-link" href="/categories">Categories </a>
+                </span>
+            </nav>
+        </div>
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+
+
+

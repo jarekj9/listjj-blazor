@@ -1,0 +1,304 @@
+@using List.Extensions
+@using System
+@using System.Linq.Expressions
+@using Listjj.Pages.Components
+@inject IRefreshService RefreshService
+@inject IFileService FileService
+@inherits PageBase
+@layout ListjjLayout
+@page "/list"
+
+
+@* @if (_claims.Count() > 0)
+{
+    <ul>
+        @foreach (var claim in _claims)
+        {
+            <li>@claim.Type &ndash; @claim.Value</li>
+        }
+    </ul>
+} *@
+<AuthorizeView Roles="User">
+
+<AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+
+<div class="row">
+    <div class="input-group mb-3 col-md-8 col-lg-6 col-xl-4">
+        <input type="text" class="form-control" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-6 col-xl-4">
+        <div class="row">
+            <div class="col-6">
+                <MudDatePicker Label="From:" @bind-Date="fromDate"/>
+            </div>
+            <div class="col-6">
+                <MudDatePicker Label="To:" @bind-Date="toDate"/>
+            </div>
+        </div>
+    </div>
+</div>
+@if (ItemsVm is null)
+{
+    <MudSkeleton />
+}
+else 
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>Value</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th><span style="display: inline-block">Category:&nbsp</span><span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList"/></span></th>
+                <th>Active</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        @foreach(var item in ItemsVm)
+        {
+            <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
+                <td>
+                    @item.Value
+                </td>
+                <td title="Created: @item.Created, Changed: @item.Modified">
+                    @item.Name
+                    @if (item.FilesList.Count > 0)
+                    {
+                        <div class="mt-3">
+                            <span class="font-weight-bold">Files:</span>
+                            <ul class="ml-3">
+                                @foreach (var file in item.FilesList)
+                                {
+                                    <li>
+                                        <a @onclick="() => GetFile(file)">@file.Item1</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                <td>
+                    @item.Category.Name
+                </td>
+                <td>
+                    <input type="checkbox" checked="@item.Active" @onchange="() => ClickActive(item)">
+                </td>
+                <td>
+                    <button class="btn btn-outline-danger" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                    <button class="btn btn-outline-primary" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
+                </td>
+            </tr>
+
+            @if(item.IsEditing)
+            {
+                <tr class="table-secondary" @ondblclick="() => item.IsEditing = !item.IsEditing">
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <input for="Value" class="form-controll" @bind="@item.Value" />
+                        </Animate>
+                    </td>
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <input for="Name" class="form-controll" @bind="@item.Name" />
+                            @if(item.FilesList.Count > 0)
+                            {
+                                <div class="mt-3">
+                                    <span class="font-weight-bold">Files:</span>
+                                    <ul class="ml-3">
+                                        @foreach(var file in item.FilesList)
+                                        {
+                                            <li>
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                                                @file.Item1
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </Animate>
+                    </td>
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <input for="Description" class="form-controll" @bind="@item.Description" />
+                        </Animate>
+                    </td>
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <select @bind="@item.CategoryId">
+                                <option>---select---</option>
+                                @if (CategoriesVm is null)
+                                {
+                                <option>Loading...</option>
+                                }
+                                else
+                                {
+                                    @foreach(var category in CategoriesVm)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                }
+                            </select>
+                        </Animate>
+                    </td>
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <input type="checkbox" for="active" class="form-controll" @bind="@item.Active" />
+                        </Animate>
+                    </td>
+                    <td>
+                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                            <button class="btn btn-outline-primary" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
+                            <button class="btn btn-outline-secondary" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
+                        </Animate>
+                    </td>
+                </tr>
+                <FileUpload NoteId="@item.Id"/>
+            }
+        }
+    </table>
+
+    <ImportExport></ImportExport>
+    <ApiKey />
+}
+
+</AuthorizeView>
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private IDistributedCache cache { get; set; }
+    private FilterItems filterItems { get; set; }
+    private string SearchText { get; set; }
+    private bool fromCache { get; set; }
+    private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-1);
+    private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
+
+    private async void RefreshMe()
+    {
+        Items = await Task.Run(() => Listjjervice.GetAllItems());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        RefreshService.RefreshRequested += RefreshMe;
+        await LoadData();
+        //ItemsVm = await LoadFromCache(); // Test for cache
+    }
+
+    public async Task<List<ListItemViewModel>> LoadFromCache()
+    {
+        string recordKey = "items";
+        var cachedItems = await cache.GetRecordAsync<List<ListItemViewModel>>(recordKey);  // read cache
+        if (cachedItems is null)
+        {
+            //Set cache
+            fromCache = false;
+            ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+            await cache.SetRecordAsync(recordKey, ItemsVm);
+            return ItemsVm;
+        }
+        fromCache = true;
+        return cachedItems;
+    }
+
+    private Task OnSearchKeyDown(KeyboardEventArgs e) => e.Code is "Enter" or "NumpadEnter" ? HandleSearch() : Task.CompletedTask;
+    private async Task HandleSearch()
+    {
+        Expression<Func<ListItem, bool>> filter = await MakeSearchFilter(SearchText);
+        Items = await Listjjervice.ExecuteQuery(filter);
+        ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+    }
+
+    public async Task UpdateList() => await HandleSearch();
+    private async Task<Expression<Func<ListItem, bool>>> MakeSearchFilter(string SearchText)
+    {
+        Expression<Func<ListItem, bool>> filter = x => x.UserId == appState.UserId && x.Modified >= fromDate && x.Modified <= toDate ;
+
+        if (filterItems.CategoryId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
+        {
+            filter = ExpressionExtensions<ListItem>.AndAlso(filter, x => x.CategoryId == filterItems.CategoryId);
+        }
+
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            return filter;
+        }
+        var searchWords = SearchText.Split(' ').ToList();
+        var negatedSearchWords = searchWords.Where(x => x[0] == '!').Select(x => x.Remove(0, 1)).ToList();
+        searchWords = searchWords.Where(x => x[0] != '!').ToList();
+        filter = searchWords.Aggregate(
+            filter,
+            (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
+                currentExpr,
+                x => x.Name.Contains(nextWord)
+            )
+        );
+        filter = negatedSearchWords.Aggregate(
+            filter,
+            (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
+                currentExpr,
+                x => !x.Name.Contains(nextWord)
+            )
+        );
+        return filter;
+    }
+
+    private async Task DeleteItem(ListItemViewModel itemVm)
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete note {itemVm.Name} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        var item = await Listjjervice.FindById(itemVm.Id);
+        await Listjjervice.DelListItem(item);
+        await UpdateList();
+    }
+
+
+    private async Task DeleteFile(Tuple<string, Guid> fileTuple, ListItemViewModel itemVm)
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileTuple.Item1} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        await FileService.DelFile(fileTuple.Item2);
+        itemVm.FilesList.Remove(fileTuple);
+    }
+
+    private async Task GetFile(Tuple<string, Guid> fileTuple)
+    {
+        var file = await FileService.GetFile(fileTuple.Item2);
+        await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileTuple.Item1, "application/octet-stream", file.Bytes);
+    }
+
+    private async Task ClickActive(ListItemViewModel itemVm)
+    {
+        var item = await Listjjervice.FindById(itemVm.Id);
+        item.Active = !item.Active;
+        await Listjjervice.UpdateListItem(item);
+    }
+
+    private async Task EditItem(ListItemViewModel itemVm)
+    {
+        var item = await Listjjervice.FindById(itemVm.Id);
+        item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
+        await Listjjervice.UpdateListItem(item);
+        item.IsEditing = false;
+        await UpdateList();
+    }
+
+    private void ShowEdit(ListItemViewModel itemVm)
+    {
+        itemVm.IsEditing = !itemVm.IsEditing;
+    }
+
+}

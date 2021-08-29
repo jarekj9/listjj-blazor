@@ -1,0 +1,60 @@
+---
+
+version: "3"
+
+services:
+  mariadb:
+    image: mariadb
+    container_name: listjj_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_USER: remote
+      MYSQL_PASSWORD: root1234
+      MYSQL_DATABASE: db
+    restart: unless-stopped
+    ports:
+      - 33306:3306
+    networks:
+      - listjj
+
+  migrations:
+    build: 
+      context: .
+      dockerfile: Migrations.Dockerfile
+    container_name: listjj_migrations_temp
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker  # to use appsettings.Docker.json
+    networks:
+      - listjj
+
+  listjj:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: listjj_blazor
+    container_name: listjj
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+      - migrations
+    ports:
+      - 8085:80
+    networks:
+      - listjj
+
+  redis:
+    hostname: redis
+    image: redis:6.2
+    container_name: listjj_redis
+    #volumes:
+    #  - /mnt/c/docker/redis:/data
+    ports:
+      - 6379:6379
+    networks:
+        - listjj
+
+networks:
+  listjj:
+

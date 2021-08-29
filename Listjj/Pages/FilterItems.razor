@@ -1,0 +1,65 @@
+@using Listjj.Models
+@using Listjj.Abstract
+@inherits PageBase
+
+
+<form>
+        <select @bind-value="CategoryId" @bind-value:event="onchange">
+            <option value="00000000-0000-0000-0000-000000000000">---all---</option>
+            @if (Categories is null)
+            {
+             <option>    
+                 <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </option>
+            }
+            else
+            {
+                @foreach(var category in Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            }
+        </select>
+</form>
+
+@code {
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Parameter] public List<Category> Categories { get; set; }
+    [Parameter] public EventCallback UpdateList { get; set; }
+    private Guid categoryId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+    [Parameter] public Guid CategoryId 
+    { 
+        get => categoryId; 
+        set 
+        {
+            categoryId = value;
+            OnFilterChange();
+        } 
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var recentCategoryIdCookie = await JSRuntime.InvokeAsync<string>("ReadCookie", "recent_category_id");
+            if (Guid.TryParse(recentCategoryIdCookie, out var recentCategoryId) && Categories != null)
+            {
+                bool categoryExists = Categories.Exists(x => x.Id == recentCategoryId);
+                if(categoryExists)
+                {
+                    CategoryId = recentCategoryId;
+                }
+            }
+        }
+    }
+
+    private async Task OnFilterChange()
+    {
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", categoryId, 0.1);
+        await UpdateList.InvokeAsync();
+    }
+
+}

@@ -1,0 +1,80 @@
+@using Listjj.Models
+@using Listjj.Abstract
+@using System.IO
+@using System.Text
+@inject IFileService FileService
+@inject IListjjervice Listjjervice
+@inject IRefreshService RefreshService
+@inject ICategoryService CategoryService
+@inherits PageBase
+
+<div>
+    <span class="input-zone p-3 m-2" style="float: left;" @onclick="DownloadFile">
+        Export
+    </span>
+    <span class="input-zone p-3 m-2" style="float: left;">
+        <InputFile OnChange="@Upload"/>
+        Drop file to import
+    </span>
+</div>
+
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    private async void DownloadFile() {
+        var items = await Task.Run(() => Listjjervice.GetAllItems());
+        var categories = await Task.Run(() => CategoryService.GetAllCategories());
+        var text = "Value;Name;Description;Category;Active;\n";
+        foreach(var item in items) {
+            text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active}\n");
+        }
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        FileService.SaveAs(JSRuntime, "export.csv", bytes);
+    }
+
+   private async Task Upload(InputFileChangeEventArgs e)
+   {
+        Console.WriteLine("Uploading...");
+        MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        // read all at once:
+        //var bytes = ms.ToArray();
+        //string text = System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+        //Console.WriteLine(text);
+
+        ms.Position = 0;
+        using (var reader = new StreamReader(ms, Encoding.UTF8))
+        {
+            string line;
+            string[] words;
+            line = reader.ReadLine();  // skip heading
+            while ((line = reader.ReadLine()) != null)
+            {
+                ListItem item = new ListItem();
+                Category category = new Category();
+                words = line.Split(";");
+                item.Value = Double.Parse(words[0]);
+                item.Name = words[1];
+                item.Description = words[2];
+
+                var categories = await CategoryService.GetCategoriesByUserId(appState.UserId);
+                categories = categories.Where(x => x.Name == words[3]).ToList();
+                if(categories.Any()) {
+                    category = categories[0];
+                }
+                else {
+                    category.Name = words[3];
+                    category.UserId = appState.UserId;
+                    await CategoryService.AddCategory(category);
+                }
+                item.CategoryId = category.Id;
+                item.Active = Boolean.Parse(words[4]);
+                item.UserId = appState.UserId;
+
+                await Listjjervice.AddListItem(item);
+            }
+        }
+        //RefreshService.CallRequestRefresh();  // does not reset FileInput, so have to reload
+        NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+   }
+}

@@ -1,0 +1,97 @@
+@using Listjj.Models
+@using Listjj.Abstract
+@inject ICategoryService CategoryService
+@inherits PageBase
+
+@layout ListjjLayout
+@page "/categories"
+
+
+<AuthorizeView Roles="User">
+<AddCategory UpdateList="UpdateList"></AddCategory>
+@if (CategoriesVm is null)
+{
+    <p><em>Loading... !</em></p>
+}
+else 
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        @foreach(var category in CategoriesVm)
+        {
+            <tr hidden="@category.IsEditing" @ondblclick="() => category.IsEditing = !category.IsEditing">
+                <td>
+                    @category.Name
+                </td>
+                <td>
+                    @category.Description
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" @onclick="() => DeleteCategory(category)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                    <button class="btn btn-outline-primary" @onclick="() => ShowEdit(category)" title="Edit"><i class="far fa-edit"></i></button>
+                </td>
+            </tr>
+            @if(category.IsEditing)
+            {
+                <tr class="table-secondary" @ondblclick="() => category.IsEditing = !category.IsEditing">
+                    <td><input for="Name" class="form-controll" @bind="@category.Name" /></td>
+                    <td><input for="Description" class="form-controll" @bind="@category.Description" /></td>
+                    <td>
+                        <button class="btn btn-outline-primary" @onclick="() => EditCategory(category)" title="Save"><i class="far fa-save"></i></button>
+                        <button class="btn btn-outline-secondary" @onclick="() => ShowEdit(category)" title="Cancel"><i class="far fa-window-close"></i></button>
+                    </td>
+                </tr>
+            }
+
+        }
+    </table>
+}
+</AuthorizeView>
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    public async Task UpdateList()
+    {
+        await LoadData();
+        StateHasChanged();
+    }
+
+    private async Task DeleteCategory(CategoryViewModel categoryVm)
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete category {categoryVm.Name} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        var category = await CategoryService.FindById(categoryVm.Id);
+        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        await CategoryService.DelCategory(category);
+        await UpdateList();
+    }
+
+    private void ShowEdit(CategoryViewModel categoryVm)
+    {
+        categoryVm.IsEditing = !categoryVm.IsEditing;
+    }
+
+    protected async Task EditCategory(CategoryViewModel categoryVm)
+    {
+        var category = await CategoryService.FindById(categoryVm.Id);
+        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        category.IsEditing = false;
+        await CategoryService.UpdateCategory(category);
+        await UpdateList();
+    }
+
+}
