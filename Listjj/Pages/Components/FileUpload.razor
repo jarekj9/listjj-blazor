@@ -35,25 +35,21 @@
             MemoryStream ms = new MemoryStream();
             await file.OpenReadStream(5000000).CopyToAsync(ms);
             var bytes = ms.ToArray();
-            
+
             var item = FileService.AddFile(NoteId, bytes, file.Name);
-            
+
             // Saving to disk:
-            try
-            {
-                using var fs = new FileStream(file.Name, FileMode.Create, FileAccess.Write);
-                fs.Write(bytes, 0, bytes.Length);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception caught in process: {0}", ex);
-                throw;
-            }
-
-
+            //try
+            //{
+            //    using var fs = new FileStream(file.Name, FileMode.Create, FileAccess.Write);
+            //    fs.Write(bytes, 0, bytes.Length);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("Exception caught in process: {0}", ex);
+            //    throw;
+            //}
         }
-        //TODO upload the files to the server
     }
-
 
 }

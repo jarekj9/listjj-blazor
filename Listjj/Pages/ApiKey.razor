@@ -4,49 +4,47 @@
 
 
 
-
-<span class="input-zone p-3 m-2" style="float: left;">
-    <button type="button" data-toggle="modal" data-target="#mainModal">
+<button type="button" data-toggle="modal" data-target="#mainModal">
+    <span class="input-zone p-3 m-2" style="float: left;">
         Api Key
-    </button>
-</span>
-
+    </span>
+</button>
 <div class="modal fade" id="mainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Api key</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-            @if(@Key == Guid.Empty)
-            {
-                <p>If you forgot old key, new can be generated. Old key will be deleted.</p>
-            }
-            else
-            {
-                <p>Your new api key: @Key</p>
-                <p>
-                    Check this out:<br />
-                    curl -k https://localhost:5001/api/Listjj/GetAllListjj -H "Authorization: ApiKey @Key"<br />
-                    curl -k -X POST -H "Content-Type: application/json" -H "Authorization: ApiKey @Key" -d '{"name": "new", "value": "1", "description":"dsc", "categoryName":"default"}' https://localhost:5001/api/Listjj/AddItem
-                </p>
-            }
-            <button type="button" class="btn btn-outline-primary" @onclick="GenerateKey">Generate Key</button>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Api key</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (@Key == Guid.Empty)
+                {
+                    <p>If you forgot old key, new can be generated. Old key will be deleted.</p>
+                }
+                else
+                {
+                    <p>Your new api key: @Key</p>
+                    <p>
+                        Check this out:<br />
+                        curl -k https://localhost:5001/api/Listjj/GetAllListjj -H "Authorization: ApiKey @Key"<br />
+                        curl -k -X POST -H "Content-Type: application/json" -H "Authorization: ApiKey @Key" -d '{"name": "new", "value": "1", "description":"dsc", "categoryName":"default"}' https://localhost:5001/api/Listjj/AddItem
+                    </p>
+                }
+                <button type="button" class="btn btn-outline-primary" @onclick="GenerateKey">Generate Key</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private IUserService UserService { get; set; }
-    private Guid Key { get; set; } 
+    private Guid Key { get; set; }
 
     protected async Task GenerateKey()
     {
