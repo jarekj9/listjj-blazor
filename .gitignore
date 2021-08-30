@@ -1,4 +1,6 @@
-Listjj/obj/
-Listjj/bin/
-Listjj/Migrations/
-Listjj/appsettings.json
+**/obj/
+**/bin/
+**/.vs
+**/.vscode
+**/Migrations/
+**/appsettings.json
