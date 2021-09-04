@@ -9,12 +9,13 @@ public class ListjjMappingProfile : AutoMapper.Profile
 {
     public ListjjMappingProfile()
     {
-        CreateMap<ListItem, ListItemViewModel>()
-            .ForMember(d => d.Name, s => s.MapFrom(s => $"{s.Name}TEST"))
-            .ForMember(d => d.FilesList, s => s.MapFrom(s => s.Files.Select(f => new Tuple<string,Guid>(f.Name,f.Id)).ToList()));
+        CreateMap<ListItem, ListItemViewModel>();
+            //.ForMember(d => d.FilesList, s => s.MapFrom(s => s.Files.Select(f => new Tuple<string,Guid>(f.Name,f.Id)).ToList()));
 
         CreateMap<ListItemViewModel, ListItem>();
         CreateMap<Category, CategoryViewModel>();
         CreateMap<CategoryViewModel, Category>();
+        CreateMap<File, FileViewModel>();
+        CreateMap<FileViewModel, File>();
     }
 }

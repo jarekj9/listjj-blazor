@@ -68,15 +68,15 @@ else
                 </td>
                 <td title="Created: @item.Created, Changed: @item.Modified">
                     @item.Name
-                    @if (item.FilesList.Count > 0)
+                    @if (item.Files.Count > 0)
                     {
                         <div class="mt-3">
                             <span class="font-weight-bold">Files:</span>
                             <ul class="ml-3">
-                                @foreach (var file in item.FilesList)
+                                @foreach (var file in item.Files)
                                 {
                                     <li>
-                                        <a class="link-primary" @onclick="() => GetFile(file)">@file.Item1</a>
+                                        <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a>
                                     </li>
                                 }
                             </ul>
@@ -109,16 +109,16 @@ else
                     <td>
                         <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
                             <input for="Name" class="form-controll" @bind="@item.Name" />
-                            @if (item.FilesList.Count > 0)
+                            @if (item.Files.Count > 0)
                             {
                                 <div class="mt-3">
                                     <span class="font-weight-bold">Files:</span>
                                     <ul class="ml-3">
-                                        @foreach (var file in item.FilesList)
+                                        @foreach (var file in item.Files)
                                         {
                                             <li>
                                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                                                <a class="link-primary" @onclick="() => GetFile(file)">@file.Item1</a>
+                                                <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a>
                                             </li>
                                         }
                                     </ul>
@@ -265,21 +265,20 @@ else
     }
 
 
-    private async Task DeleteFile(Tuple<string, Guid> fileTuple, ListItemViewModel itemVm)
+    private async Task DeleteFile(FileViewModel fileVm, ListItemViewModel itemVm)
     {
-        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileTuple.Item1} ?");
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileVm.Name} ?");
         if (!isConfirmed)
         {
             return;
         }
-        await FileService.DelFile(fileTuple.Item2);
-        itemVm.FilesList.Remove(fileTuple);
+        itemVm.Files.Remove(fileVm);
     }
 
-    private async Task GetFile(Tuple<string, Guid> fileTuple)
+    private async Task GetFile(FileViewModel fileVm)
     {
-        var file = await FileService.GetFile(fileTuple.Item2);
-        await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileTuple.Item1, "application/octet-stream", file.Bytes);
+        var file = await FileService.GetFile(fileVm.Id);
+        await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileVm.Name, "application/octet-stream", file.Bytes);
     }
 
     private async Task ClickActive(ListItemViewModel itemVm)

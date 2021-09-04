@@ -20,6 +20,6 @@ namespace Listjj.ViewModels
         public bool IsEditing;
         public CategoryViewModel Category { get; set; }
         public ApplicationUser User { get; set; }
-        public List<Tuple<string, Guid>> FilesList { get; set;} = new List<Tuple<string, Guid>>();
+        public List<FileViewModel> Files { get; set;} = new List<FileViewModel>();
     }
 }
