@@ -1,7 +1,24 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    --text-bg: #BBD1EA;
+    --navbar-bg: #04080F;
+    --notes-bar: #04080F;
+    --form-bg: #A1C6EA;
+    --text-dark: #04080F;
+    --text-light: #BBD1EA;
+    --icons: #507DBC;
+    --bg: #DAE3E5;
+    --edit-bg: #E0EAF5;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--bg) !important;
+}
+
+div {
+    border-radius: 7px;
 }
 
 a, .btn-link {
@@ -24,6 +41,11 @@ a, a:hover, a:focus, .input-zone {
         text-decoration: underline !important;
         cursor: pointer;
     }
+
+input, select, textarea {
+    color: var(--text-dark) !important;
+    background-color: var(--bg) !important;
+}
 
 .btn-primary {
     color: #fff;
@@ -68,10 +90,42 @@ a, a:hover, a:focus, .input-zone {
 
 /* Jarek : */
 .addFormBackground {
-    background-color: rgb(244, 249, 252);
+    background-color: var(--form-bg);
     font-size: large;
+    color: var(--text-dark);
 }
-
+    .addLabel {
+        width: 100px;
+        margin: 5px;
+    }
+    .addBox {
+        width: 200px;
+    }
+.navbar-default {
+    background-color: var(--navbar-bg);
+    border-radius: 7px;
+}
+    .nav-link {
+        color: var(--text-light);
+    }
+    .nav-link:hover {
+        color: var(--icons);
+    }
+table {
+    border-radius: 7px !important;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+}
+    table > tr > td {
+        background-color: var(--text-bg);
+        color: var(--text-dark);
+    }
+    table > thead > tr > th {
+        background-color: var(--notes-bar) !important;
+    }
+tr.table-secondary > td {
+    background-color: var(--edit-bg) !important;
+}
 /* for animation : */
 .fadeOut {
     visibility: hidden;
@@ -86,6 +140,10 @@ a, a:hover, a:focus, .input-zone {
 
 tr:hover {
     background-color: rgb(244, 249, 252);
+}
+
+.mud-toolbar {
+    background-color: var(--navbar-bg) !important;
 }
 
 /* file input : */
@@ -121,10 +179,3 @@ tr:hover {
     visibility: hidden;
   }
 
-.addLabel {
-    width: 100px;
-    margin: 5px;
-}
-.addBox {
-    width: 200px;
-}

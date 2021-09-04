@@ -39,7 +39,8 @@ namespace Listjj.Service
             var file = new File {
                 Bytes = Bytes,
                 ListItemId = itemId,
-                Name = name
+                Name = name,
+                Size = Bytes.Length
             };
             await _appDbContext.Files.AddAsync(file);
             await _appDbContext.SaveChangesAsync();

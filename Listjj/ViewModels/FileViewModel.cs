@@ -1,15 +1,16 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
+using Listjj.Models;
+using System.Collections.Generic;
 
-namespace Listjj.Models
+
+namespace Listjj.ViewModels
 {
-    public class File
+    public class FileViewModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Size { get; set; }
-        public byte[] Bytes {get; set;}
         public Guid ListItemId { get; set; }
-        [ForeignKey("ListItemId")] public ListItem ListItem { get; set; } 
     }
 }

@@ -22,20 +22,22 @@
 
 <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
 
-<div class="row">
-    <div class="input-group mb-3 col-md-8 col-lg-6 col-xl-4">
-        <input type="text" class="form-control" style="height:45px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
-        <div class="input-group-append">
-            <button class="btn btn-outline-primary" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-6 col-xl-4">
-        <div class="row">
-            <div class="col-6">
-                <MudDatePicker Label="From:" @bind-Date="fromDate"/>
+<div class="form-group addFormBackground p-3 mb-3">
+    <div class="row">
+        <div class="input-group mb-3 mt-3 col-md-8 col-lg-6 col-xl-4">
+            <input type="text" class="form-control" style="height:45px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
             </div>
-            <div class="col-6">
-                <MudDatePicker Label="To:" @bind-Date="toDate"/>
+        </div>
+        <div class="col-md-6 col-lg-6 col-xl-4">
+            <div class="row">
+                <div class="col-6">
+                    <MudDatePicker Color="Color.Dark" Class="mb-2" Label="From:" @bind-Date="fromDate" />
+                </div>
+                <div class="col-6">
+                    <MudDatePicker Color="Color.Dark" Label="To:" @bind-Date="toDate" />
+                </div>
             </div>
         </div>
     </div>
@@ -46,7 +48,7 @@
 }
 else 
 {
-    <table class="table">
+    <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>
                 <th>Value</th>
