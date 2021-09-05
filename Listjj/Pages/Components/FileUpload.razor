@@ -1,6 +1,7 @@
 @using System
 @using System.IO
 @using Listjj.Pages
+@using List.Helpers
 @inherits PageBase
 
 
@@ -11,45 +12,34 @@
         Icon="@Icons.Filled.AttachFile"
         for="fileInput" />
 
-@if (files != null)
+@FilesRows
+
+@if(filesLoading)
 {
-    <MudText Typo="@Typo.h6">@files.Count() File@(files.Count() == 1 ? "" : "s"):</MudText>
-    <MudList>
-    @foreach (var file in files)
-    {
-     <MudListItem Icon="@Icons.Filled.AttachFile" @key="@file">
-         @file.Name <code>@file.Size bytes</code>
-     </MudListItem>
-    }
-    </MudList>
+    <div class="spinner-border text-primary mt-2 ml-3" role="status"></div>
 }
+
 @code
 {
-    IList<IBrowserFile> files = new List<IBrowserFile>();
-    [Parameter] public Guid NoteId {get; set;}
+    [Parameter] public RenderFragment FilesRows { get; set; }
+    [Parameter] public ListItemViewModel ItemVm { get; set; }
+    private bool filesLoading = false;
+
     private async Task UploadFiles(InputFileChangeEventArgs e)
     {
+        filesLoading = true;
         foreach (var file in e.GetMultipleFiles())
         {
-            files.Add(file);
             MemoryStream ms = new MemoryStream();
             await file.OpenReadStream(5000000).CopyToAsync(ms);
             var bytes = ms.ToArray();
 
-            var item = FileService.AddFile(NoteId, bytes, file.Name);
-
-            // Saving to disk:
-            //try
-            //{
-            //    using var fs = new FileStream(file.Name, FileMode.Create, FileAccess.Write);
-            //    fs.Write(bytes, 0, bytes.Length);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("Exception caught in process: {0}", ex);
-            //    throw;
-            //}
+            var newFile = await FileService.AddFile(ItemVm.Id, bytes, file.Name);
+            FileViewModel newfileVm = new FileViewModel();
+            MapperHelper.MapItem<Listjj.Models.File, FileViewModel>(newFile, newfileVm);
+            ItemVm.Files.Add(newfileVm);
         }
+        filesLoading = false;
     }
 
 }

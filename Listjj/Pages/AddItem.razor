@@ -100,7 +100,7 @@
         ItemVm.UserId = appState.UserId;
         var item = new ListItem();
         MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);
-        await Listjjervice.AddListItem(item);
+        await ListItemService.AddListItem(item);
         await UpdateList.InvokeAsync();
         appState.RecentCategoryId = ItemVm.CategoryId;
         ItemVm = new ListItemViewModel();

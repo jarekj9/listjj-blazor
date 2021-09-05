@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Listjj.Abstract
 {
-    public interface IListjjervice
+    public interface IListItemService
     {
         Task<ListItem> FindById(Guid id);
         Task<bool> AddListItem(ListItem item);

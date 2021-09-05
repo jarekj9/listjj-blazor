@@ -51,7 +51,7 @@ namespace Listjj
             services.AddStackExchangeRedisCache(opt => opt.Configuration = Configuration.GetConnectionString("Redis"));
 
             services.AddHttpContextAccessor();  // for user identity
-            services.AddScoped<IListjjervice, Listjjervice>();
+            services.AddScoped<IListItemService, ListItemService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRefreshService, RefreshService>();

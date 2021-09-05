@@ -15,11 +15,11 @@ using Listjj.Data;
  
 namespace Listjj.Service
 {
-    public class Listjjervice : IListjjervice
+    public class ListItemService : IListItemService
     {
         private readonly AppDbContext  _appDbContext;
 
-        public Listjjervice (AppDbContext appDbContext)
+        public ListItemService (AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
@@ -57,7 +57,7 @@ namespace Listjj.Service
         }
         public async Task<List<ListItem>> GetItemsByUserId(string id)
         {
-            return await _appDbContext.ListItems.Include(i => i.Files).Where(x => x.UserId == id).ToListAsync();
+            return await _appDbContext.ListItems.Include(i => i.Files).Include(i => i.Category).Where(x => x.UserId == id).ToListAsync();
         }
         public async Task<List<ListItem>> GetItemsByCategoryId(Guid id)
         {

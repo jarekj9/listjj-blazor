@@ -8,16 +8,6 @@
 @layout ListjjLayout
 @page "/list"
 
-
-@* @if (_claims.Count() > 0)
-{
-    <ul>
-        @foreach (var claim in _claims)
-        {
-            <li>@claim.Type &ndash; @claim.Value</li>
-        }
-    </ul>
-} *@
 <AuthorizeView Roles="User">
 
 <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
@@ -54,7 +44,10 @@ else
                 <th>Value</th>
                 <th>Name</th>
                 <th>Description</th>
-                <th><span style="display: inline-block">Category:&nbsp</span><span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList"/></span></th>
+                <th>
+                    <span style="display: inline-block">Category:&nbsp</span>
+                    <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList"/></span>
+                </th>
                 <th>Active</th>
                 <th>Action</th>
             </tr>
@@ -75,9 +68,9 @@ else
                             <ul class="ml-3">
                                 @foreach (var file in item.Files)
                                 {
-                                    <li>
-                                        <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a>
-                                    </li>
+                                <li>
+                                    <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+                                </li>
                                 }
                             </ul>
                         </div>
@@ -109,22 +102,28 @@ else
                     <td>
                         <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
                             <input for="Name" class="form-controll" @bind="@item.Name" />
-                            @if (item.Files.Count > 0)
-                            {
-                                <div class="mt-3">
-                                    <span class="font-weight-bold">Files:</span>
-                                    <ul class="ml-3">
-                                        @foreach (var file in item.Files)
+                            <div class="mt-2">
+                                <FileUpload ItemVm="item">
+                                    <FilesRows>
+                                        @if (item.Files.Count > 0)
                                         {
-                                            <li>
-                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                                                <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a>
-                                            </li>
+                                            <div class="mt-3">
+                                                <ul class="ml-3">
+                                                    @foreach (var file in item.Files)
+                                                    {
+                                                        <li>
+                                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button>
+                                                            <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
                                         }
-                                    </ul>
-                                </div>
-                            }
-                            <div class="mt-2"><FileUpload NoteId="@item.Id" /></div>
+                                    </FilesRows>
+                                </FileUpload>
+                            </div>
                         </Animate>
                     </td>
                     <td>
@@ -183,7 +182,7 @@ else
 
     private async void RefreshMe()
     {
-        Items = await Task.Run(() => Listjjervice.GetAllItems());
+        Items = await Task.Run(() => ListItemService.GetAllItems());
     }
 
     protected override async Task OnInitializedAsync()
@@ -214,7 +213,7 @@ else
     private async Task HandleSearch()
     {
         Expression<Func<ListItem, bool>> filter = await MakeSearchFilter(SearchText);
-        Items = await Listjjervice.ExecuteQuery(filter);
+        Items = await ListItemService.ExecuteQuery(filter);
         ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
     }
 
@@ -259,8 +258,8 @@ else
         {
             return;
         }
-        var item = await Listjjervice.FindById(itemVm.Id);
-        await Listjjervice.DelListItem(item);
+        var item = await ListItemService.FindById(itemVm.Id);
+        await ListItemService.DelListItem(item);
         await UpdateList();
     }
 
@@ -273,6 +272,7 @@ else
             return;
         }
         itemVm.Files.Remove(fileVm);
+        await FileService.DelFile(fileVm.Id);
     }
 
     private async Task GetFile(FileViewModel fileVm)
@@ -283,16 +283,16 @@ else
 
     private async Task ClickActive(ListItemViewModel itemVm)
     {
-        var item = await Listjjervice.FindById(itemVm.Id);
+        var item = await ListItemService.FindById(itemVm.Id);
         item.Active = !item.Active;
-        await Listjjervice.UpdateListItem(item);
+        await ListItemService.UpdateListItem(item);
     }
 
     private async Task EditItem(ListItemViewModel itemVm)
     {
-        var item = await Listjjervice.FindById(itemVm.Id);
+        var item = await ListItemService.FindById(itemVm.Id);
         item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
-        await Listjjervice.UpdateListItem(item);
+        await ListItemService.UpdateListItem(item);
         item.IsEditing = false;
         await UpdateList();
     }

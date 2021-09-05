@@ -18,7 +18,7 @@ namespace Listjj.Pages
     {
         [Inject] protected NavigationManager NavManager { get; set; }
         [Inject] protected Data.AppState appState { get; set; }
-        [Inject] protected IListjjervice Listjjervice { get; set; }
+        [Inject] protected IListItemService ListItemService { get; set; }
         [Inject] protected ICategoryService CategoryService { get; set; }
         [Inject] protected IFileService FileService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -49,7 +49,7 @@ namespace Listjj.Pages
             Categories = await CategoryService.GetCategoriesByUserId(appState.UserId);
             CategoriesVm = MapperHelper.MapItems<Category, CategoryViewModel>(Categories);
 
-            Items = await Listjjervice.GetItemsByUserId(appState.UserId);
+            Items = await ListItemService.GetItemsByUserId(appState.UserId);
             ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
         }
 

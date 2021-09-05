@@ -3,7 +3,7 @@
 @using System.IO
 @using System.Text
 @inject IFileService FileService
-@inject IListjjervice Listjjervice
+@inject IListItemService ListItemService
 @inject IRefreshService RefreshService
 @inject ICategoryService CategoryService
 @inherits PageBase
@@ -22,7 +22,7 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
     private async void DownloadFile() {
-        var items = await Task.Run(() => Listjjervice.GetAllItems());
+        var items = await Task.Run(() => ListItemService.GetAllItems());
         var categories = await Task.Run(() => CategoryService.GetAllCategories());
         var text = "Value;Name;Description;Category;Active;\n";
         foreach(var item in items) {
@@ -37,10 +37,6 @@
         Console.WriteLine("Uploading...");
         MemoryStream ms = new MemoryStream();
         await e.File.OpenReadStream().CopyToAsync(ms);
-        // read all at once:
-        //var bytes = ms.ToArray();
-        //string text = System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-        //Console.WriteLine(text);
 
         ms.Position = 0;
         using (var reader = new StreamReader(ms, Encoding.UTF8))
@@ -71,7 +67,7 @@
                 item.Active = Boolean.Parse(words[4]);
                 item.UserId = appState.UserId;
 
-                await Listjjervice.AddListItem(item);
+                await ListItemService.AddListItem(item);
             }
         }
         //RefreshService.CallRequestRefresh();  // does not reset FileInput, so have to reload

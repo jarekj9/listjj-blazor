@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Listjj.Abstract;
 using Listjj.Models;
-using System.IO;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Newtonsoft.Json;
@@ -19,13 +18,13 @@ namespace Listjj.APIs
 
     public class ListjjController: ControllerBase
     {
-        private readonly IListjjervice Listjjervice;
+        private readonly IListItemService ListItemService;
         private readonly ICategoryService CategoryService;
         private readonly IUserService UserService;
 
-        public ListjjController(IListjjervice Listjjervice, IUserService userService, ICategoryService categoryService)
+        public ListjjController(IListItemService listItemService, IUserService userService, ICategoryService categoryService)
         {
-            Listjjervice = Listjjervice;
+            ListItemService = listItemService;
             CategoryService = categoryService;
             UserService = userService;
         }
@@ -67,7 +66,7 @@ namespace Listjj.APIs
             {
                 return "Unauthorized access.";
             }
-            var items = await Listjjervice.GetItemsByUserId(userId.ToString());
+            var items = await ListItemService.GetItemsByUserId(userId.ToString());
             var response = System.Text.Json.JsonSerializer.Serialize(items);
             return response;
         }
@@ -118,7 +117,7 @@ namespace Listjj.APIs
             item.Description = description;
             Double.TryParse(value, out double parsedValue);
             item.Value = parsedValue;
-            await Listjjervice.AddListItem(item);
+            await ListItemService.AddListItem(item);
             return "{\"status\":\"ok\"}";
         }
 

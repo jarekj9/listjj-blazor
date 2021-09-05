@@ -34,7 +34,7 @@ namespace Listjj.Service
         {
             return (await _appDbContext.Files.FindAsync(id));
         }
-        public async Task<bool> AddFile(Guid itemId, byte[] Bytes, string name)
+        public async Task<File> AddFile(Guid itemId, byte[] Bytes, string name)
         {  
             var file = new File {
                 Bytes = Bytes,
@@ -44,7 +44,7 @@ namespace Listjj.Service
             };
             await _appDbContext.Files.AddAsync(file);
             await _appDbContext.SaveChangesAsync();
-            return true;
+            return file;
         }
 
         public async Task<List<(string, Guid)>> GetNamesAndIds(Guid itemId)
