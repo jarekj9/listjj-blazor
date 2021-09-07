@@ -1,0 +1,110 @@
+@inherits PageBase
+
+
+<EditForm Model="@ItemVm" OnValidSubmit="HandleValidSubmit">
+    <div class="form-group addFormBackground p-3">
+        <h4>Add Item</h4>
+            <div class="container-fluid">
+            <div class="row">
+                <div class="">
+                    <label class="addLabel" for="new-value">Value: </label>
+                    <input id="new-value" @bind="@ItemVm.Value" type="number" class="form-controll addBox">
+                </div>
+                <div class="">
+                    <label class="addLabel" for="new-value">Name: </label>
+                    <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll addBox">
+                </div>
+                <div class="">
+                    <label class="addLabel" for="new-value">Description: </label>
+                    <input id="new-dsc" @bind="@ItemVm.Description" type="text" class="form-controll addBox">
+                </div>
+                <div class="">
+                    <label class="addLabel" for="new-value">Category:</label>
+                    <select class="addBox" id="new-category" @bind="@ItemVm.CategoryId">
+                        <option value="00000000-0000-0000-0000-000000000000">---select---</option>
+                        @if (CategoriesVm is null)
+                        {
+                        <option>    
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </option>
+                        }
+                        else
+                        {
+                            @foreach(var category in CategoriesVm)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="">
+                    <label class="addLabel" for="new-value">Active: </label>
+                    <input id="new-active" type="checkbox" @bind="@ItemVm.Active" class="form-controll addBox">
+                </div>
+            </div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary m-2" value="Save">Save</button>
+    </div>
+</EditForm>
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Parameter] public EventCallback UpdateList { get; set; }
+    [Parameter] public ListItemViewModel ItemVm { get; set; } = new ListItemViewModel();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ItemVm.CategoryId = appState.RecentCategoryId;
+            var recentCategoryIdCookie = await JSRuntime.InvokeAsync<string>("ReadCookie", "recent_category_id");
+            if (Guid.TryParse(recentCategoryIdCookie, out var recentCategoryId) && CategoriesVm != null)
+            {
+                bool categoryExists = CategoriesVm.Exists(x => x.Id == recentCategoryId);
+                if(categoryExists)
+                {
+                    appState.RecentCategoryId = recentCategoryId;
+                }
+            }
+            if (ItemVm.CategoryId != appState.RecentCategoryId)
+            {
+                ItemVm.CategoryId = appState.RecentCategoryId;
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        if (!appState.IsLoggedIn)
+        {
+            await JSRuntime.InvokeAsync<object>("alert", "Please login first.");
+            return;
+        }
+        Category category = await CategoryService.FindById(ItemVm.CategoryId);
+        if(category is null) {  // no category selected
+            if (CategoriesVm.Any() is not false) {
+                ItemVm.CategoryId = CategoriesVm[0].Id;
+            }
+            else {
+                Category defaultCat = new Category();
+                defaultCat.Name = "default";
+                defaultCat.UserId = appState.UserId;
+                await CategoryService.AddCategory(defaultCat);
+                category = await CategoryService.FindById(defaultCat.Id);
+                ItemVm.CategoryId = category.Id;
+            }
+        }
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", ItemVm.CategoryId, 0.1);
+        ItemVm.UserId = appState.UserId;
+        var item = new ListItem();
+        MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);
+        await ListItemService.AddListItem(item);
+        await UpdateList.InvokeAsync();
+        appState.RecentCategoryId = ItemVm.CategoryId;
+        ItemVm = new ListItemViewModel();
+        ItemVm.CategoryId = appState.RecentCategoryId;
+    }
+
+}

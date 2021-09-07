@@ -1,0 +1,29 @@
+@inject ICategoryService CategoryService
+@inject IJSRuntime JSRuntime
+@inherits PageBase
+
+<EditForm Model="@categoryVm" OnValidSubmit="HandleValidSubmit">
+    <div class="form-group addFormBackground p-3">
+        Name: <input for="categoryVm.Name" class="form-controll" @bind="@categoryVm.Name" />
+        Description: <input for="categoryVm.Description" class="form-controll" @bind="@categoryVm.Description" />
+        <input type="submit" class="btn btn-outline-primary" value="save" />
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter] public EventCallback UpdateList { get; set; }
+    CategoryViewModel categoryVm = new CategoryViewModel();
+
+
+    protected async Task HandleValidSubmit()
+    {
+        var category = new Category();
+        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        category.UserId = appState.UserId;
+        await CategoryService.AddCategory(category);
+        await UpdateList.InvokeAsync();
+        categoryVm = new CategoryViewModel();
+    }
+
+}

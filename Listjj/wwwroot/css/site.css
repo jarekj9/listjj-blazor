@@ -115,6 +115,7 @@ table {
     border-radius: 7px !important;
     border-top-right-radius: 15px;
     border-top-left-radius: 15px;
+    table-layout: fixed;
 }
     table > tr > td {
         background-color: var(--text-bg);
@@ -123,6 +124,7 @@ table {
     table > thead > tr > th {
         background-color: var(--notes-bar) !important;
     }
+
 tr.table-secondary > td {
     background-color: var(--edit-bg) !important;
 }

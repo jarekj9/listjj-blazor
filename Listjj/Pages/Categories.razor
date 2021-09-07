@@ -1,5 +1,6 @@
 @using Listjj.Models
 @using Listjj.Abstract
+@using Listjj.Pages.Components
 @inject ICategoryService CategoryService
 @inherits PageBase
 
@@ -8,50 +9,50 @@
 
 
 <AuthorizeView Roles="User">
-<AddCategory UpdateList="UpdateList"></AddCategory>
-@if (CategoriesVm is null)
-{
-    <p><em>Loading... !</em></p>
-}
-else 
-{
-    <table class="table table-striped">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        @foreach(var category in CategoriesVm)
-        {
-            <tr hidden="@category.IsEditing" @ondblclick="() => category.IsEditing = !category.IsEditing">
-                <td>
-                    @category.Name
-                </td>
-                <td>
-                    @category.Description
-                </td>
-                <td>
-                    <button class="btn btn-outline-primary" @onclick="() => DeleteCategory(category)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                    <button class="btn btn-outline-primary" @onclick="() => ShowEdit(category)" title="Edit"><i class="far fa-edit"></i></button>
-                </td>
-            </tr>
-            @if(category.IsEditing)
+    <AddCategory UpdateList="UpdateList"></AddCategory>
+    @if (CategoriesVm is null)
+    {
+        <p><em>Loading... !</em></p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            @foreach (var category in CategoriesVm)
             {
-                <tr class="table-secondary" @ondblclick="() => category.IsEditing = !category.IsEditing">
-                    <td><input for="Name" class="form-controll" @bind="@category.Name" /></td>
-                    <td><input for="Description" class="form-controll" @bind="@category.Description" /></td>
+                <tr hidden="@category.IsEditing" @ondblclick="() => category.IsEditing = !category.IsEditing">
                     <td>
-                        <button class="btn btn-outline-primary" @onclick="() => EditCategory(category)" title="Save"><i class="far fa-save"></i></button>
-                        <button class="btn btn-outline-secondary" @onclick="() => ShowEdit(category)" title="Cancel"><i class="far fa-window-close"></i></button>
+                        @category.Name
+                    </td>
+                    <td>
+                        @category.Description
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary" @onclick="() => DeleteCategory(category)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                        <button class="btn btn-outline-primary" @onclick="() => ShowEdit(category)" title="Edit"><i class="far fa-edit"></i></button>
                     </td>
                 </tr>
-            }
+                @if (category.IsEditing)
+                {
+                    <tr class="table-secondary" @ondblclick="() => category.IsEditing = !category.IsEditing">
+                        <td><input for="Name" class="form-controll" @bind="@category.Name" /></td>
+                        <td><input for="Description" class="form-controll" @bind="@category.Description" /></td>
+                        <td>
+                            <button class="btn btn-outline-primary" @onclick="() => EditCategory(category)" title="Save"><i class="far fa-save"></i></button>
+                            <button class="btn btn-outline-secondary" @onclick="() => ShowEdit(category)" title="Cancel"><i class="far fa-window-close"></i></button>
+                        </td>
+                    </tr>
+                }
 
-        }
-    </table>
-}
+            }
+        </table>
+    }
 </AuthorizeView>
 
 @code {
