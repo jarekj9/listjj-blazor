@@ -15,10 +15,10 @@
 
     <div class="form-group addFormBackground p-3 mb-3">
         <div class="row">
-            <div class="input-group mb-3 mt-3 col-md-8 col-lg-6 col-xl-4">
-                <input type="text" class="form-control" style="height:45px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+            <div class="input-group mb-3 mt-5 col-md-8 col-lg-6 col-xl-4">
+                <input type="text" class="form-control" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-primary" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <button class="btn btn-sm btn-outline-primary" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </div>
             </div>
             <div class="col-md-6 col-lg-6 col-xl-4">
@@ -39,12 +39,12 @@
     }
     else
     {
-        <table class="table table-bordered">
+        <table class="table table-striped main-table">
             <thead class="thead-dark">
                 <tr>
                     <th>Value</th>
                     <th>Name</th>
-                    <th>Description</th>
+                    @*<th>Description</th>*@
                     <th>
                         <span style="display: inline-block">Category:&nbsp</span>
                         <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList" /></span>
@@ -61,12 +61,13 @@
                         @item.Value
                     </td>
                     <td title="Created: @item.Created, Changed: @item.Modified">
-                        @item.Name
+                        @item.Name<br />
+                        @item.Description
                         @if (item.Files.Count > 0)
                         {
                             <div class="mt-3">
                                 <span class="font-weight-bold">Files:</span>
-                                <ul class="ml-3">
+                                <ul class="ml-3" style="overflow: visible;width:200%;">
                                     @foreach (var file in item.Files)
                                     {
                                         <li>
@@ -77,9 +78,9 @@
                             </div>
                         }
                     </td>
-                    <td>
+                    @*<td>
                         @item.Description
-                    </td>
+                    </td>*@
                     <td>
                         @item.Category.Name
                     </td>
@@ -87,8 +88,8 @@
                         <input type="checkbox" checked="@item.Active" @onchange="() => ClickActive(item)">
                     </td>
                     <td>
-                        <button class="btn btn-outline-danger" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                        <button class="btn btn-outline-primary" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
+                        <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                        <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
                     </td>
                 </tr>
 
@@ -97,19 +98,20 @@
                     <tr class="table-secondary" @ondblclick="() => item.IsEditing = !item.IsEditing">
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input for="Value" class="form-controll" @bind="@item.Value" />
+                                <input for="Value" class="form-controll" size="4" @bind="@item.Value" />
                             </Animate>
                         </td>
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input for="Name" class="form-controll" @bind="@item.Name" />
+                                <input size="18"for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
+                                <textarea rows="3" cols="20" for="Description" class="form-controll" @bind="@item.Description" />
                                 <div class="mt-2">
                                     <FileUpload ItemVm="item">
                                         <FilesRows>
                                             @if (item.Files.Count > 0)
                                             {
                                                 <div class="mt-3">
-                                                    <ul class="ml-3">
+                                                    <ul class="ml-3" style="overflow: visible;width:200%;">
                                                         @foreach (var file in item.Files)
                                                         {
                                                             <li>
@@ -127,11 +129,11 @@
                                 </div>
                             </Animate>
                         </td>
-                        <td>
+                        @*<td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
                                 <input for="Description" class="form-controll" @bind="@item.Description" />
                             </Animate>
-                        </td>
+                        </td>*@
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
                                 <select @bind="@item.CategoryId">
@@ -157,8 +159,8 @@
                         </td>
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <button class="btn btn-outline-primary" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
-                                <button class="btn btn-outline-secondary" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
+                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
+                                <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
                             </Animate>
                         </td>
                     </tr>

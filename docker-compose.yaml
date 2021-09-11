@@ -5,6 +5,7 @@ version: "3"
 services:
   mariadb:
     image: mariadb
+    #image: jsurf/rpi-mariadb
     container_name: listjj_mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root1234

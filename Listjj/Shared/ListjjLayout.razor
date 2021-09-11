@@ -7,30 +7,40 @@
 
 <div class="page">
     <div class="main">
-        <div class="top-row px-4">
+        <div class="top-row px-2">
 
             <AuthorizeView>
                 <Authorized>
                     Hello, @context.User.Identity.Name!
-                    <a href="Identity/Account/Logout">Log out</a>
                 </Authorized>
-                <NotAuthorized>
-                    <a href="Identity/Account/Register">Register</a>
-                    <a href="Identity/Account/Login">Log in</a>
-                </NotAuthorized>
             </AuthorizeView>
 
-
             <nav class="navbar navbar-default navbar-expand-sm">
-                <span class="nav-item" >
-                    <a class="nav-link" href="/list">Items </a>
-                </span>
-                <span class="nav-item">
-                    <a class="nav-link" href="/categories">Categories </a>
-                </span>
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <span class="nav-item">
+                            <a class="nav-link" href="Identity/Account/Login">Log in</a>
+                        </span>
+                        <span class="nav-item">
+                            <a class="nav-link" href="Identity/Account/Register">Register</a>
+                        </span>
+                    </NotAuthorized>
+                    <Authorized>
+                        <span class="nav-item">
+                            <a class="nav-link" href="/list">Items </a>
+                        </span>
+                        <span class="nav-item">
+                            <a class="nav-link" href="/categories">Categories </a>
+                        </span>
+                        <span class="nav-item">
+                            <a class="nav-link" href="Identity/Account/Logout">Log out</a>
+                        </span>
+                    </Authorized>
+                </AuthorizeView>
             </nav>
+
         </div>
-        <div class="content px-4">
+        <div class="content px-2">
             @Body
         </div>
     </div>
