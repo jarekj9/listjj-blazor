@@ -18,6 +18,7 @@ namespace Listjj.ViewModels
         public Guid CategoryId { get; set; }
         public string UserId { get; set; }
         public bool IsEditing;
+        public string Tags { get; set; } = string.Empty;
         public CategoryViewModel Category { get; set; }
         public ApplicationUser User { get; set; }
         public List<FileViewModel> Files { get; set;} = new List<FileViewModel>();

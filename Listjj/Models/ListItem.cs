@@ -12,6 +12,7 @@ namespace Listjj.Models
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public Guid CategoryId { get; set; }
+        public string Tags { get; set; } = string.Empty;
         [ForeignKey("CategoryId")] public Category Category { get; set; }
 
         [JsonIgnore]
