@@ -3,49 +3,49 @@
 
 <EditForm Model="@ItemVm" OnValidSubmit="HandleValidSubmit">
     <div class="form-group addFormBackground p-3">
-        <h4>Add Item</h4>
-            <div class="container-fluid">
+        <h5>Add Item</h5>
+        <div class="container-fluid">
             <div class="row">
-                <div class="">
-                    <label class="addLabel" for="new-value">Value: </label>
-                    <input id="new-value" @bind="@ItemVm.Value" type="number" class="form-controll addBox">
+                <div class="form-group col-sm-12 col-md-4 col-lg-2 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="new-value">Value: </label>
+                    <input id="new-value" @bind="@ItemVm.Value" type="number" class="form-controll" style="width: 50px;">
                 </div>
-                <div class="">
-                    <label class="addLabel" for="new-value">Name: </label>
-                    <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll addBox">
+                <div class="form-group col-sm-12 col-md-4 col-lg-3 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="new-value">Name: </label>
+                    <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll">
                 </div>
-                <div class="">
-                    <label class="addLabel" for="new-value">Description: </label>
-                    <input id="new-dsc" @bind="@ItemVm.Description" type="text" class="form-controll addBox">
+                <div class="form-group col-sm-12 col-md-4 col-lg-3 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="new-value">Description: </label>
+                    <input id="new-dsc" @bind="@ItemVm.Description" type="text" class="form-controll">
                 </div>
-                <div class="">
-                    <label class="addLabel" for="new-value">Category:</label>
+                <div class="form-group col-sm-12 col-md-4 col-lg-2 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="new-value">Category:</label>
                     <select class="addBox" id="new-category" @bind="@ItemVm.CategoryId">
                         <option value="00000000-0000-0000-0000-000000000000">---select---</option>
                         @if (CategoriesVm is null)
                         {
-                        <option>    
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </option>
+                            <option>
+                                <div class="spinner-border" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </option>
                         }
                         else
                         {
-                            @foreach(var category in CategoriesVm)
+                            @foreach (var category in CategoriesVm)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }
                         }
                     </select>
                 </div>
-                <div class="">
-                    <label class="addLabel" for="new-value">Active: </label>
-                    <input id="new-active" type="checkbox" @bind="@ItemVm.Active" class="form-controll addBox">
+                <div class="form-group col-sm-12 col-md-4 col-lg-2 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="new-value">Active: </label>
+                    <input id="new-active" type="checkbox" @bind="@ItemVm.Active" class="form-controll">
                 </div>
             </div>
-            </div>
-            <button type="submit" class="btn btn-outline-primary m-2" value="Save">Save</button>
+        </div>
+        <button type="submit" class="btn btn-outline-primary m-2" value="Save">Save</button>
     </div>
 </EditForm>
 
