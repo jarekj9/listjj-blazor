@@ -20,14 +20,6 @@ namespace Listjj.Service
             this.listItemService = ListItemService;
         }
 
-        public async Task LoadToCache()
-        {
-            var tagsSelection = await Load();
-            await cache.SetRecordAsync(TagsSelectionKey, tagsSelection);
-        }
-
-        public async Task ClearCache() => cache.RemoveAsync(TagsSelectionKey);
-
         public Task<List<string>> GetTagsSelectionAsync(string userId)
         {
             tagsUserId = userId;
