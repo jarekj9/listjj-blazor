@@ -21,6 +21,7 @@ namespace Listjj.Pages
         [Inject] protected IListItemService ListItemService { get; set; }
         [Inject] protected ICategoryService CategoryService { get; set; }
         [Inject] protected IFileService FileService { get; set; }
+        [Inject] protected ITagsCacheService TagsCacheService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         protected IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 
@@ -51,6 +52,7 @@ namespace Listjj.Pages
 
             Items = await ListItemService.GetItemsByUserId(appState.UserId);
             ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+
         }
 
     }

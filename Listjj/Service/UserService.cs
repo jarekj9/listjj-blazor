@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Listjj.Abstract;
@@ -17,6 +16,11 @@ namespace Listjj.Service
         public UserService (AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
+        }
+
+        public async Task<List<ApplicationUser>> FindAllUsers()
+        {
+            return await _appDbContext.Users.ToListAsync();
         }
 
         public ApplicationUser FindUserByUserId(string userId)

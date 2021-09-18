@@ -18,7 +18,7 @@ namespace List.Extensions
         )
         {
             var options = new DistributedCacheEntryOptions();
-            options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(60);
+            options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(36000000);
             options.SlidingExpiration = unusedExpireTime;
 
             var jsonData = JsonSerializer.Serialize(data);
@@ -35,6 +35,20 @@ namespace List.Extensions
             }
 
             return JsonSerializer.Deserialize<T>(jsonData);
+        }
+
+        public static async Task<T> GetRecordAsync<T>(this IDistributedCache cache, string recordKey, Func<Task<T>> valueFunc)
+        {
+            var result = await cache.GetRecordAsync<T>(recordKey);
+
+            if (result != null)
+            {
+                return result;
+            }
+            var value = await valueFunc();
+            await cache.SetRecordAsync(recordKey, value);
+
+            return value;
         }
 
     }

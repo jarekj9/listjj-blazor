@@ -30,6 +30,10 @@ html, body {
     }
 }
 
+.standardBgColor {
+    background-color: var(--bg);
+}
+
 div {
     border-radius: 7px;
 }

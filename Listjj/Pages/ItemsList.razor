@@ -11,7 +11,9 @@
 
 <AuthorizeView Roles="User">
 
-    <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+    <CascadingValue Value="@TagsSelection">
+        <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm"/>
+    </CascadingValue>
 
     <div class="form-group addFormBackground p-3 mb-3">
         <div class="row">
@@ -35,7 +37,7 @@
     </div>
     @if (ItemsVm is null)
     {
-        <MudSkeleton />
+        <MudProgressCircular Color="Color.Secondary" Style="height:70px;width:70px;" Indeterminate="true" />
     }
     else
     {
@@ -103,8 +105,11 @@
                         </td>
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input size="18"for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
+                                <input size="18" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
                                 <textarea rows="3" cols="20" for="Description" class="form-controll" @bind="@item.Description" />
+                                <CascadingValue Value="@TagsSelection">
+                                    <TagsInput Tags="item.Tags" />
+                                </CascadingValue>
                                 <div class="mt-2">
                                     <FileUpload ItemVm="item">
                                         <FilesRows>
@@ -163,6 +168,8 @@
                                 <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
                             </Animate>
                         </td>
+                        <td>
+                        </td>
                     </tr>
                 }
             }
@@ -184,6 +191,7 @@
     private bool fromCache { get; set; }
     private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-1);
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
+    protected List<string> TagsSelection { get; set; }
 
     private async void RefreshMe()
     {
@@ -195,6 +203,7 @@
         await base.OnInitializedAsync();
         RefreshService.RefreshRequested += RefreshMe;
         await LoadData();
+        TagsSelection = await TagsCacheService.GetTagsSelectionAsync(appState.UserId);
         //ItemsVm = await LoadFromCache(); // Test for cache
     }
 

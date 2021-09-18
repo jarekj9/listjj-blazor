@@ -1,0 +1,79 @@
+@inherits PageBase
+
+<div class="input-group input-group-sm">
+    <span class="standardBgColor" style="padding: 0;border:1px solid lightgrey;border-radius: 5px;">
+        @if (Tags != null)
+        {
+            @foreach (var tag in Tags)
+            {
+                @if (tag == "") continue;
+                <span class="badge badge-primary m-1" style="font-size: 12px;">
+                    @tag <a href="#" style="color: white;" @onclick=@(() => DeleteTag(tag)) @onclick:preventDefault>&nbsp;x</a>
+                </span>
+            }
+        }
+        <input list="browsers" type="text" class="form-control m-1" placeholder="Add tag"
+               style="padding: 0;display: inline;border: 0;max-width: 120px;min-width: 120px;height: 20px;"
+               @onkeyup="@HandleInputKeyUp" @onchange="@HandleInputChange" @bind-value="@CurrentTag" @bind-value:event="oninput" />
+        <datalist id="browsers">
+            @if (TagsSelection != null)
+            {
+                @foreach (var tag in TagsSelection)
+                {
+                    <option value="@tag" />
+                }
+            }
+        </datalist>
+    </span>
+</div>
+
+@code {
+    [Inject] public ITagsCacheService TagsCacheService { get; set; }
+    [Parameter] public List<string>? Tags { get; set; } = new List<string>();
+    [CascadingParameter] public List<string> TagsSelection { get; set; }
+    private string CurrentTag { get; set; }
+    private string previousTagInput = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private void HandleInputKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter")
+        {
+            AddTag();
+        }
+    }
+
+    private async Task HandleInputChange()
+    {
+        if (CurrentTag.Length - previousTagInput.Length > 2) // workaround, because @onselect does not work here
+        {
+            await AddTag();
+            previousTagInput = "";
+        }
+        else
+        {
+            previousTagInput = CurrentTag;
+        }
+    }
+
+    private async Task AddTag()
+    {
+        if (!Tags.Exists(x => x == CurrentTag) && CurrentTag != "")
+        {
+            Tags.Add(CurrentTag);
+            if (!TagsSelection.Exists(x => x == CurrentTag))
+            {
+                TagsSelection.Add(CurrentTag);
+                await TagsCacheService.UpdateCache(appState.UserId, TagsSelection);
+            }
+        }
+        CurrentTag = "";
+    }
+
+    private void DeleteTag(string tag) => Tags.Remove(tag);
+
+}

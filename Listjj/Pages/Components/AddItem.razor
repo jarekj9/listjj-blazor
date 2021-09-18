@@ -2,6 +2,9 @@
 
 
 <EditForm Model="@ItemVm" OnValidSubmit="HandleValidSubmit">
+    <!-- The button disables implicit form submissoon -->
+    <button disabled style="display: none;"></button>
+
     <div class="form-group addFormBackground p-3">
         <h5>Add Item</h5>
         <div class="container-fluid">
@@ -11,15 +14,15 @@
                     <input id="new-value" @bind="@ItemVm.Value" type="number" class="form-controll" style="width: 50px;">
                 </div>
                 <div class="form-group col-sm-12 col-md-4 col-lg-3 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-value">Name: </label>
+                    <label class="control-label addLabel" for="new-name">Name: </label>
                     <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll">
                 </div>
                 <div class="form-group col-sm-12 col-md-4 col-lg-3 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-value">Description: </label>
+                    <label class="control-label addLabel" for="new-dsc">Description: </label>
                     <input id="new-dsc" @bind="@ItemVm.Description" type="text" class="form-controll">
                 </div>
                 <div class="form-group col-sm-12 col-md-4 col-lg-2 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-value">Category:</label>
+                    <label class="control-label addLabel" for="new-category">Category:</label>
                     <select class="addBox" id="new-category" @bind="@ItemVm.CategoryId">
                         <option value="00000000-0000-0000-0000-000000000000">---select---</option>
                         @if (CategoriesVm is null)
@@ -40,8 +43,11 @@
                     </select>
                 </div>
                 <div class="form-group col-sm-12 col-md-4 col-lg-2 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-value">Active: </label>
+                    <label class="control-label addLabel" for="new-active">Active: </label>
                     <input id="new-active" type="checkbox" @bind="@ItemVm.Active" class="form-controll">
+                </div>
+                <div class="form-group col-sm-12 col-md-4 col-lg-3 text-nowrap addDiv">
+                    <TagsInput Tags="ItemVm.Tags" />
                 </div>
             </div>
         </div>
@@ -53,6 +59,8 @@
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
     [Parameter] public ListItemViewModel ItemVm { get; set; } = new ListItemViewModel();
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

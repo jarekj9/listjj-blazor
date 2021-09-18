@@ -56,6 +56,7 @@ namespace Listjj
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRefreshService, RefreshService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITagsCacheService, TagsCacheService>();
             services.AddScoped<AppState>();
 
             //mud blazor
