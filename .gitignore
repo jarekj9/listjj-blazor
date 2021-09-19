@@ -1,6 +1,6 @@
 **/obj/
 **/bin/
-**/.vs
-**/.vscode
+**/.vs/
+**/.vscode/
 **/Migrations/
 **/appsettings.json

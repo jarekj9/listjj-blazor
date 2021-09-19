@@ -37,7 +37,7 @@
     </div>
     @if (ItemsVm is null)
     {
-        <MudProgressCircular Color="Color.Secondary" Style="height:70px;width:70px;" Indeterminate="true" />
+        <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
     }
     else
     {
@@ -316,6 +316,14 @@
         itemVm.IsEditing = !itemVm.IsEditing;
     }
 
-    private async Task HandleRestartClick() => await Task.Run(() => hostApplicationLifetime.StopApplication());
+    private async Task HandleRestartClick()
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure, that you want to restart ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        await Task.Run(() => hostApplicationLifetime.StopApplication());
+    }
 
 }
