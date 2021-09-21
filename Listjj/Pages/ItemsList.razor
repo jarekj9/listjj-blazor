@@ -11,30 +11,36 @@
 
 <AuthorizeView Roles="User">
 
-    <CascadingValue Value="@TagsSelection">
-        <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm"/>
-    </CascadingValue>
-
-    <div class="form-group addFormBackground p-3 mb-3">
-        <div class="row">
-            <div class="input-group mb-3 mt-5 col-md-8 col-lg-6 col-xl-4">
-                <input type="text" class="form-control" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
-                <div class="input-group-append">
-                    <button class="btn btn-sm btn-outline-primary" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-6 col-xl-4">
+    <div class="row">
+        <div class="col-12 col-xl-3">
+            <CascadingValue Value="@TagsSelection">
+                <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+            </CascadingValue>
+        </div>
+        <div class="col-lg-12 col-xl-9 mt-auto">
+            <div class="form-group addFormBackground p-3">
                 <div class="row">
-                    <div class="col-6">
-                        <MudDatePicker Color="Color.Dark" Class="mb-2" Label="From:" @bind-Date="fromDate" />
+                    <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
+                        <input type="text" class="form-control" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+                        <div class="input-group-append">
+                            <button class="btn btn-sm btn-outline-primary" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <MudDatePicker Color="Color.Dark" Label="To:" @bind-Date="toDate" />
+                    <div class="col-12 col-lg-6">
+                        <div class="row">
+                            <div class="col-6">
+                                <MudDatePicker Color="Color.Dark" Class="mb-2" Label="From:" @bind-Date="fromDate" />
+                            </div>
+                            <div class="col-6">
+                                <MudDatePicker Color="Color.Dark" Label="To:" @bind-Date="toDate" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     @if (ItemsVm is null)
     {
         <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
