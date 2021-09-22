@@ -5,10 +5,10 @@
     <!-- The button disables implicit form submissoon -->
     <button disabled style="display: none;"></button>
 
-    <div class="form-group addFormBackground p-3">
-        <h5>Add Item</h5>
+    <div class="form-group addFormBackground">
         <div class="container-fluid">
             <div class="row">
+                <h5 class="m-2">Add Item</h5>
                 <div class="form-group col-12 text-nowrap addDiv">
                     <label class="control-label addLabel" for="new-value">Value: </label>
                     <input id="new-value" @bind="@ItemVm.Value" type="number" class="form-controll" style="width: 50px;">

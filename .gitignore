@@ -4,3 +4,4 @@
 **/.vscode/
 **/Migrations/
 **/appsettings.json
+**/deploy-rpi.sh
