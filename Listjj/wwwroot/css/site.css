@@ -29,6 +29,10 @@ html, body {
         writing-mode: vertical-lr;
     }
 }
+@media screen and (min-width: 1280px) {
+        display: none;
+    }
+}
 
 .standardBgColor {
     background-color: var(--bg);
@@ -58,7 +62,9 @@ a, a:hover, a:focus, .input-zone {
         text-decoration: underline !important;
         cursor: pointer;
     }
-
+.text-small {
+    font-size: 0.8em;
+}
 input, select, textarea {
     color: var(--text-dark) !important;
     background-color: var(--bg) !important;

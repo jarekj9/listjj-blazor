@@ -13,26 +13,38 @@
 
     <div class="row">
         <div class="col-12 col-xl-3">
-            <CascadingValue Value="@TagsSelection">
-                <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" /> 
-            </CascadingValue>
+            <a data-toggle="collapse" href="#addDropdown">
+                <span class="text-primary font-weight-bold text-small">Add</span>
+                <i class="fas fa-caret-down text-primary"></i>
+            </a>
+            <div class="collapse show" id="addDropdown">
+                <CascadingValue Value="@TagsSelection">
+                    <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+                </CascadingValue>
+            </div>
         </div>
         <div class="col-lg-12 col-xl-9 mt-auto">
-            <div class="form-group addFormBackground">
-                <div class="row">
-                    <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
-                        <input type="text" class="form-control ml-2" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
-                        <div class="input-group-append">
-                            <button class="btn btn-sm btn-outline-primary mr-2" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="row ">
-                            <div class="col-6">
-                                <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="From:" @bind-Date="fromDate" />
+            <a data-toggle="collapse" href="#filterDropdown">
+                <span class="text-primary font-weight-bold text-small">Filter</span>
+                <i class="fas fa-caret-down text-primary"></i>
+            </a>
+            <div class="collapse" id="filterDropdown">
+                <div class="form-group addFormBackground">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
+                            <input type="text" class="form-control ml-2" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-outline-primary mr-2" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
                             </div>
-                            <div class="col-6">
-                                <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="To:" @bind-Date="toDate" />
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="row ">
+                                <div class="col-6">
+                                    <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="From:" @bind-Date="fromDate" />
+                                </div>
+                                <div class="col-6">
+                                    <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="To:" @bind-Date="toDate" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -87,8 +99,8 @@
                         }
                     </td>
                     @*<td>
-                        @item.Description
-                    </td>*@
+                            @item.Description
+                        </td>*@
                     <td>
                         @item.Category.Name
                     </td>
@@ -141,10 +153,10 @@
                             </Animate>
                         </td>
                         @*<td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input for="Description" class="form-controll" @bind="@item.Description" />
-                            </Animate>
-                        </td>*@
+                                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                    <input for="Description" class="form-controll" @bind="@item.Description" />
+                                </Animate>
+                            </td>*@
                         <td>
                             <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
                                 <select @bind="@item.CategoryId">
@@ -180,10 +192,15 @@
                 }
             }
         </table>
-
-        <ImportExport></ImportExport>
-        <ApiKey />
-        <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+        <a data-toggle="collapse" href="#advancedDropdown">
+            <span class="text-primary font-weight-bold text-small">Advanced</span>
+            <i class="fas fa-caret-down text-primary"></i>
+        </a>
+        <div class="collapse" id="advancedDropdown">
+            <ImportExport></ImportExport>
+            <ApiKey />
+            <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+        </div>
     }
 
 </AuthorizeView>
