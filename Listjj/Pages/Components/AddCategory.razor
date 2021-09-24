@@ -4,9 +4,25 @@
 
 <EditForm Model="@categoryVm" OnValidSubmit="HandleValidSubmit">
     <div class="form-group addFormBackground p-3">
-        Name: <input for="categoryVm.Name" class="form-controll" @bind="@categoryVm.Name" />
-        Description: <input for="categoryVm.Description" class="form-controll" @bind="@categoryVm.Description" />
-        <button type="submit" class="btn btn-outline-primary" value="save">Save</button>
+        <div class="container-fluid pt-1">
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="categoryName">Name: </label>
+                    <input id="categoryName" class="form-controll" @bind="@categoryVm.Name" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="categoryDescription">Description: </label>
+                    <input id="categoryDescription" class="form-controll" @bind="@categoryVm.Description" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <button type="submit" class="btn btn-outline-primary" value="save">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 </EditForm>
 
