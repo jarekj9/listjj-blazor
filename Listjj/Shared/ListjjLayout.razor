@@ -1,50 +1,30 @@
 @inherits LayoutComponentBase
 @inject NavigationManager MyNavigationManager
 
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudAppBar Elevation="1" Dense="true">
+    <AuthorizeView>
+        <NotAuthorized>
+            <span class="nav-item">
+                <a class="nav-link" href="Identity/Account/Login">Log in</a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="Identity/Account/Register">Register</a>
+            </span>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudAppBar>
 
-<div class="page">
+<div class="page pt-8">
     <div class="main">
-        <div class="top-row px-2">
-
-            <AuthorizeView>
-                <Authorized>
-                    Hello, @context.User.Identity.Name!
-                </Authorized>
-            </AuthorizeView>
-
-            <nav class="navbar navbar-default navbar-expand-sm">
-                <AuthorizeView>
-                    <NotAuthorized>
-                        <span class="nav-item">
-                            <a class="nav-link" href="Identity/Account/Login">Log in</a>
-                        </span>
-                        <span class="nav-item">
-                            <a class="nav-link" href="Identity/Account/Register">Register</a>
-                        </span>
-                    </NotAuthorized>
-                    <Authorized>
-                        <span class="nav-item">
-                            <a class="nav-link" href="/list">Items </a>
-                        </span>
-                        <span class="nav-item">
-                            <a class="nav-link" href="/categories">Categories </a>
-                        </span>
-                        <span class="nav-item">
-                            <a class="nav-link" href="Identity/Account/Logout">Log out</a>
-                        </span>
-                    </Authorized>
-                </AuthorizeView>
-            </nav>
-
-        </div>
         <div class="content px-2">
             @Body
         </div>
     </div>
 </div>
+
 
 
 

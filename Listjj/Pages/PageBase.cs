@@ -29,6 +29,7 @@ namespace Listjj.Pages
         [Parameter] public List<ListItemViewModel> ItemsVm { get; set; }
         protected List<Category> Categories { get; set; }
         [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
+        protected bool isDrawerOpen = true;
 
         public async Task Test()
         {

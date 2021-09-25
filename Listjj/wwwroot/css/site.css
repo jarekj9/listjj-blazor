@@ -10,6 +10,7 @@
     --icons: #507DBC;
     --bg: #DAE3E5;
     --edit-bg: #E0EAF5;
+    --link: #0366d6;
 }
 
 html, body {
@@ -38,12 +39,12 @@ html, body {
     background-color: var(--bg);
 }
 
-div {
+.divRounded {
     border-radius: 7px;
 }
 
 a, .btn-link {
-    color: #0366d6;
+    color: var(--link);
 }
 
 a, a:hover, a:focus, .input-zone {
@@ -224,3 +225,8 @@ tr:hover {
     visibility: hidden;
   }
 
+/*MUD BLAZOR*/
+
+.mud-drawer {
+    background-color: var(--form-bg) !important;
+}

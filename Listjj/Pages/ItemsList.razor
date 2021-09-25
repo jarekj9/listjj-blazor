@@ -11,198 +11,206 @@
 
 <AuthorizeView Roles="User">
 
-    <div class="row">
-        <div class="col-12 col-xl-3">
-            <a data-toggle="collapse" href="#addDropdown">
-                <span class="text-primary font-weight-bold text-small">Add</span>
-                <i class="fas fa-caret-down text-primary"></i>
-            </a>
-            <div class="collapse show" id="addDropdown">
-                <CascadingValue Value="@TagsSelection">
-                    <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
-                </CascadingValue>
-            </div>
-        </div>
-        <div class="col-lg-12 col-xl-9 mt-auto">
-            <a data-toggle="collapse" href="#filterDropdown">
-                <span class="text-primary font-weight-bold text-small">Filter</span>
-                <i class="fas fa-caret-down text-primary"></i>
-            </a>
-            <div class="collapse" id="filterDropdown">
-                <div class="form-group addFormBackground">
-                    <div class="row">
-                        <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
-                            <input type="text" class="form-control ml-2" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
-                            <div class="input-group-append">
-                                <button class="btn btn-sm btn-outline-primary mr-2" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6">
-                            <div class="row ">
-                                <div class="col-6">
-                                    <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="From:" @bind-Date="fromDate" />
+    <MudLayout>
+        <MudAppBar Elevation="1" Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
+            <TopBar />
+        </MudAppBar>
+        <MudDrawer Width="300px" @bind-Open="@isDrawerOpen" ClipMode="DrawerClipMode.Never" Elevation="1" Variant="@DrawerVariant.Responsive">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">Add Item</MudText>
+            </MudDrawerHeader>
+            <CascadingValue Value="@TagsSelection">
+                <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+            </CascadingValue>
+        </MudDrawer>
+        <MudMainContent Class="pt-1">
+
+
+            <div class="row">
+                <div class="col-lg-12 col-xl-9 mt-auto">
+                    <a data-toggle="collapse" href="#filterDropdown">
+                        <span class="text-primary font-weight-bold text-small">Filter</span>
+                        <i class="fas fa-caret-down text-primary"></i>
+                    </a>
+                    <div class="collapse" id="filterDropdown">
+                        <div class="form-group addFormBackground divRounded">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
+                                    <input type="text" class="form-control ml-2" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-sm btn-outline-primary mr-2" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="To:" @bind-Date="toDate" />
+                                <div class="col-12 col-lg-6">
+                                    <div class="row divRounded">
+                                        <div class="col-6">
+                                            <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="From:" @bind-Date="fromDate" />
+                                        </div>
+                                        <div class="col-6">
+                                            <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="To:" @bind-Date="toDate" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    @if (ItemsVm is null)
-    {
-        <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
-    }
-    else
-    {
-        <table class="table table-striped main-table">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Value</th>
-                    <th>Name</th>
-                    @*<th>Description</th>*@
-                    <th>
-                        <span style="display: inline-block">Category:&nbsp</span>
-                        <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList" /></span>
-                    </th>
-                    <th>Active</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            @foreach (var item in ItemsVm)
+            @if (ItemsVm is null)
             {
-                <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
-                    <td>
-                        @item.Value
-                    </td>
-                    <td title="Created: @item.Created, Changed: @item.Modified">
-                        @item.Name<br />
-                        @item.Description
-                        @if (item.Files.Count > 0)
-                        {
-                            <div class="mt-3">
-                                <span class="font-weight-bold">Files:</span>
-                                <ul class="ml-3" style="overflow: visible;width:140%;">
-                                    @foreach (var file in item.Files)
-                                    {
-                                        <li>
-                                            <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                    </td>
-                    @*<td>
-                            @item.Description
-                        </td>*@
-                    <td>
-                        @item.Category.Name
-                    </td>
-                    <td>
-                        <input type="checkbox" checked="@item.Active" @onchange="() => ClickActive(item)">
-                    </td>
-                    <td>
-                        <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                        <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
-                    </td>
-                </tr>
-
-                @if (item.IsEditing)
-                {
-                    <tr class="table-secondary" @ondblclick="() => item.IsEditing = !item.IsEditing">
-                        <td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input for="Value" class="form-controll" size="4" @bind="@item.Value" />
-                            </Animate>
-                        </td>
-                        <td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input size="18" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
-                                <textarea rows="3" cols="20" for="Description" class="form-controll" @bind="@item.Description" />
-                                <CascadingValue Value="@TagsSelection">
-                                    <TagsInput Tags="item.Tags" />
-                                </CascadingValue>
-                                <div class="mt-2">
-                                    <FileUpload ItemVm="item">
-                                        <FilesRows>
-                                            @if (item.Files.Count > 0)
-                                            {
-                                                <div class="mt-3">
-                                                    <ul class="ml-3" style="overflow: visible;width:200%;">
-                                                        @foreach (var file in item.Files)
-                                                        {
-                                                            <li>
-                                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete">
-                                                                    <i class="far fa-trash-alt"></i>
-                                                                </button>
-                                                                <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                </div>
-                                            }
-                                        </FilesRows>
-                                    </FileUpload>
-                                </div>
-                            </Animate>
-                        </td>
-                        @*<td>
-                                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                    <input for="Description" class="form-controll" @bind="@item.Description" />
-                                </Animate>
-                            </td>*@
-                        <td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <select @bind="@item.CategoryId">
-                                    <option>---select---</option>
-                                    @if (CategoriesVm is null)
-                                    {
-                                        <option>Loading...</option>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var category in CategoriesVm)
-                                        {
-                                            <option value="@category.Id">@category.Name</option>
-                                        }
-                                    }
-                                </select>
-                            </Animate>
-                        </td>
-                        <td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <input type="checkbox" for="active" class="form-controll" @bind="@item.Active" />
-                            </Animate>
-                        </td>
-                        <td>
-                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
-                                <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
-                            </Animate>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                }
+                <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
             }
-        </table>
-        <a data-toggle="collapse" href="#advancedDropdown">
-            <span class="text-primary font-weight-bold text-small">Advanced</span>
-            <i class="fas fa-caret-down text-primary"></i>
-        </a>
-        <div class="collapse" id="advancedDropdown">
-            <ImportExport></ImportExport>
-            <ApiKey />
-            <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
-        </div>
-    }
+            else
+            {
+                <table class="table table-striped main-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Value</th>
+                            <th>Name</th>
+                            @*<th>Description</th>*@
+                            <th>
+                                <span style="display: inline-block">Category:&nbsp</span>
+                                <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList" /></span>
+                            </th>
+                            <th>Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
+                    @foreach (var item in ItemsVm)
+                    {
+                        <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
+                            <td>
+                                @item.Value
+                            </td>
+                            <td title="Created: @item.Created, Changed: @item.Modified">
+                                @item.Name<br />
+                                @item.Description
+                                @if (item.Files.Count > 0)
+                                {
+                                    <div class="mt-3">
+                                        <span class="font-weight-bold">Files:</span>
+                                        <ul class="ml-3" style="overflow: visible;width:140%;">
+                                            @foreach (var file in item.Files)
+                                            {
+                                                <li>
+                                                    <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </td>
+                            @*<td>
+                                    @item.Description
+                                </td>*@
+                            <td>
+                                @item.Category.Name
+                            </td>
+                            <td>
+                                <input type="checkbox" checked="@item.Active" @onchange="() => ClickActive(item)">
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
+                            </td>
+                        </tr>
+
+                        @if (item.IsEditing)
+                        {
+                            <tr class="table-secondary" @ondblclick="() => item.IsEditing = !item.IsEditing">
+                                <td>
+                                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                        <input for="Value" class="form-controll" size="4" @bind="@item.Value" />
+                                    </Animate>
+                                </td>
+                                <td>
+                                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                        <input size="18" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
+                                        <textarea rows="3" cols="20" for="Description" class="form-controll" @bind="@item.Description" />
+                                        <CascadingValue Value="@TagsSelection">
+                                            <TagsInput Tags="item.Tags" />
+                                        </CascadingValue>
+                                        <div class="mt-2">
+                                            <FileUpload ItemVm="item">
+                                                <FilesRows>
+                                                    @if (item.Files.Count > 0)
+                                                    {
+                                                        <div class="mt-3">
+                                                            <ul class="ml-3" style="overflow: visible;width:200%;">
+                                                                @foreach (var file in item.Files)
+                                                                {
+                                                                    <li>
+                                                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete">
+                                                                            <i class="far fa-trash-alt"></i>
+                                                                        </button>
+                                                                        <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                </FilesRows>
+                                            </FileUpload>
+                                        </div>
+                                    </Animate>
+                                </td>
+                                @*<td>
+                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                            <input for="Description" class="form-controll" @bind="@item.Description" />
+                                        </Animate>
+                                    </td>*@
+                                <td>
+                                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                        <select @bind="@item.CategoryId">
+                                            <option>---select---</option>
+                                            @if (CategoriesVm is null)
+                                            {
+                                                <option>Loading...</option>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var category in CategoriesVm)
+                                                {
+                                                    <option value="@category.Id">@category.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </Animate>
+                                </td>
+                                <td>
+                                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                        <input type="checkbox" for="active" class="form-controll" @bind="@item.Active" />
+                                    </Animate>
+                                </td>
+                                <td>
+                                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                                        <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
+                                        <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
+                                    </Animate>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+                <a data-toggle="collapse" href="#advancedDropdown">
+                    <span class="text-primary font-weight-bold text-small">Advanced</span>
+                    <i class="fas fa-caret-down text-primary"></i>
+                </a>
+                <div class="collapse" id="advancedDropdown">
+                    <ImportExport></ImportExport>
+                    <ApiKey />
+                    <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                </div>
+            }
+
+
+        </MudMainContent>
+    </MudLayout>
 </AuthorizeView>
 
 @code {
