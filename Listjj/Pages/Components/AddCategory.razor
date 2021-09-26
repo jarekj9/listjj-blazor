@@ -38,6 +38,7 @@
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
         category.UserId = appState.UserId;
         await CategoryService.AddCategory(category);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Added {category.Name}");
         await UpdateList.InvokeAsync();
         categoryVm = new CategoryViewModel();
     }

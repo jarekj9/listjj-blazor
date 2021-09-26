@@ -61,6 +61,15 @@ window.swalConfirm = async function(title, text="") {
       return result;
 }
 
+// Toastr
+window.notify = async function (text) {
+    toastr.options.progressBar = true;
+    toastr.options.timeOut = 2000;
+    toastr.options.extendedTimeOut = 2000;
+    toastr.success(text);
+    return true;
+}
+
 // bootstrap modal
 window.modalClose = function() {
     $('#mainModal').modal('hide');

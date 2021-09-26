@@ -24,7 +24,7 @@
                 <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
             </CascadingValue>
         </MudDrawer>
-        <MudMainContent Class="pt-1">
+        <MudMainContent Class="pt-1 pl-2">
 
 
             <div class="row">
@@ -220,7 +220,7 @@
     private FilterItems filterItems { get; set; }
     private string SearchText { get; set; }
     private bool fromCache { get; set; }
-    private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-1);
+    private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
     protected List<string> TagsSelection { get; set; }
 
@@ -298,14 +298,10 @@
 
     private async Task DeleteItem(ListItemViewModel itemVm)
     {
-        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete note {itemVm.Name} ?");
-        if (!isConfirmed)
-        {
-            return;
-        }
         var item = await ListItemService.FindById(itemVm.Id);
         await ListItemService.DelListItem(item);
         await UpdateList();
+        await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
     }
 
 
@@ -338,6 +334,7 @@
         var item = await ListItemService.FindById(itemVm.Id);
         item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
         await ListItemService.UpdateListItem(item);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {item.Name}");
         item.IsEditing = false;
         await UpdateList();
     }

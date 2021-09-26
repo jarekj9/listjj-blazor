@@ -108,6 +108,7 @@
         var item = new ListItem();
         MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);
         await ListItemService.AddListItem(item);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Added {ItemVm.Name}");
         await UpdateList.InvokeAsync();
         appState.RecentCategoryId = ItemVm.CategoryId;
         ItemVm = new ListItemViewModel();

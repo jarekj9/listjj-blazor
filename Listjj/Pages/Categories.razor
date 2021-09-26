@@ -21,7 +21,7 @@
             </MudDrawerHeader>
             <AddCategory UpdateList="UpdateList"></AddCategory>
         </MudDrawer>
-        <MudMainContent Class="pt-2">
+        <MudMainContent Class="pt-2 pl-2">
 
 
             @if (CategoriesVm is null)
@@ -96,6 +96,7 @@
         var category = await CategoryService.FindById(categoryVm.Id);
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
         await CategoryService.DelCategory(category);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {category.Name}");
         await UpdateList();
     }
 
@@ -110,6 +111,7 @@
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
         category.IsEditing = false;
         await CategoryService.UpdateCategory(category);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {category.Name}");
         await UpdateList();
     }
 
