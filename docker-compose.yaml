@@ -34,14 +34,20 @@ services:
       dockerfile: Dockerfile
     image: listjj_blazor
     container_name: listjj
+    env_file:
+        - ./variables.env
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      #ASPNETCORE_Kestrel__Certificates__Default__Password: stored in variables.env
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /app/cert.pfx
     restart: unless-stopped
     depends_on:
       - mariadb
       - migrations
     ports:
       - 8085:80
+      - 8086:443
     networks:
       - listjj
 

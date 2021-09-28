@@ -17,4 +17,5 @@ RUN dotnet publish "Listjj.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY cert.pfx .
 ENTRYPOINT ["dotnet", "Listjj.dll"]
