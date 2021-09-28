@@ -103,7 +103,7 @@
                 ItemVm.CategoryId = category.Id;
             }
         }
-        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", ItemVm.CategoryId, 0.1);
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", ItemVm.CategoryId, 360);
         ItemVm.UserId = appState.UserId;
         var item = new ListItem();
         MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);

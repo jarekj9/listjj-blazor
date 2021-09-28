@@ -3,7 +3,7 @@
 
 @inherits PageBase
 
-
+@*TODO: Rename to CategoryFilter*@
 <form>
     <select @bind-value="CategoryId" @bind-value:event="onchange">
         <option value="00000000-0000-0000-0000-000000000000">---all---</option>
@@ -60,7 +60,7 @@
 
     private async Task OnFilterChange()
     {
-        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", categoryId, 0.1);
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", categoryId, 360);
         await UpdateList.InvokeAsync();
     }
 
