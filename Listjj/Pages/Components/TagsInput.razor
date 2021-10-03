@@ -7,8 +7,8 @@
             @foreach (var tag in Tags)
             {
                 @if (tag == "") continue;
-                <span class="badge badge-primary m-1" style="font-size: 12px; background-color: @GetStringColorDeleg(tag); color:@GetTextColorFromBgColorDeleg(GetStringColorDeleg(tag))">
-                    @tag <a href="#" style="color: white;" @onclick=@(() => DeleteTag(tag)) @onclick:preventDefault>&nbsp;x</a>
+                <span class="badge badge-primary m-1" style="font-size: 12px; background-color: @GetColorFromStringDeleg(tag); color: @GetTextColorFromBgColorDeleg(GetColorFromStringDeleg(tag));">
+                    @tag <a href="#" style="color: @GetTextColorFromBgColorDeleg(GetColorFromStringDeleg(tag));" @onclick=@(() => DeleteTag(tag)) @onclick:preventDefault>&nbsp;<i class="fas fa-trash-alt"></i></a>
                 </span>
             }
         }
@@ -76,7 +76,7 @@
 
     private void DeleteTag(string tag) => Tags.Remove(tag);
 
-    private static string GetStringColor(string word)
+    private static string GetColorFromString(string word)
     {
         var letters = word.Split();
         var colorDec = new List<string> { "0", "0", "0", "0", "0", "0" };
@@ -87,13 +87,13 @@
         var color = string.Join("", colorDec);
         return $"#{color}";
     }
-    private Func<string, string> GetStringColorDeleg = GetStringColor;
+    private Func<string, string> GetColorFromStringDeleg = GetColorFromString;
 
     private static string GetTextColorFromBgColor(string color)
     {
         var rgbColor = System.Drawing.ColorTranslator.FromHtml(color);
-        var luminance = (rgbColor.R + rgbColor.G + rgbColor.B) / 3;
-        var textColor = luminance > 125 ? "#000000" : "#FFFFFF";
+        var luminance = rgbColor.R * 0.299 + rgbColor.G * 0.587 + rgbColor.B * 0.114;
+        var textColor = luminance > 140 ? "#000000" : "#FFFFFF";
         return textColor;
     }
     private Func<string, string> GetTextColorFromBgColorDeleg = GetTextColorFromBgColor;
