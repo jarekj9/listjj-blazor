@@ -121,5 +121,49 @@ namespace Listjj.APIs
             return "{\"status\":\"ok\"}";
         }
 
+        [HttpPost]
+        public async Task<string> DelItem(string id)
+        {
+            var headers = GetAllHeaders();
+            string key;
+            try
+            {
+                key = headers.Value["Authorization"].Split(' ')[1];
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
+                {
+                    return "Incorrect authorization header.";
+                }
+                throw;
+            }
+            var userId = UserService.FindUserIdByApiKey(Guid.Parse(key));
+            if (userId == new Guid())
+            {
+                return "Unauthorized access.";
+            }
+
+            using (var streamReader = new HttpRequestStreamReader(Request.Body, Encoding.UTF8))
+            using (var jsonReader = new JsonTextReader(streamReader))
+            {
+                var jsonData = await JObject.LoadAsync(jsonReader);
+                id = jsonData.GetValue("id")?.ToString() ?? "";
+            }
+
+            Guid.TryParse(id, out var idGuid);
+            if (idGuid == new Guid())
+            {
+                return "Incorrect id.";
+            }
+            var item = await ListItemService.FindById(idGuid);
+            if (item == null)
+            {
+                return "Item not found";
+            }
+            await ListItemService.DelListItem(item);
+            return "{\"status\":\"ok\"}";
+        }
+
     }
 }
