@@ -31,11 +31,6 @@ namespace Listjj.Pages
         [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
         protected bool isDrawerOpen = true;
 
-        public async Task Test()
-        {
-            Console.WriteLine("TEST");
-            await Task.CompletedTask;
-        }
 
         protected async Task LoadData()
         {

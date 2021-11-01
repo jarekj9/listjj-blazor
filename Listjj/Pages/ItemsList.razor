@@ -88,6 +88,7 @@
                             <td title="Created: @item.Created, Changed: @item.Modified">
                                 @item.Name<br />
                                 @item.Description
+                                <TagsInput Tags="item.Tags" ReadOnly="true"/>
                                 @if (item.Files.Count > 0)
                                 {
                                     <div class="mt-3">
@@ -224,15 +225,15 @@
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
     protected List<string> TagsSelection { get; set; }
 
-    private async void RefreshMe()
-    {
-        Items = await Task.Run(() => ListItemService.GetAllItems());
-    }
+    //private async void RefreshMe()
+    //{
+    //    Items = await Task.Run(() => ListItemService.GetAllItems());
+    //}
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        RefreshService.RefreshRequested += RefreshMe;
+        //RefreshService.RefreshRequested += RefreshMe;
         await LoadData();
         TagsSelection = await TagsCacheService.GetTagsSelectionAsync(appState.UserId);
         //ItemsVm = await LoadFromCache(); // Test for cache
@@ -276,21 +277,21 @@
         {
             return filter;
         }
-        var searchWords = SearchText.Split(' ').ToList();
+        var searchWords = SearchText.Trim().Split(' ').ToList();
         var negatedSearchWords = searchWords.Where(x => x[0] == '!').Select(x => x.Remove(0, 1)).ToList();
         searchWords = searchWords.Where(x => x[0] != '!').ToList();
         filter = searchWords.Aggregate(
             filter,
             (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
                 currentExpr,
-                x => x.Name.Contains(nextWord)
+                x => x.Name.Contains(nextWord) || x.Tags.Contains(nextWord)
             )
         );
         filter = negatedSearchWords.Aggregate(
             filter,
             (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
                 currentExpr,
-                x => !x.Name.Contains(nextWord)
+                x => !x.Name.Contains(nextWord) && !x.Tags.Contains(nextWord)
             )
         );
         return filter;
