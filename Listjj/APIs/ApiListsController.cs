@@ -68,6 +68,7 @@ namespace Listjj.APIs
             }
             var items = await ListItemService.GetItemsByUserId(userId.ToString());
             var response = System.Text.Json.JsonSerializer.Serialize(items);
+
             return response;
         }
         [HttpPost]
@@ -121,9 +122,20 @@ namespace Listjj.APIs
             return "{\"status\":\"ok\"}";
         }
 
+        [HttpOptions]
         [HttpPost]
         public async Task<string> DelItem(string id)
         {
+            // HTTP OPTIONS is necessary for preflight request, otherwise CORS will be a problem
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+            if (Request.Method == "OPTIONS")
+            {
+                Console.WriteLine("####### Sending Options");
+                return "Options";
+            }
+
             var headers = GetAllHeaders();
             string key;
             try
@@ -134,6 +146,7 @@ namespace Listjj.APIs
             {
                 if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
                 {
+                    Console.WriteLine("####### Sending Wrong auth header");
                     return "Incorrect authorization header.";
                 }
                 throw;
@@ -141,6 +154,7 @@ namespace Listjj.APIs
             var userId = UserService.FindUserIdByApiKey(Guid.Parse(key));
             if (userId == new Guid())
             {
+                Console.WriteLine("####### Sending Unauthorized access.");
                 return "Unauthorized access.";
             }
 
@@ -154,15 +168,19 @@ namespace Listjj.APIs
             Guid.TryParse(id, out var idGuid);
             if (idGuid == new Guid())
             {
+                Console.WriteLine("####### Sending Incorrect id.");
                 return "Incorrect id.";
             }
             var item = await ListItemService.FindById(idGuid);
             if (item == null)
             {
-                return "Item not found";
+                Console.WriteLine("####### Sending Item not found");
+                return "Item not found.";
             }
             await ListItemService.DelListItem(item);
-            return "{\"status\":\"ok\"}";
+
+            Console.WriteLine("####### Sending ok");
+            return "Deleted.";
         }
 
     }
