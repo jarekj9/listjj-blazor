@@ -27,37 +27,7 @@
         <MudMainContent Class="pt-1 pl-2">
 
 
-            <div class="row">
-                <div class="col-lg-12 col-xl-9 mt-auto">
-                    <a data-toggle="collapse" href="#filterDropdown">
-                        <span class="text-primary font-weight-bold text-small">Filter</span>
-                        <i class="fas fa-caret-down text-primary"></i>
-                    </a>
-                    <div class="collapse" id="filterDropdown">
-                        <div class="form-group addFormBackground divRounded">
-                            <div class="row">
-                                <div class="col-md-12 col-lg-6 input-group mb-3 mt-5 ">
-                                    <input type="text" class="form-control ml-2" style="height:30px;" placeholder="Search" @bind-value="SearchText" @bind-value:event="oninput" @onkeydown="OnSearchKeyDown">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-sm btn-outline-primary mr-2" style="height:30px;" @onclick="HandleSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="row divRounded">
-                                        <div class="col-6">
-                                            <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="From:" @bind-Date="fromDate" />
-                                        </div>
-                                        <div class="col-6">
-                                            <MudDatePicker Color="Color.Dark" Class="mb-2 ml-2 mr-2" Label="To:" @bind-Date="toDate" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+          <SearchBox @ref="searchBox" FilterItemsCategoryId="FilterItemsCategoryId" UpdateList="UpdateList"/>
             @if (ItemsVm is null)
             {
                 <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
@@ -219,24 +189,19 @@
     [Inject] private IDistributedCache cache { get; set; }
     [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
     private FilterItems filterItems { get; set; }
+    private SearchBox searchBox;
+    private Guid FilterItemsCategoryId => filterItems != null ? filterItems.CategoryId : Guid.Parse("00000000-0000-0000-0000-000000000000");
     private string SearchText { get; set; }
     private bool fromCache { get; set; }
     private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
     protected List<string> TagsSelection { get; set; }
 
-    //private async void RefreshMe()
-    //{
-    //    Items = await Task.Run(() => ListItemService.GetAllItems());
-    //}
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        //RefreshService.RefreshRequested += RefreshMe;
         await LoadData();
         TagsSelection = await TagsCacheService.GetTagsSelectionAsync(appState.UserId);
-        //ItemsVm = await LoadFromCache(); // Test for cache
     }
 
     public async Task<List<ListItemViewModel>> LoadFromCache()
@@ -245,7 +210,6 @@
         var cachedItems = await cache.GetRecordAsync<List<ListItemViewModel>>(recordKey);  // read cache
         if (cachedItems is null)
         {
-            //Set cache
             fromCache = false;
             ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
             await cache.SetRecordAsync(recordKey, ItemsVm);
@@ -255,46 +219,12 @@
         return cachedItems;
     }
 
-    private Task OnSearchKeyDown(KeyboardEventArgs e) => e.Code is "Enter" or "NumpadEnter" ? HandleSearch() : Task.CompletedTask;
-    private async Task HandleSearch()
+    public async Task UpdateList()
     {
-        Expression<Func<ListItem, bool>> filter = await MakeSearchFilter(SearchText);
+        Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
         Items = await ListItemService.ExecuteQuery(filter);
         ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
-    }
-
-    public async Task UpdateList() => await HandleSearch();
-    private async Task<Expression<Func<ListItem, bool>>> MakeSearchFilter(string SearchText)
-    {
-        Expression<Func<ListItem, bool>> filter = x => x.UserId == appState.UserId && x.Modified >= fromDate && x.Modified <= toDate;
-
-        if (filterItems.CategoryId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
-        {
-            filter = ExpressionExtensions<ListItem>.AndAlso(filter, x => x.CategoryId == filterItems.CategoryId);
-        }
-
-        if (string.IsNullOrEmpty(SearchText))
-        {
-            return filter;
-        }
-        var searchWords = SearchText.Trim().Split(' ').ToList();
-        var negatedSearchWords = searchWords.Where(x => x[0] == '!').Select(x => x.Remove(0, 1)).ToList();
-        searchWords = searchWords.Where(x => x[0] != '!').ToList();
-        filter = searchWords.Aggregate(
-            filter,
-            (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
-                currentExpr,
-                x => x.Name.Contains(nextWord) || x.Tags.Contains(nextWord)
-            )
-        );
-        filter = negatedSearchWords.Aggregate(
-            filter,
-            (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
-                currentExpr,
-                x => !x.Name.Contains(nextWord) && !x.Tags.Contains(nextWord)
-            )
-        );
-        return filter;
+        StateHasChanged();
     }
 
     private async Task DeleteItem(ListItemViewModel itemVm)
