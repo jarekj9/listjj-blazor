@@ -221,6 +221,7 @@
 
     public async Task UpdateList()
     {
+        StateHasChanged();
         Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
         Items = await ListItemService.ExecuteQuery(filter);
         ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
