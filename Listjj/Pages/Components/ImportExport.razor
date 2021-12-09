@@ -22,18 +22,18 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
     private async void DownloadFile() {
-        var items = await Task.Run(() => ListItemService.GetAllItems());
+        var items = await Task.Run(() => ListItemService.GetItemsByUserId(appState.UserId));
         var categories = await Task.Run(() => CategoryService.GetAllCategories());
-        var text = "Value;Name;Description;Category;Active;\n";
+        var text = "Value;Name;Description;Category;Active;Tags;\n";
         foreach(var item in items) {
-            text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active}\n");
+            text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(text);
         FileService.SaveAs(JSRuntime, "export.csv", bytes);
     }
 
-   private async Task Upload(InputFileChangeEventArgs e)
-   {
+    private async Task Upload(InputFileChangeEventArgs e)
+    {
         Console.WriteLine("Uploading...");
         MemoryStream ms = new MemoryStream();
         await e.File.OpenReadStream().CopyToAsync(ms);
@@ -65,6 +65,7 @@
                 }
                 item.CategoryId = category.Id;
                 item.Active = Boolean.Parse(words[4]);
+                item.Tags = words[5];
                 item.UserId = appState.UserId;
 
                 await ListItemService.AddListItem(item);
@@ -72,5 +73,5 @@
         }
         //RefreshService.CallRequestRefresh();  // does not reset FileInput, so have to reload
         NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
-   }
+    }
 }
