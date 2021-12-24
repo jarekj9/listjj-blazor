@@ -33,6 +33,31 @@ namespace Listjj.APIs
             return "Hello API";
         }
 
+        private (bool success, string message, Guid userId) IsAuthorized()
+        {
+            var headers = GetAllHeaders();
+            string key;
+            try
+            {
+                key = headers.Value["Authorization"].Split(' ')[1];
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
+                {
+                    return (success:false, message:"Incorrect authorization header.", userId:Guid.Empty);
+                }
+                throw;
+            }
+            Guid.TryParse(key, out var parsedKey);
+            var userId = UserService.FindUserIdByApiKey(parsedKey);
+            if (parsedKey == Guid.Empty || userId == new Guid())
+            {
+                return (success:false, message:"Unauthorized access.", userId: Guid.Empty);
+            }
+            return (success:true, message:"", userId: userId);
+        }
+
         [HttpGet("GetAllHeaders")]
         public ActionResult<Dictionary<string, string>> GetAllHeaders()
         {
@@ -47,51 +72,23 @@ namespace Listjj.APIs
 
         public async Task<string> GetAllListjj()  
         {
-            var headers = GetAllHeaders();
-            string key;
-            try
+            var isAuthorized = IsAuthorized();
+            if(!isAuthorized.success)
             {
-                key = headers.Value["Authorization"].Split(' ')[1];
+                return isAuthorized.message;
             }
-            catch (Exception ex)
-            {
-                if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
-                {
-                    return "Incorrect authorization header.";
-                }
-                throw;
-            }
-            var userId = UserService.FindUserIdByApiKey(Guid.Parse(key));
-            if( userId == new Guid())
-            {
-                return "Unauthorized access.";
-            }
-            var items = await ListItemService.GetItemsByUserId(userId.ToString());
+            var items = await ListItemService.GetItemsByUserId(isAuthorized.userId.ToString());
             var response = System.Text.Json.JsonSerializer.Serialize(items);
 
             return response;
         }
         [HttpPost]
-        public async Task<string> AddItem(string name="", string description="", string categoryName="default", string value="0")  
+        public async Task<string> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
         {
-            var headers = GetAllHeaders();
-            string key;
-            try
+            var isAuthorized = IsAuthorized();
+            if (!isAuthorized.success)
             {
-                key = headers.Value["Authorization"].Split(' ')[1];
-            }
-            catch (Exception ex)
-            {
-                if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
-                {
-                    return "Incorrect authorization header.";
-                }
-                throw;
-            }
-            var userId = UserService.FindUserIdByApiKey(Guid.Parse(key));
-            if( userId == new Guid())
-            {
-                return "Unauthorized access.";
+                return isAuthorized.message;
             }
 
             using (var streamReader = new HttpRequestStreamReader(Request.Body, Encoding.UTF8))
@@ -101,23 +98,34 @@ namespace Listjj.APIs
                 name = jsonData.GetValue("name")?.ToString() ?? "";
                 description = jsonData.GetValue("description")?.ToString() ?? "";
                 value = jsonData.GetValue("value")?.ToString() ?? "0";
+                id = jsonData.GetValue("id")?.ToString() ?? "";
                 categoryName = jsonData.GetValue("categoryName")?.ToString() ?? "default";
             }
 
+            Double.TryParse(value, out double parsedValue);
             var category = await CategoryService.FindByName(categoryName);
-            if(category == null)
+            if (category == null)
             {
                 return "{\"status\":\"category not found\"}";
             }
-            var item = new ListItem();
-            item.UserId = userId.ToString();
-            item.Created = DateTime.Now;
-            item.Modified = DateTime.Now;
+
+            Guid.TryParse(id, out var parsedId);
+            var item = (await ListItemService.FindById(parsedId)) ?? new ListItem();
             item.CategoryId = category.Id;
             item.Name = name;
             item.Description = description;
-            Double.TryParse(value, out double parsedValue);
             item.Value = parsedValue;
+
+            if (item.Id != Guid.Empty)
+            {
+                await ListItemService.UpdateListItem(item);
+                return "{\"status\":\"ok\"}";
+            }
+
+            item.Id = parsedId;
+            item.UserId = isAuthorized.userId.ToString();
+            item.Created = DateTime.Now;
+            item.Modified = DateTime.Now;
             await ListItemService.AddListItem(item);
             return "{\"status\":\"ok\"}";
         }
@@ -136,26 +144,10 @@ namespace Listjj.APIs
                 return "Options";
             }
 
-            var headers = GetAllHeaders();
-            string key;
-            try
+            var isAuthorized = IsAuthorized();
+            if (!isAuthorized.success)
             {
-                key = headers.Value["Authorization"].Split(' ')[1];
-            }
-            catch (Exception ex)
-            {
-                if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
-                {
-                    Console.WriteLine("####### Sending Wrong auth header");
-                    return "Incorrect authorization header.";
-                }
-                throw;
-            }
-            var userId = UserService.FindUserIdByApiKey(Guid.Parse(key));
-            if (userId == new Guid())
-            {
-                Console.WriteLine("####### Sending Unauthorized access.");
-                return "Unauthorized access.";
+                return isAuthorized.message;
             }
 
             using (var streamReader = new HttpRequestStreamReader(Request.Body, Encoding.UTF8))

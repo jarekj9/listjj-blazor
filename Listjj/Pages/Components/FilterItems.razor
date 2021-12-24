@@ -28,7 +28,7 @@
 @code {
 
     [Inject] private IJSRuntime JSRuntime { get; set; }
-    [Parameter] public List<Category> Categories { get; set; }
+    [Parameter] public new List<Category> Categories { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
     private Guid categoryId = Guid.Parse("00000000-0000-0000-0000-000000000000");
     [Parameter]

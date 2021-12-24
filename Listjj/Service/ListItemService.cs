@@ -65,8 +65,7 @@ namespace Listjj.Service
         }
         public async Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter)
         {
-            IQueryable<ListItem> query = _appDbContext.ListItems.Include(i => i.Files).Where(filter);
-            return await query.ToListAsync();
+            return await _appDbContext.ListItems.Include(i => i.Files).Where(filter).ToListAsync();
         }
     }
 }

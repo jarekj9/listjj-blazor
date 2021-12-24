@@ -31,7 +31,6 @@
 </div>
 
 @code {
-    [Inject] public ITagsCacheService TagsCacheService { get; set; }
     [Parameter] public List<string>? Tags { get; set; } = new List<string>();
     [Parameter] public bool ReadOnly { get; set; }
     [CascadingParameter] public List<string> TagsSelection { get; set; }
@@ -43,11 +42,11 @@
         await base.OnInitializedAsync();
     }
 
-    private void HandleInputKeyUp(KeyboardEventArgs e)
+    private async Task HandleInputKeyUp(KeyboardEventArgs e)
     {
         if (e.Code == "Enter")
         {
-            AddTag();
+            await AddTag();
         }
     }
 

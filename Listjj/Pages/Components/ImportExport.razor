@@ -29,7 +29,7 @@
             text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        FileService.SaveAs(JSRuntime, "export.csv", bytes);
+        await FileService.SaveAs(JSRuntime, "export.csv", bytes);
     }
 
     private async Task Upload(InputFileChangeEventArgs e)
