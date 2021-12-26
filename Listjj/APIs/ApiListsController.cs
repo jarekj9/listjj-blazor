@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
 
 
 namespace Listjj.APIs
@@ -21,12 +22,14 @@ namespace Listjj.APIs
         private readonly IListItemService ListItemService;
         private readonly ICategoryService CategoryService;
         private readonly IUserService UserService;
+        private readonly ILogger<ListjjController> logger;
 
-        public ListjjController(IListItemService listItemService, IUserService userService, ICategoryService categoryService)
+        public ListjjController(IListItemService listItemService, IUserService userService, ICategoryService categoryService, ILogger<ListjjController> _logger)
         {
             ListItemService = listItemService;
             CategoryService = categoryService;
             UserService = userService;
+            logger = _logger;
         }
         public string GetValues()
         {
@@ -58,6 +61,7 @@ namespace Listjj.APIs
             return (success:true, message:"", userId: userId);
         }
 
+
         [HttpGet("GetAllHeaders")]
         public ActionResult<Dictionary<string, string>> GetAllHeaders()
         {
@@ -82,6 +86,33 @@ namespace Listjj.APIs
 
             return response;
         }
+        public async Task<string> GetByCategoryName(string name = "", string key = "")
+        {
+            Guid.TryParse(key, out var parsedKey);
+            var userId = UserService.FindUserIdByApiKey(parsedKey);
+            if (parsedKey == Guid.Empty || userId == new Guid())       // special auth for tizen watch
+            {
+                return "{\"status\":\"Unauthorized access.\"}";
+            }
+
+            // HTTP OPTIONS is necessary for preflight request, otherwise CORS will be a problem
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            if (Request.Method == "OPTIONS")
+            {
+                return "Options";
+            }
+
+            var categoryId = (await CategoryService.FindByName(name)).Id;
+            var items = (await ListItemService.GetItemsByCategoryId(categoryId));
+            if (items.Count == 0)
+            {
+                return "{\"status\":\"List is empty.\"}";
+            }
+            var response = System.Text.Json.JsonSerializer.Serialize(items[0]);
+
+            return response;
+        }
+
         [HttpPost]
         public async Task<string> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
         {
