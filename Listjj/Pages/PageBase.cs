@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Listjj.Abstract;
@@ -10,16 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using List.Helpers;
 
-
-
 namespace Listjj.Pages
 {
     public class PageBase : ComponentBase
     {
         [Inject] protected NavigationManager NavManager { get; set; }
         [Inject] protected Data.AppState appState { get; set; }
-        [Inject] protected IListItemService ListItemService { get; set; }
-        [Inject] protected ICategoryService CategoryService { get; set; }
+        [Inject] protected ICategoryRepository CategoryRepository { get; set; }
+        [Inject] protected IListItemRepository ListItemRepository { get; set; }
         [Inject] protected IFileService FileService { get; set; }
         [Inject] protected ITagsCacheService TagsCacheService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -43,10 +40,10 @@ namespace Listjj.Pages
                 string username = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
                 appState.SetLogin(true, id, username);  // should be moved to some login class
             }
-            Categories = await CategoryService.GetCategoriesByUserId(appState.UserId);
+            Categories = await CategoryRepository.GetAllByUserId(appState.UserId);
             CategoriesVm = MapperHelper.MapItems<Category, CategoryViewModel>(Categories);
 
-            Items = await ListItemService.GetItemsByUserId(appState.UserId);
+            Items = await ListItemRepository.GetAllByUserId(appState.UserId);
             ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
 
         }

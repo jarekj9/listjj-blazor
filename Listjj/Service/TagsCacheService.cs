@@ -11,13 +11,13 @@ namespace Listjj.Service
     public class TagsCacheService : ITagsCacheService
     {
         private readonly IDistributedCache cache;
-        private IListItemService listItemService;
+        private IListItemRepository listItemRepository;
         private string TagsSelectionKey = "TagsSelection";
         private string tagsUserId = String.Empty;
-        public TagsCacheService(IDistributedCache cache, IListItemService ListItemService)
+        public TagsCacheService(IDistributedCache cache, IListItemRepository ListItemRepository)
         {
             this.cache = cache;
-            this.listItemService = ListItemService;
+            this.listItemRepository = ListItemRepository;
         }
 
         public Task<List<string>> GetTagsSelectionAsync(string userId)
@@ -30,7 +30,7 @@ namespace Listjj.Service
         private async Task<List<string>> Load()
         {
             var alltags = new List<String>();
-            var listItems = await this.listItemService.GetItemsByUserId(tagsUserId);
+            var listItems = await this.listItemRepository.GetAllByUserId(tagsUserId);
             alltags.AddRange(listItems.SelectMany(i => i.Tags?.Split(',')).Distinct().ToList());
             return alltags;
         }

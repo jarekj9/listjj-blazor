@@ -19,15 +19,15 @@ namespace Listjj.APIs
 
     public class ListjjController: ControllerBase
     {
-        private readonly IListItemService ListItemService;
-        private readonly ICategoryService CategoryService;
+        private readonly IListItemRepository ListItemRepository;
+        private readonly ICategoryRepository CategoryRepository;
         private readonly IUserService UserService;
         private readonly ILogger<ListjjController> logger;
 
-        public ListjjController(IListItemService listItemService, IUserService userService, ICategoryService categoryService, ILogger<ListjjController> _logger)
+        public ListjjController(IListItemRepository listItemRepository, IUserService userService, ICategoryRepository categoryRepository, ILogger<ListjjController> _logger)
         {
-            ListItemService = listItemService;
-            CategoryService = categoryService;
+            ListItemRepository = listItemRepository;
+            CategoryRepository = categoryRepository;
             UserService = userService;
             logger = _logger;
         }
@@ -81,7 +81,9 @@ namespace Listjj.APIs
             {
                 return isAuthorized.message;
             }
-            var items = await ListItemService.GetItemsByUserId(isAuthorized.userId.ToString());
+            var items = await ListItemRepository.GetAllByUserId(isAuthorized.userId.ToString());
+            //var items = await ListItemService.GetItemsByUserId(isAuthorized.userId.ToString());
+
             var response = System.Text.Json.JsonSerializer.Serialize(items);
 
             return response;
@@ -102,8 +104,10 @@ namespace Listjj.APIs
                 return "Options";
             }
 
-            var categoryId = (await CategoryService.FindByName(name)).Id;
-            var items = (await ListItemService.GetItemsByCategoryId(categoryId));
+            var categoryId = (await CategoryRepository.GetByName(name)).Id;
+            //var categoryId = (await CategoryService.FindByName(name)).Id;
+            var items = (await ListItemRepository.GetAllByCategoryId(categoryId));
+            //var items = (await ListItemService.GetItemsByCategoryId(categoryId));
             if (items.Count == 0)
             {
                 return "{\"status\":\"List is empty.\"}";
@@ -134,14 +138,16 @@ namespace Listjj.APIs
             }
 
             Double.TryParse(value, out double parsedValue);
-            var category = await CategoryService.FindByName(categoryName);
+            var category = await CategoryRepository.GetByName(categoryName);
+            //var category = await CategoryService.FindByName(categoryName);
             if (category == null)
             {
                 return "{\"status\":\"category not found\"}";
             }
 
             Guid.TryParse(id, out var parsedId);
-            var item = (await ListItemService.FindById(parsedId)) ?? new ListItem();
+            var item = (await ListItemRepository.GetById(parsedId)) ?? new ListItem();
+            //var item = (await ListItemService.FindById(parsedId)) ?? new ListItem();
             item.CategoryId = category.Id;
             item.Name = name;
             item.Description = description;
@@ -149,7 +155,9 @@ namespace Listjj.APIs
 
             if (item.Id != Guid.Empty)
             {
-                await ListItemService.UpdateListItem(item);
+                ListItemRepository.Update(item);
+                await ListItemRepository.Save();
+                //await ListItemService.UpdateListItem(item);
                 return "{\"status\":\"ok\"}";
             }
 
@@ -157,7 +165,9 @@ namespace Listjj.APIs
             item.UserId = isAuthorized.userId.ToString();
             item.Created = DateTime.Now;
             item.Modified = DateTime.Now;
-            await ListItemService.AddListItem(item);
+            ListItemRepository.Add(item);
+            await ListItemRepository.Save();
+            //await ListItemService.AddListItem(item);
             return "{\"status\":\"ok\"}";
         }
 
@@ -194,13 +204,16 @@ namespace Listjj.APIs
                 Console.WriteLine("####### Sending Incorrect id.");
                 return "Incorrect id.";
             }
-            var item = await ListItemService.FindById(idGuid);
+            var item = await ListItemRepository.GetById(idGuid);
+            //var item = await ListItemService.FindById(idGuid);
             if (item == null)
             {
                 Console.WriteLine("####### Sending Item not found");
                 return "Item not found.";
             }
-            await ListItemService.DelListItem(item);
+            ListItemRepository.Delete(item);
+            await ListItemRepository.Save();
+            //await ListItemService.DelListItem(item);
 
             Console.WriteLine("####### Sending ok");
             return "Deleted.";

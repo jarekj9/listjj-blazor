@@ -3,6 +3,7 @@
 @using System.Linq.Expressions
 @using Listjj.Pages.Components
 @using Microsoft.Extensions.Hosting
+@using Listjj.Repository
 @inject IRefreshService RefreshService
 @inject IFileService FileService
 @inherits PageBase
@@ -223,15 +224,16 @@
     {
         StateHasChanged();
         Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
-        Items = await ListItemService.ExecuteQuery(filter);
+        Items = await ListItemRepository.ExecuteQuery(filter);
         ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
         StateHasChanged();
     }
 
     private async Task DeleteItem(ListItemViewModel itemVm)
     {
-        var item = await ListItemService.FindById(itemVm.Id);
-        await ListItemService.DelListItem(item);
+        var item = await ListItemRepository.GetById(itemVm.Id);
+        ListItemRepository.Delete(item.Id);
+        await ListItemRepository.Save();
         await UpdateList();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
     }
@@ -256,16 +258,19 @@
 
     private async Task ClickActive(ListItemViewModel itemVm)
     {
-        var item = await ListItemService.FindById(itemVm.Id);
+        var item = await ListItemRepository.GetById(itemVm.Id);
         item.Active = !item.Active;
-        await ListItemService.UpdateListItem(item);
+        ListItemRepository.Update(item);
+        await ListItemRepository.Save();
     }
 
     private async Task EditItem(ListItemViewModel itemVm)
     {
-        var item = await ListItemService.FindById(itemVm.Id);
+        var item = await ListItemRepository.GetById(itemVm.Id);
         item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
-        await ListItemService.UpdateListItem(item);
+        item.Modified = DateTime.Now;
+        ListItemRepository.Update(item);
+        await ListItemRepository.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Updated {item.Name}");
         item.IsEditing = false;
         await UpdateList();

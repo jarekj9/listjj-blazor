@@ -1,3 +1,4 @@
+@using Listjj.Repository
 @inherits PageBase
 
 
@@ -89,7 +90,7 @@
             await JSRuntime.InvokeAsync<object>("alert", "Please login first.");
             return;
         }
-        Category category = await CategoryService.FindById(ItemVm.CategoryId);
+        var category = await CategoryRepository.GetById(ItemVm.CategoryId);
         if(category is null) {  // no category selected
             if (CategoriesVm.Any() is not false) {
                 ItemVm.CategoryId = CategoriesVm[0].Id;
@@ -98,8 +99,9 @@
                 Category defaultCat = new Category();
                 defaultCat.Name = "default";
                 defaultCat.UserId = appState.UserId;
-                await CategoryService.AddCategory(defaultCat);
-                category = await CategoryService.FindById(defaultCat.Id);
+                CategoryRepository.Add(defaultCat);
+                await CategoryRepository.Save();
+                category = await CategoryRepository.GetById(defaultCat.Id);
                 ItemVm.CategoryId = category.Id;
             }
         }
@@ -107,7 +109,9 @@
         ItemVm.UserId = appState.UserId;
         var item = new ListItem();
         MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);
-        await ListItemService.AddListItem(item);
+        item.Created = item.Modified = DateTime.Now;
+        ListItemRepository.Add(item);
+        await ListItemRepository.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Added {ItemVm.Name}");
         await UpdateList.InvokeAsync();
         appState.RecentCategoryId = ItemVm.CategoryId;

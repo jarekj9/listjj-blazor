@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpOverrides;
+using Listjj.Repository;
 
 namespace Listjj
 {
@@ -51,12 +52,13 @@ namespace Listjj
             services.AddStackExchangeRedisCache(opt => opt.Configuration = Configuration.GetConnectionString("Redis"));
 
             services.AddHttpContextAccessor();  // for user identity
-            services.AddScoped<IListItemService, ListItemService>();
-            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRefreshService, RefreshService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITagsCacheService, TagsCacheService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IListItemRepository, ListItemRepository>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<AppState>();
 
             //mud blazor

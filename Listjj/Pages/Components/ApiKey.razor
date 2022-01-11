@@ -30,7 +30,7 @@
                         Check this out:<br />
                         curl -k https://localhost:5001/api/Listjj/GetAllListjj -H "Authorization: ApiKey @Key"<br /><br />
                         curl -k -X POST -H "Content-Type: application/json" -H "Authorization: ApiKey @Key" -d '{"name": "new", "value": "1", "description":"dsc", "categoryName":"default"}' https://localhost:5001/api/Listjj/AddItem <br /><br />
-                        curl -k -X POST -H "Content-Type: application/json" -H "Authorization: ApiKey fed32810-a5d5-442a-914b-cca36d3b3977" -d '{"id": "08d980c7-326f-4a0e-8de8-2f896c824ab0	"}' https://localhost:5001/api/Listjj/DelItem
+                        curl -k -X POST -H "Content-Type: application/json" -H "Authorization: ApiKey @Key" -d '{"id": "08d980c7-326f-4a0e-8de8-2f896c824ab0	"}' https://localhost:5001/api/Listjj/DelItem
                     </p>
                 }
                 <button type="button" class="btn btn-outline-primary" @onclick="GenerateKey">Generate Key</button>

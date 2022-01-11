@@ -2,10 +2,8 @@
 @using Listjj.Abstract
 @using System.IO
 @using System.Text
+@using Listjj.Repository
 @inject IFileService FileService
-@inject IListItemService ListItemService
-@inject IRefreshService RefreshService
-@inject ICategoryService CategoryService
 @inherits PageBase
 
 <div>
@@ -21,9 +19,11 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
-    private async void DownloadFile() {
-        var items = await Task.Run(() => ListItemService.GetItemsByUserId(appState.UserId));
-        var categories = await Task.Run(() => CategoryService.GetAllCategories());
+
+    private async void DownloadFile() 
+    {
+        var items = await ListItemRepository.GetAllByUserId(appState.UserId);
+        var categories = CategoryRepository.GetAll();
         var text = "Value;Name;Description;Category;Active;Tags;\n";
         foreach(var item in items) {
             text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
@@ -52,8 +52,10 @@
                 item.Value = Double.Parse(words[0]);
                 item.Name = words[1];
                 item.Description = words[2];
+                item.Created = DateTime.Now;
+                item.Modified = DateTime.Now;
 
-                var categories = await CategoryService.GetCategoriesByUserId(appState.UserId);
+                var categories = await CategoryRepository.GetAllByUserId(appState.UserId);
                 categories = categories.Where(x => x.Name == words[3]).ToList();
                 if(categories.Any()) {
                     category = categories[0];
@@ -61,17 +63,18 @@
                 else {
                     category.Name = words[3];
                     category.UserId = appState.UserId;
-                    await CategoryService.AddCategory(category);
+                    CategoryRepository.Add(category);
+                    CategoryRepository.Save();
                 }
                 item.CategoryId = category.Id;
                 item.Active = Boolean.Parse(words[4]);
                 item.Tags = words[5];
                 item.UserId = appState.UserId;
 
-                await ListItemService.AddListItem(item);
+                ListItemRepository.Add(item);
+                await ListItemRepository.Save();
             }
         }
-        //RefreshService.CallRequestRefresh();  // does not reset FileInput, so have to reload
         NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
     }
 }

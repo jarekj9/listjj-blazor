@@ -1,7 +1,7 @@
 @using Listjj.Models
 @using Listjj.Abstract
 @using Listjj.Pages.Components
-@inject ICategoryService CategoryService
+@using Listjj.Repository
 @inherits PageBase
 
 @layout ListjjLayout
@@ -93,9 +93,10 @@
         {
             return;
         }
-        var category = await CategoryService.FindById(categoryVm.Id);
+        var category = await CategoryRepository.GetById(categoryVm.Id);
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
-        await CategoryService.DelCategory(category);
+        CategoryRepository.Delete(category.Id);
+        await CategoryRepository.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {category.Name}");
         await UpdateList();
     }
@@ -107,10 +108,11 @@
 
     protected async Task EditCategory(CategoryViewModel categoryVm)
     {
-        var category = await CategoryService.FindById(categoryVm.Id);
+        var category = await CategoryRepository.GetById(categoryVm.Id);
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
         category.IsEditing = false;
-        await CategoryService.UpdateCategory(category);
+        CategoryRepository.Update(category);
+        await CategoryRepository.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Updated {category.Name}");
         await UpdateList();
     }
