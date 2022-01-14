@@ -19,16 +19,12 @@ namespace Listjj.APIs
 
     public class ListjjController: ControllerBase
     {
-        private readonly IListItemRepository ListItemRepository;
-        private readonly ICategoryRepository CategoryRepository;
-        private readonly IUserService UserService;
+        private readonly IUnitOfWork UnitOfWork;
         private readonly ILogger<ListjjController> logger;
 
-        public ListjjController(IListItemRepository listItemRepository, IUserService userService, ICategoryRepository categoryRepository, ILogger<ListjjController> _logger)
+        public ListjjController(IUnitOfWork unitOfWork, ILogger<ListjjController> _logger)
         {
-            ListItemRepository = listItemRepository;
-            CategoryRepository = categoryRepository;
-            UserService = userService;
+            UnitOfWork = unitOfWork;
             logger = _logger;
         }
         public string GetValues()
@@ -36,7 +32,7 @@ namespace Listjj.APIs
             return "Hello API";
         }
 
-        private (bool success, string message, Guid userId) IsAuthorized()
+        private async Task<(bool success, string message, Guid userId)> IsAuthorized()
         {
             var headers = GetAllHeaders();
             string key;
@@ -53,12 +49,13 @@ namespace Listjj.APIs
                 throw;
             }
             Guid.TryParse(key, out var parsedKey);
-            var userId = UserService.FindUserIdByApiKey(parsedKey);
-            if (parsedKey == Guid.Empty || userId == new Guid())
+            var user =  await UnitOfWork.Users.GetByApiKey(parsedKey);
+            //var userId = UserService.FindUserIdByApiKey(parsedKey);
+            if (parsedKey == Guid.Empty || user.Id == new Guid())
             {
                 return (success:false, message:"Unauthorized access.", userId: Guid.Empty);
             }
-            return (success:true, message:"", userId: userId);
+            return (success:true, message:"", userId: user.Id);
         }
 
 
@@ -76,13 +73,12 @@ namespace Listjj.APIs
 
         public async Task<string> GetAllListjj()  
         {
-            var isAuthorized = IsAuthorized();
+            var isAuthorized = await IsAuthorized();
             if(!isAuthorized.success)
             {
                 return isAuthorized.message;
             }
-            var items = await ListItemRepository.GetAllByUserId(isAuthorized.userId.ToString());
-            //var items = await ListItemService.GetItemsByUserId(isAuthorized.userId.ToString());
+            var items = await UnitOfWork.ListItems.GetAllByUserId(isAuthorized.userId);
 
             var response = System.Text.Json.JsonSerializer.Serialize(items);
 
@@ -91,8 +87,9 @@ namespace Listjj.APIs
         public async Task<string> GetByCategoryName(string name = "", string key = "")
         {
             Guid.TryParse(key, out var parsedKey);
-            var userId = UserService.FindUserIdByApiKey(parsedKey);
-            if (parsedKey == Guid.Empty || userId == new Guid())       // special auth for tizen watch
+            var user = await UnitOfWork.Users.GetByApiKey(parsedKey);
+            //var userId = UserService.FindUserIdByApiKey(parsedKey);
+            if (parsedKey == Guid.Empty || user.Id == new Guid())       // special auth for tizen watch
             {
                 return "{\"status\":\"Unauthorized access.\"}";
             }
@@ -104,10 +101,8 @@ namespace Listjj.APIs
                 return "Options";
             }
 
-            var categoryId = (await CategoryRepository.GetByName(name)).Id;
-            //var categoryId = (await CategoryService.FindByName(name)).Id;
-            var items = (await ListItemRepository.GetAllByCategoryId(categoryId));
-            //var items = (await ListItemService.GetItemsByCategoryId(categoryId));
+            var categoryId = (await UnitOfWork.Categories.GetByName(name)).Id;
+            var items = (await UnitOfWork.ListItems.GetAllByCategoryId(categoryId));
             if (items.Count == 0)
             {
                 return "{\"status\":\"List is empty.\"}";
@@ -120,7 +115,7 @@ namespace Listjj.APIs
         [HttpPost]
         public async Task<string> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
         {
-            var isAuthorized = IsAuthorized();
+            var isAuthorized = await IsAuthorized();
             if (!isAuthorized.success)
             {
                 return isAuthorized.message;
@@ -138,16 +133,14 @@ namespace Listjj.APIs
             }
 
             Double.TryParse(value, out double parsedValue);
-            var category = await CategoryRepository.GetByName(categoryName);
-            //var category = await CategoryService.FindByName(categoryName);
+            var category = await UnitOfWork.Categories.GetByName(categoryName);
             if (category == null)
             {
                 return "{\"status\":\"category not found\"}";
             }
 
             Guid.TryParse(id, out var parsedId);
-            var item = (await ListItemRepository.GetById(parsedId)) ?? new ListItem();
-            //var item = (await ListItemService.FindById(parsedId)) ?? new ListItem();
+            var item = (await UnitOfWork.ListItems.GetById(parsedId)) ?? new ListItem();
             item.CategoryId = category.Id;
             item.Name = name;
             item.Description = description;
@@ -155,19 +148,17 @@ namespace Listjj.APIs
 
             if (item.Id != Guid.Empty)
             {
-                ListItemRepository.Update(item);
-                await ListItemRepository.Save();
-                //await ListItemService.UpdateListItem(item);
+                UnitOfWork.ListItems.Update(item);
+                await UnitOfWork.Save();
                 return "{\"status\":\"ok\"}";
             }
 
             item.Id = parsedId;
-            item.UserId = isAuthorized.userId.ToString();
+            item.UserId = isAuthorized.userId;
             item.Created = DateTime.Now;
             item.Modified = DateTime.Now;
-            ListItemRepository.Add(item);
-            await ListItemRepository.Save();
-            //await ListItemService.AddListItem(item);
+            UnitOfWork.ListItems.Add(item);
+            await UnitOfWork.Save();
             return "{\"status\":\"ok\"}";
         }
 
@@ -185,7 +176,7 @@ namespace Listjj.APIs
                 return "Options";
             }
 
-            var isAuthorized = IsAuthorized();
+            var isAuthorized = await IsAuthorized();
             if (!isAuthorized.success)
             {
                 return isAuthorized.message;
@@ -204,16 +195,14 @@ namespace Listjj.APIs
                 Console.WriteLine("####### Sending Incorrect id.");
                 return "Incorrect id.";
             }
-            var item = await ListItemRepository.GetById(idGuid);
-            //var item = await ListItemService.FindById(idGuid);
+            var item = await UnitOfWork.ListItems.GetById(idGuid);
             if (item == null)
             {
                 Console.WriteLine("####### Sending Item not found");
                 return "Item not found.";
             }
-            ListItemRepository.Delete(item);
-            await ListItemRepository.Save();
-            //await ListItemService.DelListItem(item);
+            UnitOfWork.ListItems.Delete(item.Id);
+            await UnitOfWork.Save();
 
             Console.WriteLine("####### Sending ok");
             return "Deleted.";

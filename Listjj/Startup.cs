@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpOverrides;
 using Listjj.Repository;
+using Listjj.Transaction;
 
 namespace Listjj
 {
@@ -44,8 +45,9 @@ namespace Listjj
                 )
             );
             services.AddDefaultIdentity<ApplicationUser>()
-                .AddRoles<IdentityRole>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
+
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
             //Redis Caching
@@ -54,12 +56,15 @@ namespace Listjj
             services.AddHttpContextAccessor();  // for user identity
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRefreshService, RefreshService>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITagsCacheService, TagsCacheService>();
+
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IListItemRepository, ListItemRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<AppState>();
+            
 
             //mud blazor
             services.AddMudServices();
@@ -116,4 +121,5 @@ namespace Listjj
             // }
         }
     }
+
 }

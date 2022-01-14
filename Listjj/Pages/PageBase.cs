@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Collections.Generic;
 using System.Linq;
 using List.Helpers;
+using System;
 
 namespace Listjj.Pages
 {
@@ -15,8 +16,7 @@ namespace Listjj.Pages
     {
         [Inject] protected NavigationManager NavManager { get; set; }
         [Inject] protected Data.AppState appState { get; set; }
-        [Inject] protected ICategoryRepository CategoryRepository { get; set; }
-        [Inject] protected IListItemRepository ListItemRepository { get; set; }
+        [Inject] protected IUnitOfWork UnitOfWork { get; set; }
         [Inject] protected IFileService FileService { get; set; }
         [Inject] protected ITagsCacheService TagsCacheService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -37,13 +37,14 @@ namespace Listjj.Pages
             {
                 _claims = user.Claims;
                 string id = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                Guid.TryParse(id, out var idGuid);
                 string username = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-                appState.SetLogin(true, id, username);  // should be moved to some login class
+                appState.SetLogin(true, idGuid, username);  // TODO: should be moved to some login class ?
             }
-            Categories = await CategoryRepository.GetAllByUserId(appState.UserId);
+            Categories = await UnitOfWork.Categories.GetAllByUserId(appState.UserId);
             CategoriesVm = MapperHelper.MapItems<Category, CategoryViewModel>(Categories);
 
-            Items = await ListItemRepository.GetAllByUserId(appState.UserId);
+            Items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
             ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
 
         }

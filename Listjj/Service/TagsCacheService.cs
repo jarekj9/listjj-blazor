@@ -13,14 +13,14 @@ namespace Listjj.Service
         private readonly IDistributedCache cache;
         private IListItemRepository listItemRepository;
         private string TagsSelectionKey = "TagsSelection";
-        private string tagsUserId = String.Empty;
+        private Guid tagsUserId = Guid.Empty;
         public TagsCacheService(IDistributedCache cache, IListItemRepository ListItemRepository)
         {
             this.cache = cache;
             this.listItemRepository = ListItemRepository;
         }
 
-        public Task<List<string>> GetTagsSelectionAsync(string userId)
+        public Task<List<string>> GetTagsSelectionAsync(Guid userId)
         {
             tagsUserId = userId;
             TagsSelectionKey = $"TagsSelection:{userId}";
@@ -34,7 +34,7 @@ namespace Listjj.Service
             alltags.AddRange(listItems.SelectMany(i => i.Tags?.Split(',')).Distinct().ToList());
             return alltags;
         }
-        public async Task UpdateCache(string userId, List<string> tagsSelection)
+        public async Task UpdateCache(Guid userId, List<string> tagsSelection)
         {
             var tagsSelectionKey = $"TagsSelection:{userId}";
             await cache.SetRecordAsync(tagsSelectionKey, tagsSelection);

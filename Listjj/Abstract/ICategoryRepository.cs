@@ -7,7 +7,7 @@ namespace Listjj.Abstract
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
-        Task<List<Category>> GetAllByUserId(string id);
+        Task<List<Category>> GetAllByUserId(Guid id);
         Task<Category> GetByName(string name);
     }
 }

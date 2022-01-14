@@ -18,7 +18,7 @@ namespace Listjj.Repository
             _context = context;
         }
 
-        public async Task<List<ListItem>> GetAllByUserId(string id)
+        public async Task<List<ListItem>> GetAllByUserId(Guid id)
         {
             return await _context.ListItems.Where(x => x.UserId == id).ToListAsync();
         }

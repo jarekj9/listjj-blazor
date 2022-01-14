@@ -16,7 +16,7 @@ namespace Listjj.ViewModels
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public Guid CategoryId { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public bool IsEditing;
         public List<string> Tags { get; set; } = new List<string>();
         public CategoryViewModel Category { get; set; }

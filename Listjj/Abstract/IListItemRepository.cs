@@ -8,7 +8,7 @@ namespace Listjj.Abstract
 {
     public interface IListItemRepository : IGenericRepository<ListItem>
     {
-        Task<List<ListItem>> GetAllByUserId(string id);
+        Task<List<ListItem>> GetAllByUserId(Guid id);
         Task<List<ListItem>> GetAllByCategoryId(Guid id);
         Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter);
     }

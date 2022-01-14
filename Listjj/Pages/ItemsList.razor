@@ -224,16 +224,16 @@
     {
         StateHasChanged();
         Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
-        Items = await ListItemRepository.ExecuteQuery(filter);
+        Items = await UnitOfWork.ListItems.ExecuteQuery(filter);
         ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
         StateHasChanged();
     }
 
     private async Task DeleteItem(ListItemViewModel itemVm)
     {
-        var item = await ListItemRepository.GetById(itemVm.Id);
-        ListItemRepository.Delete(item.Id);
-        await ListItemRepository.Save();
+        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
+        UnitOfWork.ListItems.Delete(item.Id);
+        await UnitOfWork.Save();
         await UpdateList();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
     }
@@ -258,19 +258,19 @@
 
     private async Task ClickActive(ListItemViewModel itemVm)
     {
-        var item = await ListItemRepository.GetById(itemVm.Id);
+        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
         item.Active = !item.Active;
-        ListItemRepository.Update(item);
-        await ListItemRepository.Save();
+        UnitOfWork.ListItems.Update(item);
+        await UnitOfWork.Save();
     }
 
     private async Task EditItem(ListItemViewModel itemVm)
     {
-        var item = await ListItemRepository.GetById(itemVm.Id);
+        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
         item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
         item.Modified = DateTime.Now;
-        ListItemRepository.Update(item);
-        await ListItemRepository.Save();
+        UnitOfWork.ListItems.Update(item);
+        await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Updated {item.Name}");
         item.IsEditing = false;
         await UpdateList();

@@ -22,8 +22,8 @@
 
     private async void DownloadFile() 
     {
-        var items = await ListItemRepository.GetAllByUserId(appState.UserId);
-        var categories = CategoryRepository.GetAll();
+        var items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
+        var categories = UnitOfWork.Categories.GetAll();
         var text = "Value;Name;Description;Category;Active;Tags;\n";
         foreach(var item in items) {
             text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
@@ -55,7 +55,7 @@
                 item.Created = DateTime.Now;
                 item.Modified = DateTime.Now;
 
-                var categories = await CategoryRepository.GetAllByUserId(appState.UserId);
+                var categories = await UnitOfWork.Categories.GetAllByUserId(appState.UserId);
                 categories = categories.Where(x => x.Name == words[3]).ToList();
                 if(categories.Any()) {
                     category = categories[0];
@@ -63,16 +63,16 @@
                 else {
                     category.Name = words[3];
                     category.UserId = appState.UserId;
-                    CategoryRepository.Add(category);
-                    CategoryRepository.Save();
+                    UnitOfWork.Categories.Add(category);
+                    await UnitOfWork.Save();
                 }
                 item.CategoryId = category.Id;
                 item.Active = Boolean.Parse(words[4]);
                 item.Tags = words[5];
                 item.UserId = appState.UserId;
 
-                ListItemRepository.Add(item);
-                await ListItemRepository.Save();
+                UnitOfWork.ListItems.Add(item);
+                await UnitOfWork.Save();
             }
         }
         NavManager.NavigateTo(NavManager.Uri, forceLoad: true);

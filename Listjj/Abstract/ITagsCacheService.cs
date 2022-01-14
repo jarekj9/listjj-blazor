@@ -9,7 +9,7 @@ namespace Listjj.Abstract
 {
     public interface ITagsCacheService
     {
-        Task<List<string>> GetTagsSelectionAsync(string userId);
-        Task UpdateCache(string userId, List<string> tagsSelection);
+        Task<List<string>> GetTagsSelectionAsync(Guid userId);
+        Task UpdateCache(Guid userId, List<string> tagsSelection);
     }
 }

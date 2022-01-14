@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace Listjj.Repository
 {
@@ -16,7 +17,7 @@ namespace Listjj.Repository
         {
             _context = context;
         }
-        public async Task<List<Category>> GetAllByUserId(string id)
+        public async Task<List<Category>> GetAllByUserId(Guid id)
         {
             return await _context.Categories.Where(x => x.UserId == id).ToListAsync();
         }

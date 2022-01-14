@@ -10,7 +10,7 @@ namespace Listjj.Abstract
         Task<T> GetById(Guid id);
         void Add(T obj);
         void Update(T obj);
-        void Delete(object id);
+        void Delete(Guid id);
         Task<bool> Save();
     }
 }

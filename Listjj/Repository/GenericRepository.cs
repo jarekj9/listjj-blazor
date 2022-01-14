@@ -43,7 +43,7 @@ namespace Listjj.Repository
             _context.Entry(obj).State = EntityState.Modified;
         }
 
-        public void Delete(object id)
+        public void Delete(Guid id)
         {
             T existing = table.Find(id);
             table.Remove(existing);

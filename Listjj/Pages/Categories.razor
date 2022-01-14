@@ -93,10 +93,10 @@
         {
             return;
         }
-        var category = await CategoryRepository.GetById(categoryVm.Id);
+        var category = await UnitOfWork.Categories.GetById(categoryVm.Id);
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
-        CategoryRepository.Delete(category.Id);
-        await CategoryRepository.Save();
+        UnitOfWork.Categories.Delete(category.Id);
+        await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {category.Name}");
         await UpdateList();
     }
@@ -108,11 +108,11 @@
 
     protected async Task EditCategory(CategoryViewModel categoryVm)
     {
-        var category = await CategoryRepository.GetById(categoryVm.Id);
+        var category = await UnitOfWork.Categories.GetById(categoryVm.Id);
         MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
         category.IsEditing = false;
-        CategoryRepository.Update(category);
-        await CategoryRepository.Save();
+        UnitOfWork.Categories.Update(category);
+        await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Updated {category.Name}");
         await UpdateList();
     }

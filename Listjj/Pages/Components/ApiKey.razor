@@ -44,19 +44,18 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
-    [Inject] private IUserService UserService { get; set; }
+    [Inject] private IUnitOfWork UnitOfWork { get; set; }
     private Guid Key { get; set; }
 
     protected async Task GenerateKey()
     {
-        var currentKey = UserService.FindApiKeyByUserId(appState.UserId);
-        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure you want to regenerate api key ?", $"Old is: '{currentKey}'");
+        var user = await UnitOfWork.Users.GetById(appState.UserId);
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure you want to regenerate api key ?", $"Old is: '{user.ApiKey}'");
         if (!isConfirmed)
         {
             return;
         }
 
-        var user = UserService.FindUserByUserId(appState.UserId);
-        Key = UserService.CreateApiKey(user);
+        Key = await UnitOfWork.Users.CreateApiKey(user);
     }
 }
