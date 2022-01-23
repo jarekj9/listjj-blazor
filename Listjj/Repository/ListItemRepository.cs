@@ -20,12 +20,12 @@ namespace Listjj.Repository
 
         public async Task<List<ListItem>> GetAllByUserId(Guid id)
         {
-            return await _context.ListItems.Where(x => x.UserId == id).ToListAsync();
+            return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(x => x.UserId == id).ToListAsync();
         }
 
         public async Task<List<ListItem>> GetAllByCategoryId(Guid id)
         {
-            return await _context.ListItems.Where(x => x.CategoryId == id).ToListAsync();
+            return await _context.ListItems.Include(i => i.Files).Where(x => x.CategoryId == id).ToListAsync();
         }
 
         public async Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter)
