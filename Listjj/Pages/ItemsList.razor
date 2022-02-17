@@ -100,8 +100,8 @@
                                 </td>
                                 <td>
                                     <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                        <input size="18" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
-                                        <textarea rows="3" cols="20" for="Description" class="form-controll" @bind="@item.Description" />
+                                        <input style="width: 100%; max-width: 100%;" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
+                                        <textarea style="width: 100%; height: 100%; max-width: 100%;" class="form-controll" @bind="@item.Description" />
                                         <CascadingValue Value="@TagsSelection">
                                             <TagsInput Tags="item.Tags" />
                                         </CascadingValue>

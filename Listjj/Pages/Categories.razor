@@ -55,8 +55,8 @@
                         @if (category.IsEditing)
                         {
                             <tr class="table-secondary" @ondblclick="() => category.IsEditing = !category.IsEditing">
-                                <td><input for="Name" class="form-controll" @bind="@category.Name" /></td>
-                                <td><input for="Description" class="form-controll" @bind="@category.Description" /></td>
+                                <td><input for="Name" class="form-controll" @bind="@category.Name" style="width: 100%; max-width: 100%;"/></td>
+                                <td><textarea for="Description" class="form-controll" @bind="@category.Description" style="width: 100%; max-width: 100%;"/></td>
                                 <td>
                                     <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditCategory(category)" title="Save"><i class="far fa-save"></i></button>
                                     <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(category)" title="Cancel"><i class="far fa-window-close"></i></button>

@@ -15,11 +15,11 @@
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
                     <label class="control-label addLabel" for="new-name">Name: </label>
-                    <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll">
+                    <input id="new-name" @bind="@ItemVm.Name" type="text" class="form-controll" style="width: 70%; height: 100%;">
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-dsc">Description: </label>
-                    <input id="new-dsc" @bind="@ItemVm.Description" type="text" class="form-controll">
+                    <label class="control-label addLabel align-top" for="new-dsc">Description: </label>
+                    <textarea id="new-dsc" class="form-controll" @bind="@ItemVm.Description" style="width: 70%; height: 100%;"/>
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
                     <label class="control-label addLabel" for="new-category">Category:</label>
