@@ -23,7 +23,7 @@ jobs:
       run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}
     
     - name: docker login
-      run: docker login -u jarekj9 -p ${{ secrets.DOCKER_TOKEN }}
+      run: docker login -u jarekj9 -p ${{ secrets.DOCKER_TOKEN }} docker.io
       
     - name: docker push
       run: docker push ${{ env.IMAGE_NAME }}
