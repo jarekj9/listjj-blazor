@@ -9,7 +9,7 @@ on:
     branches: [ master ]
 
 env: 
-  IMAGE_NAME: listjj:$(date +%s)
+  IMAGE_NAME: jarekj9/listjj:$(date +%s)
 
 jobs:
 
