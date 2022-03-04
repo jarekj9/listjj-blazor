@@ -1,10 +1,15 @@
 name: Docker Image CI
 
+
+
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
+env: 
+  IMAGE_NAME: listjj:$(date +%s)
 
 jobs:
 
@@ -15,4 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}
+    
+    - name: docker login
+      run: docker login -u jarekj9 -p ${{ secrets.DOCKER_TOKEN }}
+      
+    - name: docker push
+      run: docker push ${{ env.IMAGE_NAME }}
