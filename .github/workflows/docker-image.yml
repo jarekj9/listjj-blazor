@@ -9,8 +9,7 @@ on:
     branches: [ master ]
 
 env: 
-  #IMAGE_NAME: jarekj9/listjj:$(date +%s)
-  IMAGE_NAME: jarekj9/listjj:latest
+  IMAGE_NAME: jarekj9/listjj:$(date +%s)
 
 jobs:
 
@@ -21,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile -t ${{ env.IMAGE_NAME }}
+      run: docker build . --file Dockerfile -t ${{ env.IMAGE_NAME }} -t jarekj9/listjj:latest
 
     - name: docker login
       run: docker login -u jarekj9 -p ${{ secrets.DOCKER_TOKEN }} docker.io
