@@ -15,7 +15,7 @@ jobs:
 
   build:
 
-    runs-on: [self-hosted, runner1]
+    runs-on: [self-hosted, machinejj]
 
     steps:
     - uses: actions/checkout@v2
