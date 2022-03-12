@@ -10,7 +10,7 @@
 @layout ListjjLayout
 @page "/list"
 
-<AuthorizeView Roles="User">
+<AuthorizeView Roles="User,Admin">
 
     <MudLayout>
         <MudAppBar Elevation="1" Dense="true">
@@ -40,7 +40,6 @@
                         <tr>
                             <th>Value</th>
                             <th>Name</th>
-                            @*<th>Description</th>*@
                             <th>
                                 <span style="display: inline-block">Category:&nbsp</span>
                                 <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList" /></span>
@@ -75,9 +74,6 @@
                                     </div>
                                 }
                             </td>
-                            @*<td>
-                                    @item.Description
-                                </td>*@
                             <td>
                                 @item.Category.Name
                             </td>
@@ -177,6 +173,7 @@
                     <ImportExport></ImportExport>
                     <ApiKey />
                     <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                    <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
                 </div>
             }
 
@@ -212,7 +209,7 @@
         if (cachedItems is null)
         {
             fromCache = false;
-            ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+            ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
             await cache.SetRecordAsync(recordKey, ItemsVm);
             return ItemsVm;
         }
@@ -225,7 +222,7 @@
         StateHasChanged();
         Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
         Items = await UnitOfWork.ListItems.ExecuteQuery(filter);
-        ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+        ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
         StateHasChanged();
     }
 
@@ -267,7 +264,7 @@
     private async Task EditItem(ListItemViewModel itemVm)
     {
         var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
-        item = MapperHelper.MapItem<ListItemViewModel, ListItem>(itemVm, item);
+        item = Mapper.Map<ListItemViewModel, ListItem>(itemVm, item);
         item.Modified = DateTime.Now;
         UnitOfWork.ListItems.Update(item);
         await UnitOfWork.Save();

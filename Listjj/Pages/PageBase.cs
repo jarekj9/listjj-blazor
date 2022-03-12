@@ -7,8 +7,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Collections.Generic;
 using System.Linq;
-using List.Helpers;
 using System;
+using AutoMapper;
 
 namespace Listjj.Pages
 {
@@ -19,6 +19,7 @@ namespace Listjj.Pages
         [Inject] protected IUnitOfWork UnitOfWork { get; set; }
         [Inject] protected IFileService FileService { get; set; }
         [Inject] protected ITagsCacheService TagsCacheService { get; set; }
+        [Inject] protected IMapper Mapper { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         protected IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 
@@ -42,10 +43,10 @@ namespace Listjj.Pages
                 appState.SetLogin(true, idGuid, username);  // TODO: should be moved to some login class ?
             }
             Categories = await UnitOfWork.Categories.GetAllByUserId(appState.UserId);
-            CategoriesVm = MapperHelper.MapItems<Category, CategoryViewModel>(Categories);
+            CategoriesVm = Mapper.Map<List<Category>, List<CategoryViewModel>>(Categories);
 
             Items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
-            ItemsVm = MapperHelper.MapItems<ListItem, ListItemViewModel>(Items);
+            ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
 
         }
 

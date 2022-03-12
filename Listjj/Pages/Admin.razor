@@ -1,0 +1,138 @@
+@using Listjj.Models
+@using Listjj.Abstract
+@using Listjj.Pages.Components
+@using Listjj.Repository
+@using Microsoft.AspNetCore.Identity
+@inherits PageBase
+
+@layout ListjjLayout
+@page "/admin"
+
+
+<AuthorizeView Roles="Admin">
+
+    <MudLayout>
+        <MudAppBar Elevation="1" Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
+            <TopBar />
+        </MudAppBar>
+        <MudDrawer Width="300px" @bind-Open="@isDrawerOpen" ClipMode="DrawerClipMode.Never" Elevation="1" Variant="@DrawerVariant.Responsive">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">Add User</MudText>
+            </MudDrawerHeader>
+            <AddUser UpdateList="UpdateList" AllRoles="allRoles" UserManager="UserManager"></AddUser>
+        </MudDrawer>
+        <MudMainContent Class="pt-2 pl-2">
+
+
+
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                @foreach (var user in UsersVm)
+                {
+                    <tr hidden="@user.IsEditing" @ondblclick="() => user.IsEditing = !user.IsEditing">
+                        <td>@user.UserName</td>
+                        <td></td>
+                        <td>@user.Role</td>
+                        <td>
+                            <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteUser(user)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                            <button class="btn btn-outline-primary icon-button mb-1 hide-on-mobile" @onclick="() => ShowEdit(user)" title="Edit"><i class="far fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    @if (user.IsEditing)
+                    {
+                        <tr class="table-secondary" @ondblclick="() => user.IsEditing = !user.IsEditing">
+                            <td><input for="Name" class="form-controll" @bind="@user.UserName" style="width: 100%; max-width: 100%;"/></td>
+                            <td><input for="Password" type="password" class="form-controll" @bind="@user.Password" style="width: 100%; max-width: 100%;" title="Leave blank if not changing"/></td>
+                            <td>
+                                <select id="roleselect" @bind="@user.Role">
+                                    <option value="">---select---</option>
+                                    @foreach (var role in allRoles)
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditUser(user)" title="Save"><i class="far fa-save"></i></button>
+                                <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(user)" title="Cancel"><i class="far fa-window-close"></i></button>
+                            </td>
+                        </tr>
+                    }
+
+                }
+            </table>
+
+
+        </MudMainContent>
+    </MudLayout>
+</AuthorizeView>
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private UserManager<ApplicationUser> UserManager { get; set; }
+    [Inject] private RoleManager<ApplicationRole> RoleManager { get; set; }
+    private List<string> allRoles = new List<string>();
+    private List<UserViewModel> UsersVm = new List<UserViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private new async Task LoadData()
+    {
+        allRoles = RoleManager.Roles.Select(r => r.Name).ToList();
+        var users = (await UnitOfWork.Users.GetAll()).ToList();
+        UsersVm = Mapper.Map<List<ApplicationUser>, List<UserViewModel>>(users);
+    }
+
+    public async Task UpdateList()
+    {
+        await LoadData();
+        StateHasChanged();
+    }
+
+    private async Task DeleteUser(UserViewModel userVm)
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete user {userVm.UserName} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        var user = await UserManager.FindByIdAsync(userVm.Id.ToString());
+        await UserManager.DeleteAsync(user);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {user.UserName}");
+        await UpdateList();
+    }
+
+    private void ShowEdit(UserViewModel userVm)
+    {
+        userVm.IsEditing = !userVm.IsEditing;
+    }
+
+    protected async Task EditUser(UserViewModel userVm)
+    {
+        var user = await UserManager.FindByIdAsync(userVm.Id.ToString());
+        await UserManager.SetUserNameAsync(user, userVm.UserName);
+        await UserManager.RemoveFromRolesAsync(user, allRoles);
+        await UserManager.AddToRoleAsync(user, userVm.Role);
+        if(userVm.Password != "")
+        {
+            await UserManager.RemovePasswordAsync(user);
+            await UserManager.AddPasswordAsync(user, userVm.Password);
+        }
+
+        userVm.IsEditing = false;
+        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {userVm.UserName}");
+        await UpdateList();
+    }
+
+}

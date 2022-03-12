@@ -35,7 +35,7 @@
     protected async Task HandleValidSubmit()
     {
         var category = new Category();
-        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        Mapper.Map<CategoryViewModel, Category>(categoryVm, category);
         category.UserId = appState.UserId;
         UnitOfWork.Categories.Add(category);
         await UnitOfWork.Save();

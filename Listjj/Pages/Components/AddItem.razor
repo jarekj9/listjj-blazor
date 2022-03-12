@@ -108,7 +108,7 @@
         await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", ItemVm.CategoryId, 360);
         ItemVm.UserId = appState.UserId;
         var item = new ListItem();
-        MapperHelper.MapItem<ListItemViewModel, ListItem>(ItemVm, item);
+        Mapper.Map<ListItemViewModel, ListItem>(ItemVm, item);
         item.Created = item.Modified = DateTime.Now;
         UnitOfWork.ListItems.Add(item);
         await UnitOfWork.Save();

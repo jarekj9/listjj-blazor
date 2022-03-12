@@ -94,7 +94,7 @@
             return;
         }
         var category = await UnitOfWork.Categories.GetById(categoryVm.Id);
-        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        Mapper.Map<CategoryViewModel, Category>(categoryVm, category);
         UnitOfWork.Categories.Delete(category.Id);
         await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {category.Name}");
@@ -109,7 +109,7 @@
     protected async Task EditCategory(CategoryViewModel categoryVm)
     {
         var category = await UnitOfWork.Categories.GetById(categoryVm.Id);
-        MapperHelper.MapItem<CategoryViewModel, Category>(categoryVm, category);
+        Mapper.Map<CategoryViewModel, Category>(categoryVm, category);
         category.IsEditing = false;
         UnitOfWork.Categories.Update(category);
         await UnitOfWork.Save();

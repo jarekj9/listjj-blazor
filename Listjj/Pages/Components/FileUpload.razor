@@ -1,7 +1,6 @@
 @using System
 @using System.IO
 @using Listjj.Pages
-@using List.Helpers
 @inherits PageBase
 
 
@@ -36,7 +35,7 @@
 
             var newFile = await FileService.AddFile(ItemVm.Id, bytes, file.Name);
             FileViewModel newfileVm = new FileViewModel();
-            MapperHelper.MapItem<Listjj.Models.File, FileViewModel>(newFile, newfileVm);
+            Mapper.Map<Listjj.Models.File, FileViewModel>(newFile, newfileVm);
             ItemVm.Files.Add(newfileVm);
         }
         filesLoading = false;

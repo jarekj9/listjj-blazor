@@ -1,0 +1,65 @@
+@inject IJSRuntime JSRuntime
+@using Listjj.Repository
+@using Microsoft.AspNetCore.Identity
+@inherits PageBase
+
+<EditForm Model="@userVm" OnValidSubmit="HandleValidSubmit">
+    <div class="form-group p-3"> 
+        <div class="container-fluid pt-1">
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="categoryName">Name: </label>
+                    <input id="username" class="form-controll" @bind="@userVm.UserName" style="width: 70%; height: 100%;"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="categoryName">Password: </label>
+                    <input type="password" class="form-controll" @bind="@userVm.Password" style="width: 70%; height: 100%;"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel align-top" for="categoryDescription">Role: </label>
+                    <select id="roleselect" @bind="@userVm.Role">
+                        <option value="">---select---</option>
+                        @foreach (var role in AllRoles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap mt-3 addDiv">
+                    <button type="submit" class="btn btn-outline-primary" value="save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter] public EventCallback UpdateList { get; set; }
+    [Parameter] public List<string> AllRoles { get; set; }
+    [Parameter] public UserManager<ApplicationUser> UserManager { get; set; }
+    private UserViewModel userVm = new UserViewModel();
+
+
+
+    protected async Task HandleValidSubmit()
+    {
+        var newUser = new ApplicationUser();
+        newUser.UserName = userVm.UserName;
+        newUser.Email = userVm.UserName;
+        await UserManager.CreateAsync(newUser);
+        await UserManager.AddPasswordAsync(newUser, userVm.Password);
+        await UserManager.AddToRoleAsync(newUser, userVm.Role);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Added {userVm.UserName}");
+        await UpdateList.InvokeAsync();
+        userVm = new UserViewModel();
+    }
+
+}

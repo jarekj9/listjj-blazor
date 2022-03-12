@@ -58,6 +58,9 @@ namespace Listjj
             services.AddScoped<IRefreshService, RefreshService>();
             services.AddScoped<ITagsCacheService, TagsCacheService>();
 
+            services.AddScoped<UserManager<ApplicationUser>>();
+            services.AddScoped<IUserService, UserService>();
+
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IListItemRepository, ListItemRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -72,6 +75,8 @@ namespace Listjj
             //for APIs:
             services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

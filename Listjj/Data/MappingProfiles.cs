@@ -1,24 +1,31 @@
-
 using System;
 using Listjj.Models;
 using Listjj.ViewModels;
 using System.Linq;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
-public class ListjjMappingProfile : AutoMapper.Profile
+namespace Listjj.Data
 {
-    public ListjjMappingProfile()
+    public class ListjjMappingProfile : AutoMapper.Profile
     {
-        CreateMap<ListItem, ListItemViewModel>()
-        .ForMember(dest => dest.Tags, opt => opt.MapFrom((src, dest) => src.Tags.Split(',').ToList()));
-        //.ForMember(d => d.FilesList, s => s.MapFrom(s => s.Files.Select(f => new Tuple<string,Guid>(f.Name,f.Id)).ToList()));
+        public ListjjMappingProfile()
+        {
+            CreateMap<ListItem, ListItemViewModel>()
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom((src, dest) => src.Tags.Split(',').ToList()));
 
-        CreateMap<ListItemViewModel, ListItem>()
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom((src, dest) => String.Join(',', src.Tags.Where(x => !string.IsNullOrWhiteSpace(x)))))
-            .ForMember(d => d.Files, act => act.Ignore());
-        CreateMap<Category, CategoryViewModel>();
-        CreateMap<CategoryViewModel, Category>();
-        CreateMap<File, FileViewModel>();
-        CreateMap<FileViewModel, File>();
+            CreateMap<ListItemViewModel, ListItem>()
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom((src, dest) => String.Join(',', src.Tags.Where(x => !string.IsNullOrWhiteSpace(x)))))
+                .ForMember(d => d.Files, act => act.Ignore());
+
+            CreateMap<Category, CategoryViewModel>();
+            CreateMap<CategoryViewModel, Category>();
+
+            CreateMap<File, FileViewModel>();
+            CreateMap<FileViewModel, File>();
+
+            CreateMap<ApplicationUser, UserViewModel>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom<UserRoleResolver>());
+            CreateMap<UserViewModel, ApplicationUser>();
+        }
     }
 }
