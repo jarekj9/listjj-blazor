@@ -86,7 +86,7 @@
                             </td>
                             <td>
                                 <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
+                                <button class="btn btn-outline-primary icon-button mb-1 hide-on-mobile" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
                             </td>
                         </tr>
 
@@ -170,7 +170,7 @@
                     }
                 </table>
                 <a data-toggle="collapse" href="#advancedDropdown">
-                    <span class="text-primary font-weight-bold text-small">Advanced</span>
+                    <span class="text-primary font-weight-bold">Advanced</span>
                     <i class="fas fa-caret-down text-primary"></i>
                 </a>
                 <div class="collapse" id="advancedDropdown">
