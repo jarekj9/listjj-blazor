@@ -10,7 +10,6 @@
 @layout ListjjLayout
 @page "/list"
 
-<AuthorizeView Roles="User,Admin">
 
     <MudLayout>
         <MudAppBar Elevation="1" Dense="true">
@@ -22,7 +21,9 @@
                 <MudText Typo="Typo.h6">Add Item</MudText>
             </MudDrawerHeader>
             <CascadingValue Value="@TagsSelection">
-                <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+                <AuthorizeView Roles="Admin, User">
+                    <AddItem UpdateList="UpdateList" CategoriesVm="CategoriesVm" />
+                </AuthorizeView>
             </CascadingValue>
         </MudDrawer>
         <MudMainContent Class="pt-1 pl-2">
@@ -49,6 +50,7 @@
                         </tr>
                     </thead>
 
+                    <AuthorizeView Roles="Admin">
                     @foreach (var item in ItemsVm)
                     {
                         <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
@@ -164,23 +166,31 @@
                             </tr>
                         }
                     }
+                    </AuthorizeView>
+                    <NotAuthorized>
+                        No access.
+                    </NotAuthorized>
+
                 </table>
                 <a data-toggle="collapse" href="#advancedDropdown">
                     <span class="text-primary font-weight-bold">Advanced</span>
                     <i class="fas fa-caret-down text-primary"></i>
                 </a>
                 <div class="collapse" id="advancedDropdown">
-                    <ImportExport></ImportExport>
-                    <ApiKey />
-                    <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
-                    <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                    <AuthorizeView Roles="Admin, User">
+                        <ApiKey />
+                        <ImportExport></ImportExport>
+                    </AuthorizeView>
+                     <AuthorizeView Roles="Admin">
+                        <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                        <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                    </AuthorizeView>
                 </div>
             }
 
 
         </MudMainContent>
     </MudLayout>
-</AuthorizeView>
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
