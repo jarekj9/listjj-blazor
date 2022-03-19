@@ -10,8 +10,8 @@
 @layout ListjjLayout
 @page "/list"
 
-<AuthorizeView Roles="User,Admin">
 
+<AuthorizeView Roles="User,Admin">
     <MudLayout>
         <MudAppBar Elevation="1" Dense="true">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
@@ -170,17 +170,19 @@
                     <i class="fas fa-caret-down text-primary"></i>
                 </a>
                 <div class="collapse" id="advancedDropdown">
-                    <ImportExport></ImportExport>
                     <ApiKey />
-                    <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
-                    <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                    <ImportExport></ImportExport>
+                     <AuthorizeView Roles="Admin">
+                        <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                        <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                    </AuthorizeView>
                 </div>
             }
 
 
         </MudMainContent>
     </MudLayout>
-</AuthorizeView>
+ </AuthorizeView>
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }

@@ -6,7 +6,6 @@
 @inject IFileService FileService
 @inherits PageBase
 
-<div>
     <span class="input-zone p-3 m-2" style="float: left;" @onclick="DownloadFile">
         Export
     </span>
@@ -14,7 +13,6 @@
         <InputFile OnChange="@Upload"/>
         Drop file to import notes
     </span>
-</div>
 
 
 @code {

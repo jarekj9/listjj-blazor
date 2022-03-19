@@ -38,7 +38,7 @@
                 @foreach (var user in UsersVm)
                 {
                     <tr hidden="@user.IsEditing" @ondblclick="() => user.IsEditing = !user.IsEditing">
-                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
                         <td></td>
                         <td>@user.Role</td>
                         <td>
@@ -49,11 +49,11 @@
                     @if (user.IsEditing)
                     {
                         <tr class="table-secondary" @ondblclick="() => user.IsEditing = !user.IsEditing">
-                            <td><input for="Name" class="form-controll" @bind="@user.UserName" style="width: 100%; max-width: 100%;"/></td>
+                            <td><input for="Name" class="form-controll" @bind="@user.Email" style="width: 100%; max-width: 100%;"/></td>
                             <td><input for="Password" type="password" class="form-controll" @bind="@user.Password" style="width: 100%; max-width: 100%;" title="Leave blank if not changing"/></td>
                             <td>
                                 <select id="roleselect" @bind="@user.Role">
-                                    <option value="">---select---</option>
+                                    <option value="">None</option>
                                     @foreach (var role in allRoles)
                                     {
                                         <option value="@role">@role</option>
@@ -102,7 +102,7 @@
 
     private async Task DeleteUser(UserViewModel userVm)
     {
-        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete user {userVm.UserName} ?");
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete user {userVm.Email} ?");
         if (!isConfirmed)
         {
             return;
@@ -121,17 +121,22 @@
     protected async Task EditUser(UserViewModel userVm)
     {
         var user = await UserManager.FindByIdAsync(userVm.Id.ToString());
-        await UserManager.SetUserNameAsync(user, userVm.UserName);
-        await UserManager.RemoveFromRolesAsync(user, allRoles);
-        await UserManager.AddToRoleAsync(user, userVm.Role);
+        await UserManager.SetUserNameAsync(user, userVm.Email);
         if(userVm.Password != "")
         {
             await UserManager.RemovePasswordAsync(user);
             await UserManager.AddPasswordAsync(user, userVm.Password);
         }
 
+        var assignedRoles = await UserManager.GetRolesAsync(user);
+        await UserManager.RemoveFromRolesAsync(user, assignedRoles);
+        if (!string.IsNullOrEmpty(userVm.Role))
+        {
+            await UserManager.AddToRoleAsync(user, userVm.Role);
+        }
+
         userVm.IsEditing = false;
-        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {userVm.UserName}");
+        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {userVm.Email}");
         await UpdateList();
     }
 

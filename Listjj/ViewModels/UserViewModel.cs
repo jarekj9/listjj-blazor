@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Listjj.ViewModels
@@ -6,10 +6,18 @@ namespace Listjj.ViewModels
     public class UserViewModel
     {
         public Guid Id { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public string Role;
+        [Required]
+        [RegularExpression(@"^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-‌​]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$", ErrorMessage = "Email is not valid")]
+        public string Email { get; set; }
 
-        public bool IsEditing;
+
+        [Required]
+        [DataType(DataType.Password)]
+        [RegularExpression(@"(?=[A-Za-z0-9@#$%^&+!=*-]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=*-])(?=.{6,}).*$",
+            ErrorMessage = "Password missing required chars. 6-32 chars and there must be lower case, upper case, digit and one of @#$%^&+!=*-")]
+        public string Password { get; set; } = "";
+        public string Role { get; set; }
+
+        public bool IsEditing { get; set; }
     }
 }

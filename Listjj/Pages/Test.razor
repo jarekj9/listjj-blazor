@@ -1,0 +1,25 @@
+@inject NavigationManager NavManager
+@layout ListjjLayout
+
+@page "/test"
+@using Listjj.Transaction
+
+<AuthorizeView Roles="Admin">
+    <h1>Test Page</h1>
+
+    <p>Testing</p>
+    <p>Count: @Count, @Count2</p>
+</AuthorizeView>
+@code {
+
+    [Inject] protected IUnitOfWork UnitOfWork { get; set; }
+    private int Count { get; set; }
+    private int Count2 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Count = (await UnitOfWork.Categories.GetAll()).Count();
+        Count2 = (await UnitOfWork.ListItems.GetAll()).Count();
+        Console.WriteLine("test");
+    }
+}
