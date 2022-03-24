@@ -37,7 +37,7 @@
 </div>
 
 @code {
-    [Parameter] public Guid FilterItemsCategoryId { get; set; }
+    [Parameter] public Guid CategoryFilterCategoryId { get; set; }
     [Parameter] public Func<Task> UpdateList { get; set; }
     private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
@@ -51,9 +51,9 @@
     {
         Expression<Func<ListItem, bool>> filter = x => x.UserId == appState.UserId && x.Modified >= fromDate && x.Modified <= toDate;
 
-        if (FilterItemsCategoryId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
+        if (CategoryFilterCategoryId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
         {
-            filter = ExpressionExtensions<ListItem>.AndAlso(filter, x => x.CategoryId == FilterItemsCategoryId);
+            filter = ExpressionExtensions<ListItem>.AndAlso(filter, x => x.CategoryId == CategoryFilterCategoryId);
         }
 
         if (string.IsNullOrEmpty(SearchText))

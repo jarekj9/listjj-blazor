@@ -29,7 +29,7 @@
         <MudMainContent Class="pt-1 pl-2">
 
 
-          <SearchBox @ref="searchBox" FilterItemsCategoryId="FilterItemsCategoryId" UpdateList="UpdateList"/>
+          <SearchBox @ref="searchBox" CategoryFilterCategoryId="CategoryFilterCategoryId" UpdateList="UpdateList"/>
             @if (ItemsVm is null)
             {
                 <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
@@ -43,14 +43,14 @@
                             <th>Name</th>
                             <th>
                                 <span style="display: inline-block">Category:&nbsp</span>
-                                <span style="display: inline-block"><FilterItems @ref="filterItems" Categories="Categories" UpdateList="UpdateList" /></span>
+                                <span style="display: inline-block"><CategoryFilter @ref="categoryFilter" Categories="Categories" UpdateList="UpdateList" /></span>
                             </th>
                             <th>Active</th>
                             <th>Action</th>
                         </tr>
                     </thead>
 
-                    <AuthorizeView Roles="Admin">
+                    <AuthorizeView Roles="User, Admin">
                     @foreach (var item in ItemsVm)
                     {
                         <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
@@ -171,6 +171,7 @@
                         No access.
                     </NotAuthorized>
 
+
                 </table>
                 <a data-toggle="collapse" href="#advancedDropdown">
                     <span class="text-primary font-weight-bold">Advanced</span>
@@ -196,9 +197,9 @@
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private IDistributedCache cache { get; set; }
     [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
-    private FilterItems filterItems { get; set; }
+    private CategoryFilter categoryFilter { get; set; }
     private SearchBox searchBox;
-    private Guid FilterItemsCategoryId => filterItems != null ? filterItems.CategoryId : Guid.Parse("00000000-0000-0000-0000-000000000000");
+    private Guid CategoryFilterCategoryId => categoryFilter != null ? categoryFilter.CategoryId : Guid.Parse("00000000-0000-0000-0000-000000000000");
     private string SearchText { get; set; }
     private bool fromCache { get; set; }
     private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
