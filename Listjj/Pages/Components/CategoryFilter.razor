@@ -4,7 +4,7 @@
 @inherits PageBase
 
 <form>
-    <select @bind-value="CategoryId" @bind-value:event="onchange">
+    <select @bind-value="RecentCategoryId" @bind-value:event="onchange">
         <option value="00000000-0000-0000-0000-000000000000">---all---</option>
         @if (Categories is null)
         {
@@ -29,17 +29,20 @@
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Parameter] public new List<Category> Categories { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
-    private Guid categoryId = Guid.Parse("00000000-0000-0000-0000-000000000000");
-    [Parameter]
-    public Guid CategoryId
+    private Guid recentCategoryId;
+    [Parameter] public Guid RecentCategoryId
     {
-        get => categoryId;
+        get => recentCategoryId;
         set
         {
-            categoryId = value;
+            if (recentCategoryId == value) return;
+            recentCategoryId = value;
+            RecentCategoryIdChanged.InvokeAsync(value);
             OnFilterChange();
         }
+
     }
+    [Parameter] public EventCallback<Guid> RecentCategoryIdChanged { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -51,7 +54,7 @@
                 bool categoryExists = Categories.Exists(x => x.Id == recentCategoryId);
                 if (categoryExists)
                 {
-                    CategoryId = recentCategoryId;
+                    RecentCategoryId = recentCategoryId;
                 }
             }
         }
@@ -59,7 +62,8 @@
 
     private async Task OnFilterChange()
     {
-        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", categoryId, 360);
+        appState.RecentCategoryId = RecentCategoryId;
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", RecentCategoryId, 360);
         await UpdateList.InvokeAsync();
     }
 

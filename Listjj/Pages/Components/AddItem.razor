@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
                     <label class="control-label addLabel" for="new-category">Category:</label>
-                    <select class="addBox" id="new-category" @bind="@ItemVm.CategoryId">
+                    <select class="addBox" id="new-category" @bind="@RecentCategoryId">
                         <option value="00000000-0000-0000-0000-000000000000">---select---</option>
                         @if (CategoriesVm is null)
                         {
@@ -58,29 +58,20 @@
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
     [Parameter] public ListItemViewModel ItemVm { get; set; } = new ListItemViewModel();
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private Guid recentCategoryId;
+    [Parameter] public Guid RecentCategoryId
     {
-        if (firstRender)
+        get => recentCategoryId;
+        set
         {
-            ItemVm.CategoryId = appState.RecentCategoryId;
-            var recentCategoryIdCookie = await JSRuntime.InvokeAsync<string>("ReadCookie", "recent_category_id");
-            if (Guid.TryParse(recentCategoryIdCookie, out var recentCategoryId) && CategoriesVm != null)
-            {
-                bool categoryExists = CategoriesVm.Exists(x => x.Id == recentCategoryId);
-                if(categoryExists)
-                {
-                    appState.RecentCategoryId = recentCategoryId;
-                }
-            }
-            if (ItemVm.CategoryId != appState.RecentCategoryId)
-            {
-                ItemVm.CategoryId = appState.RecentCategoryId;
-                StateHasChanged();
-            }
+            if (recentCategoryId == value) return;
+            recentCategoryId = value;
+            ItemVm.CategoryId = value;
+            RecentCategoryIdChanged.InvokeAsync(value);
         }
+
     }
+    [Parameter] public EventCallback<Guid> RecentCategoryIdChanged { get; set; }
 
     protected async Task HandleValidSubmit()
     {
@@ -104,7 +95,6 @@
                 ItemVm.CategoryId = category.Id;
             }
         }
-        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", ItemVm.CategoryId, 360);
         ItemVm.UserId = appState.UserId;
         var item = new ListItem();
         Mapper.Map<ListItemViewModel, ListItem>(ItemVm, item);
@@ -113,9 +103,7 @@
         await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Added {ItemVm.Name}");
         await UpdateList.InvokeAsync();
-        appState.RecentCategoryId = ItemVm.CategoryId;
         ItemVm = new ListItemViewModel();
-        ItemVm.CategoryId = appState.RecentCategoryId;
     }
 
 }
