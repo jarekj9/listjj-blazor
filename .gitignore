@@ -6,4 +6,4 @@
 **/appsettings.json
 **/deploy-rpi.sh
 **/cert.pfx
-**/variables.env
+**/*.env

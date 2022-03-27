@@ -7,11 +7,8 @@ services:
     image: mariadb
     #image: jsurf/rpi-mariadb
     container_name: listjj_mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_USER: remote
-      MYSQL_PASSWORD: root1234
-      MYSQL_DATABASE: db
+    env_file:
+      - ./mariadb.env
     restart: unless-stopped
     ports:
       - 33306:3306
