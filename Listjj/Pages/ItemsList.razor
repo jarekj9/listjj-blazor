@@ -22,30 +22,35 @@
             </MudDrawerHeader>
             <CascadingValue Value="@TagsSelection">
                 <AuthorizeView Roles="Admin, User">
-                    <AddItem @ref="addItem" UpdateList="UpdateList" CategoriesVm="CategoriesVm" @bind-RecentCategoryId="RecentCategoryId"/>
+                    @if (isLoaded)
+                    {
+                        <AddItem @ref="addItem" UpdateList="UpdateList" CategoriesVm="CategoriesVm" @bind-RecentCategoryId="appState.RecentCategoryId"/>
+                    }
                 </AuthorizeView>
             </CascadingValue>
         </MudDrawer>
         <MudMainContent Class="pt-1 pl-2">
 
-
-          <SearchBox @ref="searchBox" CategoryFilterCategoryId="RecentCategoryId" UpdateList="UpdateList" />
+          <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" />
             @if (ItemsVm is null)
             {
-                <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
-            }
-            else
-            {
-                <table class="table table-striped main-table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Value</th>
-                            <th>Name</th>
-                            <th>
-                                <span style="display: inline-block">Category:&nbsp</span>
-                                <span style="display: inline-block">
-                                    <CategoryFilter @ref="categoryFilter" Categories="Categories" UpdateList="UpdateList" @bind-RecentCategoryId="RecentCategoryId"/>
-                                </span>
+            <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
+        }
+        else
+        {
+            <table class="table table-striped main-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Value</th>
+                        <th>Name</th>
+                        <th>
+                            <span style="display: inline-block">Category:&nbsp</span>
+                            <span style="display: inline-block">
+                                @if (isLoaded)
+                                {
+                                    <CategoryFilter @ref="categoryFilter" Categories="Categories" UpdateList="UpdateList" @bind-RecentCategoryId="appState.RecentCategoryId"/>
+                                }
+                            </span>
                             </th>
                             <th>Active</th>
                             <th>Action</th>
@@ -202,7 +207,6 @@
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private IDistributedCache cache { get; set; }
     [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
-    public Guid RecentCategoryId { get; set; } = Guid.Parse("00000000-0000-0000-0000-000000000000");
     private CategoryFilter categoryFilter { get; set; }
     private AddItem addItem { get; set; } = new AddItem();
     private SearchBox searchBox;
@@ -217,21 +221,6 @@
         await base.OnInitializedAsync();
         await LoadData();
         TagsSelection = await TagsCacheService.GetTagsSelectionAsync(appState.UserId);
-    }
-
-    public async Task<List<ListItemViewModel>> LoadFromCache()
-    {
-        string recordKey = "items";
-        var cachedItems = await cache.GetRecordAsync<List<ListItemViewModel>>(recordKey);  // read cache
-        if (cachedItems is null)
-        {
-            fromCache = false;
-            ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
-            await cache.SetRecordAsync(recordKey, ItemsVm);
-            return ItemsVm;
-        }
-        fromCache = true;
-        return cachedItems;
     }
 
     public async Task UpdateList()

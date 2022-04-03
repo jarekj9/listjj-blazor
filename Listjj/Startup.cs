@@ -60,6 +60,7 @@ namespace Listjj
 
             services.AddScoped<UserManager<ApplicationUser>>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICategoryCacheService, CategoryCacheService>();
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IListItemRepository, ListItemRepository>();

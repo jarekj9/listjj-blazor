@@ -18,6 +18,7 @@ namespace Listjj.Pages
         [Inject] protected Data.AppState appState { get; set; }
         [Inject] protected IUnitOfWork UnitOfWork { get; set; }
         [Inject] protected IFileService FileService { get; set; }
+        [Inject] protected ICategoryCacheService CategoryCacheService { get; set; }
         [Inject] protected ITagsCacheService TagsCacheService { get; set; }
         [Inject] protected IMapper Mapper { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -28,6 +29,7 @@ namespace Listjj.Pages
         protected List<Category> Categories { get; set; }
         [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
         protected bool isDrawerOpen = true;
+        protected bool isLoaded;
 
 
         protected async Task LoadData()
@@ -45,9 +47,18 @@ namespace Listjj.Pages
             Categories = await UnitOfWork.Categories.GetAllByUserId(appState.UserId);
             CategoriesVm = Mapper.Map<List<Category>, List<CategoryViewModel>>(Categories);
 
-            Items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
-            ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
 
+            appState.RecentCategoryId = await CategoryCacheService.GetRecentCategoryAsync(appState.UserId);
+            if (appState.RecentCategoryId != Guid.Empty)
+            {
+                Items = await UnitOfWork.ListItems.GetAllByCategoryId(appState.RecentCategoryId);
+            }
+            else 
+            { 
+                Items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
+            }
+            ItemsVm = Mapper.Map<List<ListItem>, List<ListItemViewModel>>(Items);
+            isLoaded = true;
         }
 
     }

@@ -44,25 +44,10 @@
     }
     [Parameter] public EventCallback<Guid> RecentCategoryIdChanged { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var recentCategoryIdCookie = await JSRuntime.InvokeAsync<string>("ReadCookie", "recent_category_id");
-            if (Guid.TryParse(recentCategoryIdCookie, out var recentCategoryId) && Categories != null)
-            {
-                bool categoryExists = Categories.Exists(x => x.Id == recentCategoryId);
-                if (categoryExists)
-                {
-                    RecentCategoryId = recentCategoryId;
-                }
-            }
-        }
-    }
-
     private async Task OnFilterChange()
     {
         appState.RecentCategoryId = RecentCategoryId;
+        await CategoryCacheService.UpdateRecentCategoryCache(appState.UserId, RecentCategoryId);
         await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", RecentCategoryId, 360);
         await UpdateList.InvokeAsync();
     }
