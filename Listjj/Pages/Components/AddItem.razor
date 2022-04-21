@@ -104,6 +104,7 @@
         await JSRuntime.InvokeAsync<bool>("notify", $"Added {ItemVm.Name}");
         await UpdateList.InvokeAsync();
         ItemVm = new ListItemViewModel();
+        ItemVm.CategoryId = RecentCategoryId;
     }
 
 }
