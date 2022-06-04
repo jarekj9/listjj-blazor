@@ -35,7 +35,7 @@ namespace Listjj.Repository
 
             if (direction == "up")
             { 
-                var previousItem = await _context.ListItems.OrderBy(i => i.SequenceNumber).Where(i => i.SequenceNumber < movedItemSequence).LastOrDefaultAsync();
+                var previousItem = await _context.ListItems.Where(i => i.CategoryId == movedItem.CategoryId && i.SequenceNumber < movedItemSequence).OrderBy(i => i.SequenceNumber).LastOrDefaultAsync();
                 var previousItemSequence = previousItem?.SequenceNumber ?? -1;
                 if (previousItemSequence == -1)
                 {
@@ -47,7 +47,7 @@ namespace Listjj.Repository
 
             if (direction == "down")
             {
-                var nextItem = await _context.ListItems.OrderBy(i => i.SequenceNumber).Where(i => i.SequenceNumber > movedItemSequence).FirstOrDefaultAsync();
+                var nextItem = await _context.ListItems.Where(i => i.CategoryId == movedItem.CategoryId && i.SequenceNumber > movedItemSequence).OrderBy(i => i.SequenceNumber).FirstOrDefaultAsync();
                 var nextItemSequence = nextItem?.SequenceNumber ?? -1;
                 if (nextItemSequence == -1)
                 {
