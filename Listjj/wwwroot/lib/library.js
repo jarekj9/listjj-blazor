@@ -123,3 +123,19 @@ function base64DecToArr(sBase64, nBlocksSize) {
     }
     return taBytes;
 }
+
+// blink tr after moving item
+window.blink = function (trId) {
+    var tr = document.getElementById(trId);
+
+    $(tr).find('td').addClass('greyBg')
+    window.setTimeout(function () {
+        $(tr).find('td').removeClass('greyBg')
+    }, 100);
+    window.setTimeout(function () {
+        $(tr).find('td').addClass('greyBg')
+    }, 200);
+    window.setTimeout(function () {
+        $(tr).find('td').removeClass('greyBg')
+    }, 300);
+}

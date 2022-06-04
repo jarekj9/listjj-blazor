@@ -231,6 +231,10 @@ tr:hover {
     visibility: hidden;
   }
 
+.greyBg {
+    background-color: grey;
+}
+
 /*MUD BLAZOR*/
 
 .mud-drawer {

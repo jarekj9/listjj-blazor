@@ -61,7 +61,7 @@
                         <Authorized>
                         @foreach (var item in ItemsVm)
                         {
-                            <tr class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
+                            <tr id="@item.Id" class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
                                 <td>
                                     @item.Value
                                 </td>
@@ -93,6 +93,11 @@
                                 <td>
                                     <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
                                     <button class="btn btn-outline-primary icon-button mb-1 hide-on-mobile" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
+                                    @if(showMoveButtons)
+                                    {
+                                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(item, "up"))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
+                                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(item, "down"))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
+                                    }
                                 </td>
                             </tr>
 
@@ -191,6 +196,11 @@
                     <AuthorizeView Roles="Admin, User">
                         <ApiKey />
                         <ImportExport></ImportExport>
+                        <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
+                            <span class="input-zone p-3 m-2" style="float: left;">
+                                Show move buttons
+                            </span>
+                        </button>
                     </AuthorizeView>
                      <AuthorizeView Roles="Admin">
                         <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
@@ -215,6 +225,7 @@
     private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
     private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
     protected List<string> TagsSelection { get; set; }
+    private bool showMoveButtons;
 
     protected override async Task OnInitializedAsync()
     {
@@ -239,6 +250,18 @@
         await UnitOfWork.Save();
         await UpdateList();
         await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
+    }
+
+    private async Task MoveItem(ListItemViewModel itemVm, string direction)
+    {
+        var isSaved = await UnitOfWork.ListItems.Move(itemVm.Id, direction);
+        if(!isSaved)
+        {
+            return;
+        }
+        await UnitOfWork.Save();
+        await UpdateList(); 
+        await JSRuntime.InvokeAsync<String>("blink", itemVm.Id);
     }
 
 

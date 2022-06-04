@@ -28,9 +28,41 @@ namespace Listjj.Repository
             return await _context.ListItems.Include(i => i.Files).Where(x => x.CategoryId == id).ToListAsync();
         }
 
+        public async Task<bool> Move(Guid id, string direction)
+        {
+            var movedItem = await _context.ListItems.FirstOrDefaultAsync(i => i.Id == id);
+            var movedItemSequence = movedItem?.SequenceNumber ?? 0;
+
+            if (direction == "up")
+            { 
+                var previousItem = await _context.ListItems.OrderBy(i => i.SequenceNumber).Where(i => i.SequenceNumber < movedItemSequence).LastOrDefaultAsync();
+                var previousItemSequence = previousItem?.SequenceNumber ?? -1;
+                if (previousItemSequence == -1)
+                {
+                    return false;
+                }
+                movedItem.SequenceNumber = previousItemSequence;
+                previousItem.SequenceNumber = movedItemSequence;
+            }
+
+            if (direction == "down")
+            {
+                var nextItem = await _context.ListItems.OrderBy(i => i.SequenceNumber).Where(i => i.SequenceNumber > movedItemSequence).FirstOrDefaultAsync();
+                var nextItemSequence = nextItem?.SequenceNumber ?? -1;
+                if (nextItemSequence == -1)
+                {
+                    return false;
+                }
+                movedItem.SequenceNumber = nextItemSequence;
+                nextItem.SequenceNumber = movedItemSequence;
+            }
+
+            return true;
+        }
+
         public async Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter)
         {
-            return await _context.ListItems.Include(i => i.Files).Where(filter).ToListAsync();
+            return await _context.ListItems.Include(i => i.Files).Where(filter).OrderBy(i => i.SequenceNumber).ToListAsync();
         }
 
     }
