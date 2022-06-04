@@ -22,9 +22,9 @@
     {
         var items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
         var categories = UnitOfWork.Categories.GetAll();
-        var text = "Value;Name;Description;Category;Active;Tags;\n";
+        var text = "SequenceNumber;Value;Name;Description;Category;Active;Tags;\n";
         foreach(var item in items) {
-            text += ($"{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
+            text += ($"{item.SequenceNumber};{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(text);
         await FileService.SaveAs(JSRuntime, "export.csv", bytes);
@@ -47,26 +47,27 @@
                 ListItem item = new ListItem();
                 Category category = new Category();
                 words = line.Split(";");
-                item.Value = Double.Parse(words[0]);
-                item.Name = words[1];
-                item.Description = words[2];
+                item.SequenceNumber = Double.Parse(words[0]);
+                item.Value = Double.Parse(words[1]);
+                item.Name = words[2];
+                item.Description = words[3];
                 item.Created = DateTime.Now;
                 item.Modified = DateTime.Now;
 
                 var categories = await UnitOfWork.Categories.GetAllByUserId(appState.UserId);
-                categories = categories.Where(x => x.Name == words[3]).ToList();
+                categories = categories.Where(x => x.Name == words[4]).ToList();
                 if(categories.Any()) {
                     category = categories[0];
                 }
                 else {
-                    category.Name = words[3];
+                    category.Name = words[4];
                     category.UserId = appState.UserId;
                     UnitOfWork.Categories.Add(category);
                     await UnitOfWork.Save();
                 }
                 item.CategoryId = category.Id;
-                item.Active = Boolean.Parse(words[4]);
-                item.Tags = words[5];
+                item.Active = Boolean.Parse(words[5]);
+                item.Tags = words[6];
                 item.UserId = appState.UserId;
 
                 UnitOfWork.ListItems.Add(item);
