@@ -3,6 +3,7 @@
 **/.vs/
 **/.vscode/
 **/appsettings.json
+**/appsettings.Docker.json
 **/deploy-rpi.sh
 **/cert.pfx
 **/*.env
