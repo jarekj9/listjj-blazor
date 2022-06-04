@@ -99,6 +99,8 @@
         var item = new ListItem();
         Mapper.Map<ListItemViewModel, ListItem>(ItemVm, item);
         item.Created = item.Modified = DateTime.Now;
+        Items = await UnitOfWork.ListItems.GetAllByUserId(appState.UserId);
+        item.SequenceNumber = Items?.Max(i => i?.SequenceNumber ?? 0) + 1 ?? 0;
         UnitOfWork.ListItems.Add(item);
         await UnitOfWork.Save();
         await JSRuntime.InvokeAsync<bool>("notify", $"Added {ItemVm.Name}");

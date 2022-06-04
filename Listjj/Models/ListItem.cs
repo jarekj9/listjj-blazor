@@ -7,6 +7,7 @@ namespace Listjj.Models
 {
     public class ListItem : BaseEntity
     {
+        public double SequenceNumber { get; set; }
         public double Value { get; set; }
         public bool Active { get; set; }
         public DateTime Created { get; set; }
