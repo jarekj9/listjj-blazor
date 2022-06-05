@@ -59,133 +59,17 @@
 
                     <AuthorizeView Roles="User, Admin">
                         <Authorized>
-                        @foreach (var item in ItemsVm)
-                        {
-                            <tr id="@item.Id" class="@(item.IsEditing ? "table-secondary" : "")" hidden="@item.IsEditing" @ondblclick="() => item.IsEditing = !item.IsEditing">
-                                <td>
-                                    @item.Value
-                                </td>
-                                <td title="Created: @item.Created, Changed: @item.Modified">
-                                    @item.Name<br />
-                                    @item.Description
-                                    <TagsInput Tags="item.Tags" ReadOnly="true"/>
-                                    @if (item.Files.Count > 0)
-                                    {
-                                        <div class="mt-3">
-                                            <span class="font-weight-bold">Files:</span>
-                                            <ul class="ml-3" style="overflow: visible;width:140%;">
-                                                @foreach (var file in item.Files)
-                                                {
-                                                    <li>
-                                                        <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
-                                                    </li>
-                                                }
-                                            </ul>
-                                        </div>
-                                    }
-                                </td>
-                                <td>
-                                    @item.Category.Name
-                                </td>
-                                <td>
-                                    <input type="checkbox" checked="@item.Active" @onchange="() => ClickActive(item)">
-                                </td>
-                                <td>
-                                    <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteItem(item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                                    <button class="btn btn-outline-primary icon-button mb-1 hide-on-mobile" @onclick="() => ShowEdit(item)" title="Edit"><i class="far fa-edit"></i></button>
-                                    @if(showMoveButtons)
-                                    {
-                                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(item, "up"))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
-                                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(item, "down"))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
-                                    }
-                                </td>
-                            </tr>
-
-                            @if (item.IsEditing)
+                            @foreach (var item in ItemsVm)
                             {
-                                <tr class="table-secondary" @ondblclick="() => item.IsEditing = !item.IsEditing">
-                                    <td>
-                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                            <input for="Value" class="form-controll" size="4" @bind="@item.Value" />
-                                        </Animate>
-                                    </td>
-                                    <td>
-                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                            <input style="width: 100%; max-width: 100%;" for="Name" class="form-controll mb-1" @bind="@item.Name" /><br />
-                                            <textarea style="width: 100%; height: 100%; max-width: 100%;" class="form-controll" @bind="@item.Description" />
-                                            <CascadingValue Value="@TagsSelection">
-                                                <TagsInput Tags="item.Tags" />
-                                            </CascadingValue>
-                                            <div class="mt-2">
-                                                <FileUpload ItemVm="item">
-                                                    <FilesRows>
-                                                        @if (item.Files.Count > 0)
-                                                        {
-                                                            <div class="mt-3">
-                                                                <ul class="ml-3" style="overflow: visible;width:200%;">
-                                                                    @foreach (var file in item.Files)
-                                                                    {
-                                                                        <li>
-                                                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, item)" title="Delete">
-                                                                                <i class="far fa-trash-alt"></i>
-                                                                            </button>
-                                                                            <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
-                                                                        </li>
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                        }
-                                                    </FilesRows>
-                                                </FileUpload>
-                                            </div>
-                                        </Animate>
-                                    </td>
-                                    @*<td>
-                                            <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                                <input for="Description" class="form-controll" @bind="@item.Description" />
-                                            </Animate>
-                                        </td>*@
-                                    <td>
-                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                            <select @bind="@item.CategoryId">
-                                                <option>---select---</option>
-                                                @if (CategoriesVm is null)
-                                                {
-                                                    <option>Loading...</option>
-                                                }
-                                                else
-                                                {
-                                                    @foreach (var category in CategoriesVm)
-                                                    {
-                                                        <option value="@category.Id">@category.Name</option>
-                                                    }
-                                                }
-                                            </select>
-                                        </Animate>
-                                    </td>
-                                    <td>
-                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                            <input type="checkbox" for="active" class="form-controll" @bind="@item.Active" />
-                                        </Animate>
-                                    </td>
-                                    <td>
-                                        <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
-                                            <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(item)" title="Save"><i class="far fa-save"></i></button>
-                                            <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(item)" title="Cancel"><i class="far fa-window-close"></i></button>
-                                        </Animate>
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr>
+                                <CascadingValue Value="@TagsSelection">
+                                    <ItemsTableRow Item=item CategoriesVm="CategoriesVm" UpdateList="UpdateList" ShowMoveButtons=showMoveButtons/>
+                                </CascadingValue>
                             }
-                        }
                         </Authorized>
                         <NotAuthorized>
                             No access.
                         </NotAuthorized>
                     </AuthorizeView>
-
-
 
                 </table>
                 <a data-toggle="collapse" href="#advancedDropdown">
@@ -214,9 +98,9 @@
     </MudLayout>
 
 @code {
-    [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private IDistributedCache cache { get; set; }
     [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
+    [Inject] private IJSRuntime JSRuntime { get; set; }
     private CategoryFilter categoryFilter { get; set; }
     private AddItem addItem { get; set; } = new AddItem();
     private SearchBox searchBox;
@@ -243,70 +127,6 @@
         StateHasChanged();
     }
 
-    private async Task DeleteItem(ListItemViewModel itemVm)
-    {
-        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
-        UnitOfWork.ListItems.Delete(item.Id);
-        await UnitOfWork.Save();
-        await UpdateList();
-        await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
-    }
-
-    private async Task MoveItem(ListItemViewModel itemVm, string direction)
-    {
-        var isSaved = await UnitOfWork.ListItems.Move(itemVm.Id, direction);
-        if(!isSaved)
-        {
-            return;
-        }
-        await UnitOfWork.Save();
-        await UpdateList(); 
-        await JSRuntime.InvokeAsync<String>("blink", itemVm.Id);
-    }
-
-
-    private async Task DeleteFile(FileViewModel fileVm, ListItemViewModel itemVm)
-    {
-        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileVm.Name} ?");
-        if (!isConfirmed)
-        {
-            return;
-        }
-        itemVm.Files.Remove(fileVm);
-        await FileService.DelFile(fileVm.Id);
-    }
-
-    private async Task GetFile(FileViewModel fileVm)
-    {
-        var file = await FileService.GetFile(fileVm.Id);
-        await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileVm.Name, "application/octet-stream", file.Bytes);
-    }
-
-    private async Task ClickActive(ListItemViewModel itemVm)
-    {
-        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
-        item.Active = !item.Active;
-        UnitOfWork.ListItems.Update(item);
-        await UnitOfWork.Save();
-    }
-
-    private async Task EditItem(ListItemViewModel itemVm)
-    {
-        var item = await UnitOfWork.ListItems.GetById(itemVm.Id);
-        item = Mapper.Map<ListItemViewModel, ListItem>(itemVm, item);
-        item.Modified = DateTime.Now;
-        UnitOfWork.ListItems.Update(item);
-        await UnitOfWork.Save();
-        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {item.Name}");
-        item.IsEditing = false;
-        await UpdateList();
-    }
-
-    private void ShowEdit(ListItemViewModel itemVm)
-    {
-        itemVm.IsEditing = !itemVm.IsEditing;
-    }
-
     private async Task HandleRestartClick()
     {
         bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure, that you want to restart ?");
@@ -316,6 +136,4 @@
         }
         await Task.Run(() => hostApplicationLifetime.StopApplication());
     }
-
-
 }
