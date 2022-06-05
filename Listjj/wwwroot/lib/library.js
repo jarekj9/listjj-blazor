@@ -124,18 +124,21 @@ function base64DecToArr(sBase64, nBlocksSize) {
     return taBytes;
 }
 
-// blink tr after moving item
-window.blink = function (trId) {
+// blink tr after moving item x times
+window.blink = function (trId, times) {
     var tr = document.getElementById(trId);
 
-    $(tr).find('td').addClass('greyBg')
-    window.setTimeout(function () {
-        $(tr).find('td').removeClass('greyBg')
-    }, 100);
-    window.setTimeout(function () {
-        $(tr).find('td').addClass('greyBg')
-    }, 200);
-    window.setTimeout(function () {
-        $(tr).find('td').removeClass('greyBg')
-    }, 300);
+    for (x = 0; x < times; x++) {
+        blinkOnce(x);
+    }
+
+    function blinkOnce(delay) {
+        delay *= 2;
+        window.setTimeout(function () {
+            $(tr).find('td').addClass('greyBg')
+        }, 100 * delay);
+        window.setTimeout(function () {
+            $(tr).find('td').removeClass('greyBg')
+        }, 100 * (delay + 1));
+    }
 }
