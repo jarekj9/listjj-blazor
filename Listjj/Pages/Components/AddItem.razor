@@ -81,8 +81,8 @@
             return;
         }
         var category = await UnitOfWork.Categories.GetById(ItemVm.CategoryId);
-        if(category is null) {  // no category selected
-            if (CategoriesVm.Any() is not false) {
+        if(category is null) {
+            if (CategoriesVm.Any()) {
                 ItemVm.CategoryId = CategoriesVm[0].Id;
             }
             else {
@@ -107,6 +107,7 @@
         await UpdateList.InvokeAsync();
         ItemVm = new ListItemViewModel();
         ItemVm.CategoryId = RecentCategoryId;
+        StateHasChanged();
     }
 
 }
