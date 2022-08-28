@@ -11,6 +11,17 @@
 @page "/list"
 
 
+@if (appState.IsLoggedIn)
+{
+    <AuthorizeView Roles="User, Admin">
+        <NotAuthorized>
+            <div class="alert alert-danger mt-2" role="alert">
+              ACCOUNT HAS BEEN NOT AUTHORIZED
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+}
+
     <MudLayout>
         <MudAppBar Elevation="1" Dense="true">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
