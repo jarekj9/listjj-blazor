@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using AutoMapper;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace Listjj.Pages
 {
@@ -22,6 +23,7 @@ namespace Listjj.Pages
         [Inject] protected ITagsCacheService TagsCacheService { get; set; }
         [Inject] protected IMapper Mapper { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        [Inject] protected CircuitHandler CircuitHandler { get; set; }
         protected IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 
         protected List<ListItem> Items { get; set; }

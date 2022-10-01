@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpOverrides;
 using Listjj.Repository;
 using Listjj.Transaction;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace Listjj
 {
@@ -68,7 +69,7 @@ namespace Listjj
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<AppState>();
-            
+            services.AddSingleton<CircuitHandler, CircuitHandlerService>();
 
             //mud blazor
             services.AddMudServices();
