@@ -1,12 +1,12 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 :root {
-    --text-bg: #BBD1EA;
+    --text-bg: #cedef0;
     --navbar-bg: #04080F;
     --notes-bar: #04080F;
-    --form-bg: #A1C6EA;
+    --form-bg: #b6d3ef;
     --text-dark: #04080F;
-    --text-light: #BBD1EA;
+    --text-light: #cedef0;
     --icons: #507DBC;
     --bg: #DAE3E5;
     --edit-bg: #E0EAF5;
@@ -24,7 +24,7 @@ html, body {
 }
 @media screen and (max-width: 600px) {
     html, body {
-        font-size: 15px;
+        font-size: 18px;
     }
     table.main-table th {
         writing-mode: vertical-lr;
