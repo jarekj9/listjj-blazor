@@ -69,6 +69,8 @@ namespace Listjj
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<AppState>();
+
+            //monitoring number of users connections
             services.AddSingleton<CircuitHandler, CircuitHandlerService>();
 
             //mud blazor

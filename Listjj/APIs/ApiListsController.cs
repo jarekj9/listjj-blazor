@@ -29,7 +29,7 @@ namespace Listjj.APIs
         }
         public string GetValues()
         {
-            return "Hello API";
+            return "{\"ping\":\"pong\"}";
         }
 
         private async Task<(bool success, string message, Guid userId)> IsAuthorized()
@@ -68,57 +68,58 @@ namespace Listjj.APIs
             {
                 requestHeaders.Add(header.Key, header.Value);
             }
+            
             return requestHeaders;
         }
 
-        public async Task<string> GetAllListjj()  
+        public async Task<JsonResult> GetAllListjj()  
         {
             var isAuthorized = await IsAuthorized();
             if(!isAuthorized.success)
             {
-                return isAuthorized.message;
+                return new JsonResult(isAuthorized.message);
             }
             var items = await UnitOfWork.ListItems.GetAllByUserId(isAuthorized.userId);
 
-            var response = System.Text.Json.JsonSerializer.Serialize(items);
-
-            return response;
+            Response.Headers.Add("content-type", "application/json");
+            return new JsonResult(items);
         }
-        public async Task<string> GetByCategoryName(string name = "", string key = "")
+        public async Task<JsonResult> GetByCategoryName(string name = "", string key = "")
         {
+            Response.Headers.Add("content-type", "application/json");
             Guid.TryParse(key, out var parsedKey);
             var user = await UnitOfWork.Users.GetByApiKey(parsedKey);
-            //var userId = UserService.FindUserIdByApiKey(parsedKey);
             if (parsedKey == Guid.Empty || user.Id == new Guid())       // special auth for tizen watch
             {
-                return "{\"status\":\"Unauthorized access.\"}";
+                return new JsonResult(new Dictionary<string,string>() { { "status", "Unauthorized access." } });
             }
 
             // HTTP OPTIONS is necessary for preflight request, otherwise CORS will be a problem
             Response.Headers.Add("Access-Control-Allow-Origin", "*");
             if (Request.Method == "OPTIONS")
             {
-                return "Options";
+                return new JsonResult("Options");
             }
 
             var categoryId = (await UnitOfWork.Categories.GetByName(name)).Id;
             var items = (await UnitOfWork.ListItems.GetAllByCategoryId(categoryId));
             if (items.Count == 0)
             {
-                return "{\"status\":\"List is empty.\"}";
+                return new JsonResult(new Dictionary<string, string>() { { "status", "List is empty." } });
             }
             var response = System.Text.Json.JsonSerializer.Serialize(items[0]);
 
-            return response;
+            
+            return new JsonResult(items[0]);
         }
 
         [HttpPost]
-        public async Task<string> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
+        public async Task<JsonResult> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
         {
             var isAuthorized = await IsAuthorized();
             if (!isAuthorized.success)
             {
-                return isAuthorized.message;
+                return new JsonResult(isAuthorized.message);
             }
 
             using (var streamReader = new HttpRequestStreamReader(Request.Body, Encoding.UTF8))
@@ -132,11 +133,13 @@ namespace Listjj.APIs
                 categoryName = jsonData.GetValue("categoryName")?.ToString() ?? "default";
             }
 
+            Response.Headers.Add("content-type", "application/json");
+
             Double.TryParse(value, out double parsedValue);
             var category = await UnitOfWork.Categories.GetByName(categoryName);
             if (category == null)
             {
-                return "{\"status\":\"category not found\"}";
+                return new JsonResult(new Dictionary<string, string>() { { "status", "Category not found." } });
             }
 
             Guid.TryParse(id, out var parsedId);
@@ -150,7 +153,7 @@ namespace Listjj.APIs
             {
                 UnitOfWork.ListItems.Update(item);
                 await UnitOfWork.Save();
-                return "{\"status\":\"ok\"}";
+                return new JsonResult(new Dictionary<string, string>() { { "status", "ok" } });
             }
 
             item.Id = parsedId;
@@ -159,12 +162,12 @@ namespace Listjj.APIs
             item.Modified = DateTime.Now;
             UnitOfWork.ListItems.Add(item);
             await UnitOfWork.Save();
-            return "{\"status\":\"ok\"}";
+            return new JsonResult(new Dictionary<string, string>() { { "status", "ok" } });
         }
 
         [HttpOptions]
         [HttpPost]
-        public async Task<string> DelItem(string id)
+        public async Task<JsonResult> DelItem(string id)
         {
             // HTTP OPTIONS is necessary for preflight request, otherwise CORS will be a problem
             Response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -173,13 +176,13 @@ namespace Listjj.APIs
             if (Request.Method == "OPTIONS")
             {
                 Console.WriteLine("####### Sending Options");
-                return "Options";
+                return new JsonResult("Options");
             }
 
             var isAuthorized = await IsAuthorized();
             if (!isAuthorized.success)
             {
-                return isAuthorized.message;
+                return new JsonResult(isAuthorized.message);
             }
 
             using (var streamReader = new HttpRequestStreamReader(Request.Body, Encoding.UTF8))
@@ -193,19 +196,19 @@ namespace Listjj.APIs
             if (idGuid == new Guid())
             {
                 Console.WriteLine("####### Sending Incorrect id.");
-                return "Incorrect id.";
+                return new JsonResult("Incorrect id.");
             }
             var item = await UnitOfWork.ListItems.GetById(idGuid);
             if (item == null)
             {
                 Console.WriteLine("####### Sending Item not found");
-                return "Item not found.";
+                return new JsonResult("Item not found.");
             }
             UnitOfWork.ListItems.Delete(item.Id);
             await UnitOfWork.Save();
 
             Console.WriteLine("####### Sending ok");
-            return "Deleted.";
+            return new JsonResult("Deleted.");
         }
 
     }
