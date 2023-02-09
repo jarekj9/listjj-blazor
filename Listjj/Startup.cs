@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Listjj.Repository;
 using Listjj.Transaction;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.OpenApi.Models;
 
 namespace Listjj
 {
@@ -79,6 +80,10 @@ namespace Listjj
             //for APIs:
             services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Listjj", Version = "v1" });
+            });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -143,6 +148,11 @@ namespace Listjj
 
             //for APIs:
             app.UseMvcWithDefaultRoute();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+            });
 
             // DB Migration:
             // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())

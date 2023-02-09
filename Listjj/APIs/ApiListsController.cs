@@ -27,6 +27,8 @@ namespace Listjj.APIs
             UnitOfWork = unitOfWork;
             logger = _logger;
         }
+
+        [HttpGet]
         public string GetValues()
         {
             return "{\"ping\":\"pong\"}";
@@ -44,18 +46,18 @@ namespace Listjj.APIs
             {
                 if (ex is KeyNotFoundException || ex is IndexOutOfRangeException)
                 {
-                    return (success:false, message:"Incorrect authorization header.", userId:Guid.Empty);
+                    return (success: false, message: "Incorrect authorization header.", userId: Guid.Empty);
                 }
                 throw;
             }
             Guid.TryParse(key, out var parsedKey);
-            var user =  await UnitOfWork.Users.GetByApiKey(parsedKey);
+            var user = await UnitOfWork.Users.GetByApiKey(parsedKey);
             //var userId = UserService.FindUserIdByApiKey(parsedKey);
             if (parsedKey == Guid.Empty || user.Id == new Guid())
             {
-                return (success:false, message:"Unauthorized access.", userId: Guid.Empty);
+                return (success: false, message: "Unauthorized access.", userId: Guid.Empty);
             }
-            return (success:true, message:"", userId: user.Id);
+            return (success: true, message: "", userId: user.Id);
         }
 
 
@@ -68,14 +70,15 @@ namespace Listjj.APIs
             {
                 requestHeaders.Add(header.Key, header.Value);
             }
-            
+
             return requestHeaders;
         }
 
-        public async Task<JsonResult> GetAllListjj()  
+        [HttpGet]
+        public async Task<JsonResult> GetAllListjj()
         {
             var isAuthorized = await IsAuthorized();
-            if(!isAuthorized.success)
+            if (!isAuthorized.success)
             {
                 return new JsonResult(isAuthorized.message);
             }
@@ -84,6 +87,8 @@ namespace Listjj.APIs
             Response.Headers.Add("content-type", "application/json");
             return new JsonResult(items);
         }
+
+        [HttpGet]
         public async Task<JsonResult> GetByCategoryName(string name = "", string key = "")
         {
             Response.Headers.Add("content-type", "application/json");
@@ -91,7 +96,7 @@ namespace Listjj.APIs
             var user = await UnitOfWork.Users.GetByApiKey(parsedKey);
             if (parsedKey == Guid.Empty || user.Id == new Guid())       // special auth for tizen watch
             {
-                return new JsonResult(new Dictionary<string,string>() { { "status", "Unauthorized access." } });
+                return new JsonResult(new Dictionary<string, string>() { { "status", "Unauthorized access." } });
             }
 
             // HTTP OPTIONS is necessary for preflight request, otherwise CORS will be a problem
@@ -109,12 +114,12 @@ namespace Listjj.APIs
             }
             var response = System.Text.Json.JsonSerializer.Serialize(items[0]);
 
-            
+
             return new JsonResult(items[0]);
         }
 
         [HttpPost]
-        public async Task<JsonResult> AddItem(string name="", string description="", string categoryName="default", string value="0", string id = "")  
+        public async Task<JsonResult> AddItem(string name = "", string description = "", string categoryName = "default", string value = "0", string id = "")
         {
             var isAuthorized = await IsAuthorized();
             if (!isAuthorized.success)
