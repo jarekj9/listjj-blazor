@@ -1,0 +1,26 @@
+﻿@page "/itemslist"
+
+@using Listjj_frontend.Services
+@using Newtonsoft.Json
+@using System.Text.Json
+@using Listjj.Infrastructure.DTOs
+
+<h3>Items</h3>
+
+@foreach(var item in Items)
+{
+    <p>@item.Name</p>
+}
+
+@code {
+    [Inject] public IApiClient ApiClient { get; set; }
+    private IEnumerable<ListItemDTO> Items { get; set; } = new List<ListItemDTO>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await ApiClient.Get<IEnumerable<ListItemDTO>>("https://localhost:5001/api/item/all");
+        Items = response.Result;
+    }
+
+}
