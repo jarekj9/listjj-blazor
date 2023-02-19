@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Listjj.Models
+namespace Listjj_frontend.Models
 {
     public class ApplicationRole : IdentityRole<Guid>
     {
