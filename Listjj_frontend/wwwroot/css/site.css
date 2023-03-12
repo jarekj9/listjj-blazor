@@ -1,15 +1,87 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+:root {
+    --text-bg: #cedef0;
+    --navbar-bg: #04080F;
+    --notes-bar: #04080F;
+    --form-bg: #b6d3ef;
+    --text-dark: #04080F;
+    --text-light: #cedef0;
+    --icons: #507DBC;
+    --bg: #DAE3E5;
+    --edit-bg: #E0EAF5;
+    --link: #0366d6;
 }
 
-h1:focus {
-    outline: none;
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--bg) !important;
+}
+
+@media screen and (min-width: 601px) {
+    html, body {
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    html, body {
+        font-size: 18px;
+    }
+
+    table.main-table th {
+        writing-mode: vertical-lr;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .hide-on-mobile {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    display: none;
+}
+
+}
+
+.standardBgColor {
+    background-color: var(--bg);
+}
+
+.divRounded {
+    border-radius: 7px;
 }
 
 a, .btn-link {
-    color: #0071c1;
+    color: var(--link);
+}
+
+    a, a:hover, a:focus, .input-zone {
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+.link-primary {
+    color: #0d6efd !important;
+    text-decoration: underline !important;
+}
+
+    .link-primary:hover {
+        color: #808080 !important;
+        text-decoration: underline !important;
+        cursor: pointer;
+    }
+
+.text-small {
+    font-size: 0.8em;
+}
+
+input, select, textarea {
+    color: var(--text-dark) !important;
+    background-color: var(--bg) !important;
 }
 
 .btn-primary {
@@ -53,12 +125,141 @@ a, .btn-link {
         top: 0.5rem;
     }
 
-.blazor-error-boundary {
-    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
-    padding: 1rem 1rem 1rem 3.7rem;
-    color: white;
+/* Jarek : */
+.addFormBackground {
+    background-color: var(--form-bg);
+    /*    font-size: large;
+*/ color: var(--text-dark);
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
+.addLabel {
+    width: 70px;
+    margin: 5px;
+}
+
+.addDiv {
+    margin-bottom: 1px;
+}
+
+.navbar-default {
+    background-color: var(--navbar-bg);
+    border-radius: 7px;
+}
+
+.nav-link {
+    color: var(--text-light);
+}
+
+    .nav-link:hover {
+        color: var(--icons);
     }
+
+table {
+    table-layout: auto !important;
+    /*    table-layout: fixed !important;*/
+    width: 100% !important;
+}
+
+    table > tr > td {
+        background-color: var(--text-bg);
+        color: var(--text-dark);
+        padding: 5px !important;
+    }
+
+    table > thead > tr > th {
+        background-color: var(--notes-bar) !important;
+        padding: 5px !important;
+    }
+
+th {
+    border: none !important;
+}
+
+    th:first-child {
+        border-radius: 10px 0 0 0;
+    }
+
+    th:last-child {
+        border-radius: 0 10px 0 0;
+    }
+
+tr:last-child td:first-child {
+    border-radius: 0 0 0 10px;
+}
+
+tr:last-child td:last-child {
+    border-radius: 0 0 10px 0;
+}
+
+tr.table-secondary > td {
+    background-color: var(--edit-bg) !important;
+}
+/* for animation : */
+.fadeOut {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 900ms, opacity 900ms;
+}
+
+.fadeIn {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear 0s, opacity 900ms;
+}
+
+tr:hover {
+    background-color: rgb(244, 249, 252);
+}
+
+.mud-toolbar {
+    background-color: var(--navbar-bg) !important;
+}
+
+/* file input : */
+.input-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(244, 249, 252);
+    color: white;
+    cursor: pointer;
+    position: relative;
+    width: 200px;
+    height: 30px;
+    border: 2px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: rgb(0, 102, 255);
+    color: rgb(0, 102, 255);
+}
+
+    .input-zone:hover {
+        background-color: rgb(204, 224, 255)
+    }
+
+    .input-zone input[type=file] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.icon-button {
+    width: 35px;
+    height: 35px;
+}
+
+.hide {
+    visibility: hidden;
+}
+
+.greyBg {
+    background-color: grey;
+}
+
+/*MUD BLAZOR*/
+
+.mud-drawer {
+    background-color: var(--form-bg) !important;
+}

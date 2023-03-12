@@ -10,7 +10,7 @@ namespace Listjj.Models
         public string Description { get; set; }
         public Guid UserId { get; set; }
         [NotMapped] public bool IsEditing;
-        [ForeignKey("UserId")] public ApplicationUser User { get; set; }
+        //[ForeignKey("UserId")] public ApplicationUser User { get; set; }
 
     }
 }

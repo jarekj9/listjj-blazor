@@ -1,0 +1,53 @@
+@using Listjj.Infrastructure.ViewModels
+@inherits PageBase
+
+<form>
+    <select @bind-value="RecentCategoryId" @bind-value:event="onchange">
+        <option value="00000000-0000-0000-0000-000000000000">---all---</option>
+        @if (Categories is null)
+        {
+            <option>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </option>
+        }
+        else
+        {
+            @foreach (var category in Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        }
+    </select>
+</form>
+
+@code {
+
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Parameter] public new List<CategoryViewModel> Categories { get; set; }
+    [Parameter] public EventCallback UpdateList { get; set; }
+    private Guid recentCategoryId;
+    [Parameter] public Guid RecentCategoryId
+    {
+        get => recentCategoryId;
+        set
+        {
+            if (recentCategoryId == value) return;
+            recentCategoryId = value;
+            RecentCategoryIdChanged.InvokeAsync(value);
+            OnFilterChange();
+        }
+
+    }
+    [Parameter] public EventCallback<Guid> RecentCategoryIdChanged { get; set; }
+
+    private async Task OnFilterChange()
+    {
+        appState.RecentCategoryId = RecentCategoryId;
+        //await CategoryCacheService.UpdateRecentCategoryCache(appState.UserId, RecentCategoryId);
+        await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", RecentCategoryId, 360);
+        await UpdateList.InvokeAsync();
+    }
+
+}

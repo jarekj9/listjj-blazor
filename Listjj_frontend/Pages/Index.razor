@@ -1,9 +1,16 @@
-﻿@page "/"
+﻿@inject NavigationManager NavManager
+@layout ListjjLayout
 
-<PageTitle>Index</PageTitle>
+@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Redirect Page</h1>
 
-Welcome to your new app.
+<p>Redirecting to Default Page</p>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        NavManager.NavigateTo("/list");
+    }
+}

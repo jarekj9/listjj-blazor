@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Listjj.Migrations
 {
     [DbContext(typeof(AppDbContext))]
@@ -14,8 +16,8 @@ namespace Listjj.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.6");
+                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Listjj.Models.ApplicationRole", b =>
                 {
@@ -41,20 +43,20 @@ namespace Listjj.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f2533dda-c9f7-45cd-b37b-2424aba80fa2"),
-                            ConcurrencyStamp = "a5dbd554-7775-492a-9cff-2f31482c5a63",
+                            Id = new Guid("15a97f48-c093-462f-99c2-d9777a00bcb6"),
+                            ConcurrencyStamp = "5e3d0284-435d-44c6-91bd-7acd90402d5e",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("65ad6acb-45d9-48c6-a792-86be0fc2cc7e"),
-                            ConcurrencyStamp = "3382a2d3-6815-420e-ac53-816f9571df49",
+                            Id = new Guid("9224a1c8-b907-4dff-afa9-a48247fdcde8"),
+                            ConcurrencyStamp = "fe8012bd-5460-4a51-80d0-c7662406fe2a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -125,7 +127,7 @@ namespace Listjj.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Listjj.Models.ApplicationUserRole", b =>
@@ -174,8 +176,6 @@ namespace Listjj.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -230,7 +230,6 @@ namespace Listjj.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<double>("SequenceNumber")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("double");
 
                     b.Property<string>("Tags")
@@ -245,8 +244,6 @@ namespace Listjj.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ListItems");
                 });
@@ -270,7 +267,7 @@ namespace Listjj.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -292,7 +289,7 @@ namespace Listjj.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -315,7 +312,7 @@ namespace Listjj.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
@@ -330,7 +327,7 @@ namespace Listjj.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -351,7 +348,7 @@ namespace Listjj.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Listjj.Models.ApplicationUserRole", b =>
@@ -365,17 +362,6 @@ namespace Listjj.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Listjj.Models.Category", b =>
-                {
-                    b.HasOne("Listjj.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -399,15 +385,7 @@ namespace Listjj.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Listjj.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Category");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -475,7 +453,6 @@ namespace Listjj.Migrations
                 {
                     b.Navigation("Files");
                 });
-
 #pragma warning restore 612, 618
         }
     }

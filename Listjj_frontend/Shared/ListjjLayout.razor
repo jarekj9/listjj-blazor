@@ -1,0 +1,26 @@
+@inherits LayoutComponentBase
+@inject NavigationManager MyNavigationManager
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudAppBar Elevation="1" Dense="true">
+    <AuthorizeView>
+        <NotAuthorized>
+
+        </NotAuthorized>
+    </AuthorizeView>
+</MudAppBar>
+
+<div class="page pt-8">
+    <div class="main">
+        <div class="content px-2">
+            @Body
+        </div>
+    </div>
+</div>
+
+
+
+
+

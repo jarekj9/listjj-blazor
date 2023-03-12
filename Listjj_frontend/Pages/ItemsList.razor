@@ -1,26 +1,132 @@
-﻿@page "/itemslist"
+﻿@page "/list"
 
 @using Listjj_frontend.Services
+@using MudBlazor
 @using Newtonsoft.Json
 @using System.Text.Json
-@using Listjj.Infrastructure.DTOs
+@using Listjj.Infrastructure.ViewModels
+@using Listjj_frontend.Pages.Components
+@layout ListjjLayout
+@inherits PageBase
 
-<h3>Items</h3>
 
-@foreach(var item in Items)
+@if (appState.IsLoggedIn)
 {
-    <p>@item.Name</p>
+    <AuthorizeView Roles="User, Admin">
+        <NotAuthorized>
+            <div class="alert alert-danger mt-2" role="alert">
+              ACCOUNT HAS BEEN NOT AUTHORIZED
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
-@code {
-    [Inject] public IApiClient ApiClient { get; set; }
-    private IEnumerable<ListItemDTO> Items { get; set; } = new List<ListItemDTO>();
+    <MudLayout>
+        <MudAppBar Elevation="1" Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
+            <TopBar />
+        </MudAppBar>
+        <MudDrawer Width="300px" @bind-Open="@isDrawerOpen" ClipMode="DrawerClipMode.Never" Elevation="1" Variant="@DrawerVariant.Responsive">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">Add Item</MudText>
+            </MudDrawerHeader>
+            <CascadingValue Value="@TagsSelection">
+                <AuthorizeView Roles="Admin, User">
+                    @if (isLoaded)
+                    {
+                        <AddItem @ref="addItem" UpdateList="UpdateList" Categories="Categories" @bind-RecentCategoryId="appState.RecentCategoryId" />
+                    }
+                </AuthorizeView>
+            </CascadingValue>
+        </MudDrawer>
+        <MudMainContent Class="pt-1 pl-2">
 
+@*          <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" />
+*@            @if (Items is null)
+            {
+            <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
+        }
+        else
+        {
+            <table class="table table-striped main-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Value</th>
+                        <th>Name</th>
+                        <th>
+                            <span style="display: inline-block">Category:&nbsp</span>
+                            <span style="display: inline-block">
+                                @if (isLoaded)
+                                {
+                                    <CategoryFilter @ref="categoryFilter" Categories="Categories" UpdateList="UpdateList" @bind-RecentCategoryId="appState.RecentCategoryId"/>
+                                }
+                            </span>
+                            </th>
+                            <th>Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <AuthorizeView Roles="User, Admin">
+                        <Authorized>
+                            @foreach (var item in Items)
+                            {
+                                <CascadingValue Value="@TagsSelection">
+                                <ItemsTableRow Item=item CategoriesVm="Categories" UpdateList="UpdateList" ShowMoveButtons=showMoveButtons />
+                                </CascadingValue>
+                            }
+                        </Authorized>
+                        <NotAuthorized>
+                            No access.
+                        </NotAuthorized>
+                    </AuthorizeView>
+
+                </table>
+                <a data-toggle="collapse" href="#advancedDropdown">
+                    <span class="text-primary font-weight-bold">Advanced</span>
+                    <i class="fas fa-caret-down text-primary"></i>
+                </a>
+                <div class="collapse" id="advancedDropdown">
+@*                    <AuthorizeView Roles="Admin, User">
+                        <ApiKey />
+                        <ImportExport></ImportExport>
+                        <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
+                            <span class="input-zone p-3 m-2" style="float: left;">
+                                Show move buttons
+                            </span>
+                        </button>
+                    </AuthorizeView>
+                     <AuthorizeView Roles="Admin">
+                        <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                        <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                    </AuthorizeView>*@
+                </div>
+            }
+
+
+        </MudMainContent>
+    </MudLayout>
+
+@code {
+
+    protected List<string> TagsSelection { get; set; } = new List<string>();
+    private AddItem addItem { get; set; } = new AddItem();
+    private CategoryFilter categoryFilter { get; set; }
+    private bool showMoveButtons;
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await ApiClient.Get<IEnumerable<ListItemDTO>>("https://localhost:5001/api/item/all");
-        Items = response.Result;
+        await LoadData();
     }
 
+    public async Task UpdateList()
+    {
+        StateHasChanged();
+        //Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
+        //Items = await UnitOfWork.ListItems.ExecuteQuery(filter);
+        Items = await ItemService.GetAllByUserId(appState.UserId);
+        StateHasChanged();
+    }
 }
+
+

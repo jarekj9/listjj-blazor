@@ -2,22 +2,17 @@ using Listjj_frontend.Areas.Identity;
 using Listjj_frontend.Data;
 using Listjj_frontend.Models;
 using Listjj_frontend.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Components;
+using Listjj_frontend.Services.Abstract;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
+using MudBlazor.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlServer(connectionString));
-//using Microsoft.EntityFrameworkCore:
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("SqlDbContext"), new MySqlServerVersion(new Version(10, 9, 3))
@@ -36,8 +31,15 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddHttpClient<IApiClient, ApiClient>();
+builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+//builder.Services.AddScoped<IFileService, FileService>();
 
+//mud blazor
+builder.Services.AddMudServices();
 
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 
 var app = builder.Build();

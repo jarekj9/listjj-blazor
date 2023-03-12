@@ -1,0 +1,45 @@
+@using System
+@using System.IO
+@using Listjj.Infrastructure.ViewModels
+@using MudBlazor
+@inherits PageBase
+
+
+<InputFile id="fileInput" OnChange="UploadFiles" hidden multiple />
+
+<MudFab HtmlTag="label"
+        Color="Color.Default"
+        Icon="@Icons.Filled.AttachFile"
+        for="fileInput" />
+
+@FilesRows
+
+@if(filesLoading)
+{
+    <div class="spinner-border text-primary mt-2 ml-3" role="status"></div>
+}
+
+@code
+{
+    [Parameter] public RenderFragment FilesRows { get; set; }
+    [Parameter] public ListItemViewModel ItemVm { get; set; }
+    private bool filesLoading = false;
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        filesLoading = true;
+        foreach (var file in e.GetMultipleFiles())
+        {
+            MemoryStream ms = new MemoryStream();
+            await file.OpenReadStream(5000000).CopyToAsync(ms);
+            var bytes = ms.ToArray();
+
+            //var newFile = await FileService.AddFile(ItemVm.Id, bytes, file.Name);
+            //FileViewModel newfileVm = new FileViewModel();
+            //Mapper.Map<Listjj.Models.File, FileViewModel>(newFile, newfileVm);
+            //ItemVm.Files.Add(newfileVm);
+        }
+        filesLoading = false;
+    }
+
+}

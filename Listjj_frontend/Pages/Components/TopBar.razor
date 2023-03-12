@@ -1,0 +1,31 @@
+
+<AuthorizeView>
+    <Authorized>
+        <span class="nav-item">
+            <a class="nav-link" href="/list">Items </a>
+        </span>
+        <span class="nav-item">
+            <a class="nav-link" href="/categories">Categories </a>
+        </span>
+        <span class="nav-item">
+            <a class="nav-link" href="Identity/Account/Logout" title="Logged in as @context.User.Identity.Name">Log out</a>
+        </span>
+        <span class="nav-item">
+            <a class="nav-link" href="#" @onclick="ScrollTopButtonClick" @onclick:preventDefault>Scroll Top</a>
+        </span>
+    </Authorized>
+    <NotAuthorized>
+        <span class="nav-item">
+            <a class="nav-link" href="Identity/Account/Login">Login</a>
+        </span>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+
+    private async void ScrollTopButtonClick()
+    {
+        await JSRuntime.InvokeVoidAsync("ScrollTop");
+    }
+}

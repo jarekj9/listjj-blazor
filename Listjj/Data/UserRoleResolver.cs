@@ -1,8 +1,8 @@
 using Listjj.Models;
 using Listjj.ViewModels;
 using AutoMapper;
-using Listjj.Service;
 using Listjj.Abstract;
+using Listjj.Service;
 
 namespace Listjj.Data
 {

@@ -44,6 +44,22 @@ namespace Listjj_frontend.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2c731de3-3ac6-488e-b13f-941209da2f56"),
+                            ConcurrencyStamp = "6cee43bd-a4d6-4d5b-8d73-55ea178c956f",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("96f6a366-bc70-4b12-8a36-6d911f223564"),
+                            ConcurrencyStamp = "890b1d71-6b77-47f9-a89b-228eeb20552a",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Listjj_frontend.Models.ApplicationUser", b =>

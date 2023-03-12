@@ -1,0 +1,199 @@
+@using Listjj.Infrastructure.ViewModels
+@using Listjj_frontend.Services.Abstract
+
+<tr id="@Item.Id" class="@(Item.IsEditing ? "table-secondary" : "")" hidden="@Item.IsEditing" @ondblclick="() => Item.IsEditing = !Item.IsEditing">
+        <td>
+            @Item.Value
+        </td>
+        <td title="Created: @Item.Created, Changed: @Item.Modified">
+            @Item.Name<br />
+            @Item.Description
+            <TagsInput Tags="Item.Tags" ReadOnly="true"/>
+        @if (Item?.Files?.Count > 0)
+            {
+                <div class="mt-3">
+                    <span class="font-weight-bold">Files:</span>
+                    <ul class="ml-3" style="overflow: visible;width:140%;">
+                        @foreach (var file in Item.Files)
+                        {
+                            <li>
+@*                                <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+*@                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </td>
+        <td>
+            @Item.Category.Name
+        </td>
+        <td>
+            <input type="checkbox" checked="@Item.Active" @onchange="() => ClickActive(Item)">
+        </td>
+        <td>
+            <button class="btn btn-outline-danger icon-button mb-1 align-top" @onclick="() => DeleteItem(Item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+            <button class="btn btn-outline-primary icon-button mb-1 align-top hide-on-mobile" @onclick="() => ShowEdit(Item)" title="Edit"><i class="far fa-edit"></i></button>
+            @if(ShowMoveButtons)
+            {
+                <div class="d-inline-block row pl-1">
+                    <div class="col-12">
+                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, "up"))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, "down"))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
+                    </div>
+                </div>
+            }
+        </td>
+    </tr>
+
+    @if (Item.IsEditing)
+    {
+        <tr class="table-secondary" @ondblclick="() => Item.IsEditing = !Item.IsEditing">
+            <td>
+                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                    <input for="Value" class="form-controll" size="4" @bind="@Item.Value" />
+                </Animate>
+            </td>
+            <td>
+                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                    <input style="width: 100%; max-width: 100%;" for="Name" class="form-controll mb-1" @bind="@Item.Name" /><br />
+                    <textarea style="width: 100%; height: 100%; max-width: 100%;" class="form-controll" @bind="@Item.Description" />
+                    <CascadingValue Value="@TagsSelection">
+                        <TagsInput Tags="Item.Tags" />
+                    </CascadingValue>
+                    <div class="mt-2">
+                        <FileUpload ItemVm="Item">
+                            <FilesRows>
+                                @if (Item?.Files?.Count > 0)
+                                {
+                                    <div class="mt-3">
+                                        <ul class="ml-3" style="overflow: visible;width:200%;">
+                                            @foreach (var file in Item.Files)
+                                            {
+                                                <li>
+                                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, Item)" title="Delete">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+@*                                                    <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
+*@                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </FilesRows>
+                        </FileUpload>
+                    </div>
+                </Animate>
+            </td>
+            @*<td>
+                    <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                        <input for="Description" class="form-controll" @bind="@Item.Description" />
+                    </Animate>
+                </td>*@
+            <td>
+                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                    <select @bind="@Item.CategoryId">
+                        <option>---select---</option>
+                        @if (CategoriesVm != null)
+                        {
+                            @foreach (var category in CategoriesVm)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                    </select>
+                </Animate>
+            </td>
+            <td>
+                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                    <input type="checkbox" for="active" class="form-controll" @bind="@Item.Active" />
+                </Animate>
+            </td>
+            <td>
+                <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(0.5)">
+                    <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(Item)" title="Save"><i class="far fa-save"></i></button>
+                    <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(Item)" title="Cancel"><i class="far fa-window-close"></i></button>
+                </Animate>
+            </td>
+            <td>
+            </td>
+        </tr>
+    }
+
+@code {
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] public IItemService ItemsService { get; set; }
+    //[Inject] public IFileService FileService { get; set; }
+    [Inject] public ICategoryService CategoryService { get; set; }
+    //[Inject] protected IUnitOfWork UnitOfWork { get; set; }
+    //[Inject] protected IFileService FileService { get; set; }
+    [Parameter] public ListItemViewModel Item { get; set; }
+    [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
+    [Parameter] public EventCallback UpdateList { get; set; }
+    [CascadingParameter] public List<string> TagsSelection { get; set; }
+    [Parameter] public bool ShowMoveButtons { get; set; }
+
+    private async Task EditItem(ListItemViewModel itemVm)
+    {
+        Item.Modified = DateTime.Now;
+        if (Item.CategoryId != Item.Category.Id)
+        {
+            var changedCategoryVm = await CategoryService.GetById(Item.CategoryId);
+            Item.Category = changedCategoryVm;
+        }
+        await ItemsService.AddorUpdateItem(Item);
+        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {Item.Name}");
+        Item.IsEditing = false;
+        await UpdateList.InvokeAsync();
+    }
+
+    private void ShowEdit(ListItemViewModel itemVm)
+    {
+        itemVm.IsEditing = !itemVm.IsEditing;
+    }
+
+    //private async Task GetFile(FileViewModel fileVm)
+    //{
+    //    var file = await FileService.GetFile(fileVm.Id);
+    //    await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileVm.Name, "application/octet-stream", file.Bytes);
+    //}
+
+    private async Task DeleteFile(FileViewModel fileVm, ListItemViewModel itemVm)
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileVm.Name} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        itemVm.Files.Remove(fileVm);
+        //await FileService.DelFile(fileVm.Id);
+    }
+
+    private async Task MoveItem(ListItemViewModel itemVm, string direction)
+    {
+        var isSaved = await ItemsService.Move(itemVm.Id, direction);
+        if(!isSaved)
+        {
+            return;
+        }
+        await JSRuntime.InvokeAsync<String>("blink", itemVm.Id, 1);
+        await UpdateList.InvokeAsync(); 
+        await JSRuntime.InvokeAsync<String>("blink", itemVm.Id, 2);
+    }
+
+    private async Task DeleteItem(ListItemViewModel itemVm)
+    {
+        var item = await ItemsService.GetById(itemVm.Id);
+        await ItemsService.DeleteItem(itemVm.Id);
+        await UpdateList.InvokeAsync();
+        await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {itemVm.Name}");
+    }
+
+    private async Task ClickActive(ListItemViewModel itemVm)
+    {
+        var item = await ItemsService.GetById(itemVm.Id);
+        item.Active = !item.Active;
+        await ItemsService.AddorUpdateItem(item);
+    }
+}
