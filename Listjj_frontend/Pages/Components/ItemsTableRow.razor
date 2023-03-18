@@ -192,8 +192,7 @@
 
     private async Task ClickActive(ListItemViewModel itemVm)
     {
-        var item = await ItemsService.GetById(itemVm.Id);
-        item.Active = !item.Active;
-        await ItemsService.AddorUpdateItem(item);
+        itemVm.Active = !itemVm.Active;
+        await ItemsService.AddorUpdateItem(itemVm);
     }
 }

@@ -87,7 +87,7 @@
                     <i class="fas fa-caret-down text-primary"></i>
                 </a>
                 <div class="collapse" id="advancedDropdown">
-@*                    <AuthorizeView Roles="Admin, User">
+                    <AuthorizeView Roles="Admin, User">
                         <ApiKey />
                         <ImportExport></ImportExport>
                         <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
@@ -99,7 +99,7 @@
                      <AuthorizeView Roles="Admin">
                         <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
                         <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
-                    </AuthorizeView>*@
+                    </AuthorizeView>
                 </div>
             }
 
@@ -108,7 +108,8 @@
     </MudLayout>
 
 @code {
-
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
     protected List<string> TagsSelection { get; set; } = new List<string>();
     private AddItem addItem { get; set; } = new AddItem();
     private CategoryFilter categoryFilter { get; set; }
@@ -126,6 +127,16 @@
         //Items = await UnitOfWork.ListItems.ExecuteQuery(filter);
         Items = await ItemService.GetAllByUserId(appState.UserId);
         StateHasChanged();
+    }
+
+    private async Task HandleRestartClick()
+    {
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure, that you want to restart ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        await Task.Run(() => hostApplicationLifetime.StopApplication());
     }
 }
 

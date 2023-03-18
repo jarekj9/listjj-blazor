@@ -34,6 +34,7 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>();
 builder.Services.AddScoped<AppState>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //builder.Services.AddScoped<IFileService, FileService>();
 
 //mud blazor
