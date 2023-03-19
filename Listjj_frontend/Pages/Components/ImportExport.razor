@@ -1,6 +1,7 @@
 @using System.IO
 @using System.Text
 @using Listjj.Infrastructure.ViewModels
+@using Listjj_frontend.Services.Abstract
 
 @inherits PageBase
 
@@ -15,6 +16,7 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
+    [Inject] private IFileService FileService { get; set; }
 
     private async void DownloadFile() 
     {
@@ -22,10 +24,10 @@
         var categories = CategoryService.GetAllByUserId(appState.UserId);
         var text = "SequenceNumber;Value;Name;Description;Category;Active;Tags;\n";
         foreach(var item in items) {
-            text += ($"{item.SequenceNumber};{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{item.Tags}\n");
+            text += ($"{item.SequenceNumber};{item.Value};{item.Name};{item.Description};{item.Category.Name};{item.Active};{String.Join(",", item.Tags)}\n");
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        //await FileService.SaveAs(JSRuntime, "export.csv", bytes);
+        await FileService.SaveAs(JSRuntime, "export.csv", bytes);
     }
 
     private async Task Upload(InputFileChangeEventArgs e)
