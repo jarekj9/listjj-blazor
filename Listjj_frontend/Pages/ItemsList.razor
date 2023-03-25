@@ -6,6 +6,7 @@
 @using System.Text.Json
 @using Listjj.Infrastructure.ViewModels
 @using Listjj_frontend.Pages.Components
+@using System.Linq.Expressions
 @layout ListjjLayout
 @inherits PageBase
 
@@ -41,11 +42,11 @@
         </MudDrawer>
         <MudMainContent Class="pt-1 pl-2">
 
-@*          <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" />
-*@            @if (Items is null)
+          <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" />
+            @if (Items is null)
             {
-            <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
-        }
+                <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
+            }
         else
         {
             <table class="table table-striped main-table">
@@ -113,6 +114,7 @@
     protected List<string> TagsSelection { get; set; } = new List<string>();
     private AddItem addItem { get; set; } = new AddItem();
     private CategoryFilter categoryFilter { get; set; }
+    private SearchBox searchBox;
     private bool showMoveButtons;
 
     protected override async Task OnInitializedAsync()
@@ -123,9 +125,9 @@
     public async Task UpdateList()
     {
         StateHasChanged();
-        //Expression<Func<ListItem, bool>> filter = await searchBox.MakeSearchFilter();
-        //Items = await UnitOfWork.ListItems.ExecuteQuery(filter);
-        Items = await ItemService.GetAllByUserId(appState.UserId);
+        //Expression<Func<ListItemViewModel, bool>> filter = await searchBox.MakeSearchFilter();
+        Items = await ItemService.GetItemsByFilter(searchBox.SearchText, searchBox.fromDate, searchBox.toDate, appState.RecentCategoryId, appState.UserId);
+        //Items = await ItemService.GetAllByUserId(appState.UserId);
         StateHasChanged();
     }
 

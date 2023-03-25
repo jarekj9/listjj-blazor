@@ -62,7 +62,7 @@ namespace Listjj.Repository
 
         public async Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter)
         {
-            return await _context.ListItems.Include(i => i.Files).Where(filter).OrderBy(i => i.SequenceNumber).ToListAsync();
+            return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(filter).OrderBy(i => i.SequenceNumber).ToListAsync();
         }
 
     }

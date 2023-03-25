@@ -3,6 +3,7 @@
 @using System.Linq
 @using System.Linq.Expressions 
 @using MudBlazor
+@using MudBlazor.Components
 @inherits PageBase
 
 <div class="row">
@@ -39,9 +40,9 @@
 @code {
     [Parameter] public Guid CategoryFilterCategoryId { get; set; }
     [Parameter] public Func<Task> UpdateList { get; set; }
-    private DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
-    private DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
-    private string SearchText { get; set; }
+    public DateTime? fromDate { get; set; } = DateTime.Today.AddYears(-10);
+    public DateTime? toDate { get; set; } = DateTime.Today.AddDays(1);
+    public string SearchText { get; set; }
 
 
     private Task OnSearchKeyDown(KeyboardEventArgs e) => e.Code is "Enter" or "NumpadEnter" ? UpdateList.Invoke() : Task.CompletedTask;

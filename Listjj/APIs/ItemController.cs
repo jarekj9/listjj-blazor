@@ -4,10 +4,19 @@ using Listjj.Infrastructure.ViewModels;
 using Listjj.Models;
 using Listjj.Transaction;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;  
 using System.Threading.Tasks;
+using static MudBlazor.CategoryTypes;
+using System.Linq.Dynamic.Core;
+using System.Web;
+using List.Extensions;
+using Listjj.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Listjj.APIs
 {
@@ -53,6 +62,54 @@ namespace Listjj.APIs
             return new JsonResult(itemsVms);
         }
 
+        [Route("api/[controller]/items_by_filter")]
+        [HttpGet]
+        public async Task<JsonResult> GetItemsByFilter(string searchWords, string fromDateStr, string toDateStr, string categoryId, string userId)
+        {
+            searchWords = HttpUtility.UrlDecode(searchWords);
+            var fromDate =   DateTime.TryParse(HttpUtility.UrlDecode(fromDateStr), out var parsedFrom) ? parsedFrom : DateTime.MinValue;
+            var toDate = DateTime.TryParse(HttpUtility.UrlDecode(toDateStr), out var parsedTo) ? parsedTo : DateTime.MaxValue;
+            var categoryIdGuid = Guid.TryParse(categoryId, out var parsedCategoryId) ? parsedCategoryId : Guid.Empty;
+            var userIdGuid = Guid.TryParse(userId, out var parsedUserId) ? parsedUserId : Guid.Empty;
+
+            var filter = MakeSearchFilter(userIdGuid, categoryIdGuid, fromDate, toDate, searchWords);
+            var items = await unitOfWork.ListItems.ExecuteQuery(filter);
+            var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
+            return new JsonResult(itemsVms);
+        }
+        private Expression<Func<ListItem, bool>> MakeSearchFilter(Guid userId, Guid categoryId, DateTime fromDate, DateTime toDate, string searchText)
+        {
+            Expression<Func<ListItem, bool>> filter = x => x.UserId == userId && x.Modified >= fromDate && x.Modified <= toDate;
+
+            if (categoryId != Guid.Empty)
+            {
+                filter = ExpressionExtensions<ListItem>.AndAlso(filter, x => x.CategoryId == categoryId);
+            }
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return filter;
+            }
+            var searchWords = searchText.Trim().Split(' ').ToList();
+            var negatedSearchWords = searchWords.Where(x => x[0] == '!').Select(x => x.Remove(0, 1)).ToList();
+            searchWords = searchWords.Where(x => x[0] != '!').ToList();
+            filter = searchWords.Aggregate(
+                filter,
+                (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
+                    currentExpr,
+                    x => x.Name.Contains(nextWord) || x.Tags.Contains(nextWord)
+                )
+            );
+            filter = negatedSearchWords.Aggregate(
+                filter,
+                (currentExpr, nextWord) => ExpressionExtensions<ListItem>.AndAlso(
+                    currentExpr,
+                    x => !x.Name.Contains(nextWord) && !x.Tags.Contains(nextWord)
+                )
+            );
+            return filter;
+        }
+
         [Route("api/[controller]/addorupdate")]
         [HttpPost]
         public async Task<JsonResult> AddorUpdateItem([FromBody] ListItemViewModel itemVm)
@@ -67,6 +124,8 @@ namespace Listjj.APIs
             else
             {
                 var newItem = mapper.Map<ListItem>(itemVm);
+                var allSequenceNumbers = (await unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
+                newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
                 unitOfWork.ListItems.Add(newItem);
             }
 

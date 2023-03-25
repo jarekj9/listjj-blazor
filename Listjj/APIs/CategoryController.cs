@@ -35,12 +35,12 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/category_by_id")]
         [HttpGet]
-        public async Task<JsonResult> GetCategoriesById(string id)
+        public async Task<JsonResult> GetCategoryById(string id)
         {
             var categoryId = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
-            var categories = await unitOfWork.Categories.GetById(categoryId);
-            var categoriesVms = mapper.Map<List<CategoryViewModel>>(categories);
-            return new JsonResult(categoriesVms);
+            var category = await unitOfWork.Categories.GetById(categoryId);
+            var categoryVm = mapper.Map<CategoryViewModel>(category);
+            return new JsonResult(categoryVm);
         }
 
         [Route("api/[controller]/categories_by_userid")]

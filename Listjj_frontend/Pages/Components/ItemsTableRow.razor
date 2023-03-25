@@ -1,3 +1,4 @@
+@using Listjj.Infrastructure.Enums
 @using Listjj.Infrastructure.ViewModels
 @using Listjj_frontend.Services.Abstract
 
@@ -37,10 +38,10 @@
             {
                 <div class="d-inline-block row pl-1">
                     <div class="col-12">
-                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, "up"))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
+                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, MoveDirection.Up))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
                     </div>
                     <div class="col-12">
-                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, "down"))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
+                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, MoveDirection.Down))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
                     </div>
                 </div>
             }
@@ -170,9 +171,10 @@
         //await FileService.DelFile(fileVm.Id);
     }
 
-    private async Task MoveItem(ListItemViewModel itemVm, string direction)
+    private async Task MoveItem(ListItemViewModel itemVm, MoveDirection direction)
     {
-        var isSaved = await ItemsService.Move(itemVm.Id, direction);
+
+        var isSaved = await ItemsService.Move(itemVm, direction);
         if(!isSaved)
         {
             return;

@@ -1,4 +1,7 @@
-﻿using Listjj.Infrastructure.ViewModels;
+﻿using Listjj.Infrastructure.Enums;
+using Listjj.Infrastructure.ViewModels;
+using Listjj.Models;
+using System.Linq.Expressions;
 
 namespace Listjj_frontend.Services.Abstract
 {
@@ -9,6 +12,7 @@ namespace Listjj_frontend.Services.Abstract
         Task<ListItemViewModel> GetById(Guid id);
         Task<List<ListItemViewModel>> GetItemsByCategoryId(Guid categoryId);
         Task<List<ListItemViewModel>> GetAllByUserId(Guid userId);
-        Task<bool> Move(Guid id, string direction);
+        Task<bool> Move(ListItemViewModel movedItem, MoveDirection direction);
+        Task<List<ListItemViewModel>> GetItemsByFilter(string searchWords, DateTime? fromDateStr, DateTime? toDateStr, Guid categoryId, Guid userId);
     }
 }
