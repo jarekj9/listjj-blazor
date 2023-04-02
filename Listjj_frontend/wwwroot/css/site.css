@@ -263,3 +263,6 @@ tr:hover {
 .mud-drawer {
     background-color: var(--form-bg) !important;
 }
+.no-border {
+    border-width: 0 !important; /*Mudblazor fix for custom inputs*/
+}
