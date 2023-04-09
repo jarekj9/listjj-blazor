@@ -91,11 +91,14 @@
                     <AuthorizeView Roles="Admin, User">
                         <ApiKey />
                         <ImportExport></ImportExport>
-                        <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
-                            <span class="input-zone p-3 m-2" style="float: left;">
-                                Show move buttons
-                            </span>
-                        </button>
+                        @if (appState.RecentCategoryId != Guid.Empty)
+                        {
+                            <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
+                                <span class="input-zone p-3 m-2" style="float: left;">
+                                    Show move buttons
+                                </span>
+                            </button>
+                        }
                     </AuthorizeView>
                      <AuthorizeView Roles="Admin">
                         <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>

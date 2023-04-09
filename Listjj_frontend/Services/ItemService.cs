@@ -8,6 +8,7 @@ using MudBlazor.Charts;
 using NuGet.Protocol;
 using System.Linq.Expressions;
 using System.Web;
+using Ubiety.Dns.Core;
 
 namespace Listjj_frontend.Services
 {
@@ -65,6 +66,7 @@ namespace Listjj_frontend.Services
         public async Task<bool> Move(ListItemViewModel movedItem, MoveDirection direction)
         {
             var movedItemSequence = movedItem?.SequenceNumber ?? 0;
+            bool response = false;
 
             if (direction == MoveDirection.Up)
             {
@@ -78,12 +80,13 @@ namespace Listjj_frontend.Services
                 }
                 movedItem.SequenceNumber = previousItemSequence;
                 previousItem.SequenceNumber = movedItemSequence;
+                response = await AddorUpdateItem(movedItem) && await AddorUpdateItem(previousItem);
             }
 
             if (direction == MoveDirection.Down)
             {
                 var nextItem = (await GetItemsByCategoryId(movedItem.CategoryId))
-                    .Where(i => i.SequenceNumber < movedItemSequence)
+                    .Where(i => i.SequenceNumber > movedItemSequence)
                     .OrderBy(i => i.SequenceNumber).FirstOrDefault();
                 var nextItemSequence = nextItem?.SequenceNumber ?? -1;
                 if (nextItemSequence == -1)
@@ -92,9 +95,9 @@ namespace Listjj_frontend.Services
                 }
                 movedItem.SequenceNumber = nextItemSequence;
                 nextItem.SequenceNumber = movedItemSequence;
+                response = await AddorUpdateItem(movedItem) && await AddorUpdateItem(nextItem);
             }
-
-            var response = await AddorUpdateItem(movedItem);
+            
             return response;
         }
 
