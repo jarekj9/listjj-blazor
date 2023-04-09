@@ -45,7 +45,7 @@ namespace Listjj_frontend.Pages
             }
             Categories = await CategoryService.GetAllByUserId(appState.UserId);
 
-            //appState.RecentCategoryId = await CategoryCacheService.GetRecentCategoryAsync(appState.UserId);
+            appState.RecentCategoryId = await CategoryService.GetRecentCategoryByUserId(appState.UserId);
             if (appState.RecentCategoryId != Guid.Empty)
             {
                 Items = await ItemService.GetItemsByCategoryId(appState.RecentCategoryId);

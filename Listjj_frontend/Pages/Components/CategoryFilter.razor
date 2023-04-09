@@ -45,7 +45,7 @@
     private async Task OnFilterChange()
     {
         appState.RecentCategoryId = RecentCategoryId;
-        //await CategoryCacheService.UpdateRecentCategoryCache(appState.UserId, RecentCategoryId);
+        await CategoryService.UpdateRecentCategory(appState.UserId, RecentCategoryId);
         await JSRuntime.InvokeAsync<string>("WriteCookie", "recent_category_id", RecentCategoryId, 360);
         await UpdateList.InvokeAsync();
     }

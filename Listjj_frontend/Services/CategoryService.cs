@@ -1,4 +1,6 @@
-﻿using Listjj.Infrastructure.ViewModels;
+﻿using Listjj.Infrastructure.DTOs;
+using Listjj.Infrastructure.ViewModels;
+using Listjj.Models;
 using Listjj_frontend.Services.Abstract;
 
 namespace Listjj_frontend.Services
@@ -34,6 +36,22 @@ namespace Listjj_frontend.Services
         public async Task<bool> DeleteCategory(Guid id)
         {
             var response = await apiClient.Post<Guid, bool>($"https://localhost:5001/api/category/delete", id);
+            return response.HttpResponse.IsSuccessStatusCode;
+        }
+
+        public async Task<Guid> GetRecentCategoryByUserId(Guid userId)
+        {
+            var response = await apiClient.Get<Guid>($"https://localhost:5001/api/category/recent_categoryid_by_userid?userId={userId}");
+            var categoryId = response.HttpResponse.IsSuccessStatusCode ? response.Result : Guid.Empty;
+            return categoryId;
+        }
+
+        public async Task<bool> UpdateRecentCategory(Guid userId, Guid recentCategoryId)
+        {
+            var updateCategoryRequest = new UpdateCategoryRequest() { UserId = userId, RecentCategoryId = recentCategoryId };
+            var response = await apiClient.Post<UpdateCategoryRequest, bool>(
+                $"https://localhost:5001/api/category/update_recent_category", updateCategoryRequest
+            );
             return response.HttpResponse.IsSuccessStatusCode;
         }
     }

@@ -25,7 +25,7 @@ namespace Listjj.Repository
 
         public async Task<List<ListItem>> GetAllByCategoryId(Guid id)
         {
-            return await _context.ListItems.Include(i => i.Files).Where(x => x.CategoryId == id).ToListAsync();
+            return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(x => x.CategoryId == id).ToListAsync();
         }
 
         public async Task<bool> Move(Guid id, string direction)

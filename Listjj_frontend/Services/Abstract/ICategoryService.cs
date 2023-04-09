@@ -8,5 +8,7 @@ namespace Listjj_frontend.Services.Abstract
         Task<CategoryViewModel> GetById(Guid id);
         Task<bool> AddorUpdateCategory(CategoryViewModel category);
         Task<bool> DeleteCategory(Guid id);
+        Task<Guid> GetRecentCategoryByUserId(Guid userId);
+        Task<bool> UpdateRecentCategory(Guid userId, Guid recentCategoryId);
     }
 }

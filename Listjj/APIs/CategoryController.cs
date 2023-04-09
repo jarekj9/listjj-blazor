@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Listjj.Models;
 using Listjj.Pages;
 using System.Collections.Generic;
+using Listjj.Service;
+using Listjj.Infrastructure.DTOs;
+using Listjj.Data;
 
 namespace Listjj.APIs
 {
@@ -16,12 +19,14 @@ namespace Listjj.APIs
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CategoryController> logger;
         private readonly IMapper mapper;
+        private readonly ICategoryCacheService categoryCacheService;
 
-        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper)
+        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper, ICategoryCacheService categoryCacheService)
         {
             this.unitOfWork = unitOfWork;
             this.logger = logger;
             this.mapper = mapper;
+            this.categoryCacheService = categoryCacheService;
         }
 
         [Route("api/[controller]/all")]
@@ -53,6 +58,23 @@ namespace Listjj.APIs
             return new JsonResult(categoriesVms);
         }
 
+        [Route("api/[controller]/recent_categoryid_by_userid")]
+        [HttpGet]
+        public async Task<JsonResult> GetRecentCategoryIdByUserId(string userId)
+        {
+            var userIdGuid = Guid.TryParse(userId, out var guid) ? guid : Guid.Empty;
+            var recentCategoryId = await categoryCacheService.GetRecentCategoryAsync(userIdGuid);
+            return new JsonResult(recentCategoryId);
+        }
+
+        [Route("api/[controller]/update_recent_category")]
+        [HttpPost]
+        public async Task<JsonResult> GetRecentCategoryIdByUserId([FromBody]UpdateCategoryRequest updateCategoryRequest)
+        {
+            await categoryCacheService.UpdateRecentCategoryCache(updateCategoryRequest.UserId, updateCategoryRequest.RecentCategoryId);
+            return new JsonResult(true);
+        }
+
         [Route("api/[controller]/addorupdate")]
         [HttpPost]
         public async Task<JsonResult> AddorUpdateCategory([FromBody] CategoryViewModel categoryVm)
@@ -82,6 +104,5 @@ namespace Listjj.APIs
             await unitOfWork.Save();
             return new JsonResult(true);
         }
-
     }
 }
