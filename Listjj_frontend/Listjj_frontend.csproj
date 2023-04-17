@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Listjj.Infrastructure\Listjj.Infrastructure.csproj" />
-    <ProjectReference Include="..\Listjj\Listjj.csproj" />
   </ItemGroup>
 
   <ItemGroup>

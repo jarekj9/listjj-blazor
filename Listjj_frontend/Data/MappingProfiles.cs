@@ -1,5 +1,4 @@
 ﻿using Listjj.Infrastructure.ViewModels;
-using Listjj.Models;
 
 namespace Listjj_frontend.Data
 {

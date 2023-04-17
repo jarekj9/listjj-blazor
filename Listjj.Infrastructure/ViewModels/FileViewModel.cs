@@ -4,6 +4,6 @@ namespace Listjj.Infrastructure.ViewModels
 {
     public class FileViewModel: FileSimpleViewModel
     {
-        public byte[] Bytes { get; set; }
+        public string B64Bytes { get; set; }
     }
 }

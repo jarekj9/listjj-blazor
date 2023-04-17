@@ -17,7 +17,7 @@ namespace Listjj_frontend.Pages
         [Inject] public ICategoryService CategoryService { get; set; }
         [Inject] protected NavigationManager NavManager { get; set; }
         [Inject] protected Data.AppState appState { get; set; }
-        //[Inject] protected IFileService FileService { get; set; }
+        [Inject] protected IFileService FileService { get; set; }
         //[Inject] protected ICategoryCacheService CategoryCacheService { get; set; }
         //[Inject] protected ITagsCacheService TagsCacheService { get; set; }
         //[Inject] protected IMapper Mapper { get; set; }

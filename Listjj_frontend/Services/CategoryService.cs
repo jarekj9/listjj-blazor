@@ -1,6 +1,5 @@
 ﻿using Listjj.Infrastructure.DTOs;
 using Listjj.Infrastructure.ViewModels;
-using Listjj.Models;
 using Listjj_frontend.Services.Abstract;
 
 namespace Listjj_frontend.Services

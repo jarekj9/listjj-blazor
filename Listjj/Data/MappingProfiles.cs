@@ -1,7 +1,8 @@
 using System;
 using Listjj.Models;
-using Listjj.ViewModels;
 using System.Linq;
+using Listjj.Infrastructure.ViewModels;
+using Microsoft.Extensions.Options;
 
 namespace Listjj.Data
 {
@@ -19,12 +20,14 @@ namespace Listjj.Data
             CreateMap<Category, CategoryViewModel>();
             CreateMap<CategoryViewModel, Category>();
 
-            CreateMap<File, FileViewModel>();
+            CreateMap<File, FileViewModel>()
+                .ForMember(dest => dest.B64Bytes, opt => opt.MapFrom((src, dst) => Convert.ToBase64String(src.Bytes)));
+            CreateMap<File, FileSimpleViewModel>();
             CreateMap<FileViewModel, File>();
 
-            CreateMap<ApplicationUser, UserViewModel>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom<UserRoleResolver>());
-            CreateMap<UserViewModel, ApplicationUser>();
+            //CreateMap<ApplicationUser, UserViewModel>()
+            //    .ForMember(dest => dest.Role, opt => opt.MapFrom<UserRoleResolver>());
+            //CreateMap<UserViewModel, ApplicationUser>();
 
 
 

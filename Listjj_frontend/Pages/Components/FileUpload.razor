@@ -9,7 +9,7 @@
 
 <MudFab HtmlTag="label"
         Color="Color.Default"
-        Icon="@Icons.Filled.AttachFile"
+        Icon="@Icons.Material.Filled.AttachFile"
         for="fileInput" />
 
 @FilesRows
@@ -21,7 +21,7 @@
 
 @code
 {
-    [Parameter] public RenderFragment FilesRows { get; set; }
+    [Parameter] public RenderFragment? FilesRows { get; set; }
     [Parameter] public ListItemViewModel ItemVm { get; set; }
     private bool filesLoading = false;
 
@@ -33,11 +33,16 @@
             MemoryStream ms = new MemoryStream();
             await file.OpenReadStream(5000000).CopyToAsync(ms);
             var bytes = ms.ToArray();
+            var fileVm = new FileViewModel()
+                {
+                    //Id = Guid.NewGuid(),
+                    B64Bytes = Convert.ToBase64String(bytes),
+                    ListItemId = ItemVm.Id,
+                    Name = file.Name,
+                    Size = bytes.Count()
+                };
 
-            //var newFile = await FileService.AddFile(ItemVm.Id, bytes, file.Name);
-            //FileViewModel newfileVm = new FileViewModel();
-            //Mapper.Map<Listjj.Models.File, FileViewModel>(newFile, newfileVm);
-            //ItemVm.Files.Add(newfileVm);
+        var result = await FileService.AddFile(fileVm);
         }
         filesLoading = false;
     }

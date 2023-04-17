@@ -100,6 +100,7 @@ function BlazorDownloadFile(filename, contentType, content) {
     // Release memory
     URL.revokeObjectURL(exportUrl);
 }
+
 // Convert a base64 string to a Uint8Array. This is needed to create a blob object from the base64 string.
 function b64ToUint6(nChr) {
     return nChr > 64 && nChr < 91 ? nChr - 65 : nChr > 96 && nChr < 123 ? nChr - 71 : nChr > 47 && nChr < 58 ? nChr + 4 : nChr === 43 ? 62 : nChr === 47 ? 63 : 0;

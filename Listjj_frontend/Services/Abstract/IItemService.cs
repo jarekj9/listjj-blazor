@@ -1,7 +1,5 @@
 ﻿using Listjj.Infrastructure.Enums;
 using Listjj.Infrastructure.ViewModels;
-using Listjj.Models;
-using System.Linq.Expressions;
 
 namespace Listjj_frontend.Services.Abstract
 {

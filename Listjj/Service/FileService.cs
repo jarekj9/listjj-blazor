@@ -31,17 +31,22 @@ namespace Listjj.Service
         {
             return (await _appDbContext.Files.FindAsync(id));
         }
-        public async Task<File> AddFile(Guid itemId, byte[] Bytes, string name)
+        public async Task<bool> AddFile(Guid itemId, byte[] Bytes, string name)
         {  
             var file = new File {
+                Id = Guid.NewGuid(),
                 Bytes = Bytes,
                 ListItemId = itemId,
                 Name = name,
                 Size = Bytes.Length
             };
             await _appDbContext.Files.AddAsync(file);
-            await _appDbContext.SaveChangesAsync();
-            return file;
+            _appDbContext.SaveChanges();
+            //if (await _appDbContext.SaveChangesAsync() == 0)
+            //{ 
+            //    return false;
+            //}
+            return true;
         }
 
         public async Task<List<(string, Guid)>> GetNamesAndIds(Guid itemId)
@@ -53,8 +58,11 @@ namespace Listjj.Service
         {
             var file = await _appDbContext.Files.FindAsync(fileId);
             _appDbContext.Files.Remove(file);
-            await _appDbContext.SaveChangesAsync();
-            return true;
+            if (await _appDbContext.SaveChangesAsync() > 0)
+            {
+                return true;
+            }
+            return false;
         }
 
         public async Task<File> GetFile(Guid fileId)

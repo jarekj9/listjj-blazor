@@ -78,8 +78,7 @@ namespace Listjj
             services.AddMudServices();
 
             //for APIs:
-            services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+            services.AddMvc(setupAction: options => options.EnableEndpointRouting = false);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Listjj", Version = "v1" });

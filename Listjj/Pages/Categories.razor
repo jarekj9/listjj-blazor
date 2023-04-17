@@ -73,9 +73,12 @@
     </MudLayout>
 </AuthorizeView>
 
-<NotAuthorized>
-    No access.
-</NotAuthorized>
+<AuthorizeView Roles="User, Admin">
+    <NotAuthorized>
+        No access.
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }

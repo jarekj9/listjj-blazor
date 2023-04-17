@@ -81,12 +81,11 @@ window.ScrollTop = function() {
 }
 
 // download file
-function BlazorDownloadFile(filename, contentType, content) {
-    // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
-    const data = base64DecToArr(content);
-
+// download file
+function BlazorDownloadFile(filename, contentType, bytes) {
+    const uint8Array = new Uint8Array(bytes);
     // Create the URL
-    const file = new File([data], filename, { type: contentType });
+    const file = new File([uint8Array], filename, { type: contentType });
     const exportUrl = URL.createObjectURL(file);
 
     // Create the <a> element and click on it

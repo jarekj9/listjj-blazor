@@ -1,8 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System;
-using Listjj.Models;
-using System.Collections.Generic;
-
 
 namespace Listjj.ViewModels
 {

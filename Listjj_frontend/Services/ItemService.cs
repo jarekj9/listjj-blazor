@@ -1,14 +1,7 @@
 ﻿using Listjj.Infrastructure.Enums;
 using Listjj.Infrastructure.ViewModels;
-using Listjj.Models;
 using Listjj_frontend.Services.Abstract;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MudBlazor.Charts;
-using NuGet.Protocol;
-using System.Linq.Expressions;
 using System.Web;
-using Ubiety.Dns.Core;
 
 namespace Listjj_frontend.Services
 {
@@ -68,7 +61,7 @@ namespace Listjj_frontend.Services
             var movedItemSequence = movedItem?.SequenceNumber ?? 0;
             bool response = false;
 
-            if (direction == MoveDirection.Up)
+            if (direction == MoveDirection.Up && movedItem != null)
             {
                 var previousItem = (await GetItemsByCategoryId(movedItem.CategoryId))
                     .Where(i => i.SequenceNumber < movedItemSequence)
@@ -83,7 +76,7 @@ namespace Listjj_frontend.Services
                 response = await AddorUpdateItem(movedItem) && await AddorUpdateItem(previousItem);
             }
 
-            if (direction == MoveDirection.Down)
+            if (direction == MoveDirection.Down && movedItem != null)
             {
                 var nextItem = (await GetItemsByCategoryId(movedItem.CategoryId))
                     .Where(i => i.SequenceNumber > movedItemSequence)

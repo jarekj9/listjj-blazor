@@ -12,12 +12,13 @@
             <TagsInput Tags="Item.Tags" ReadOnly="true"/>
             @if (Item?.Files?.Count > 0)
                 {
-                    <div class="mt-3">
+                    <div class="mt-3 no-border">
                         <span class="font-weight-bold">Files:</span>
                         <ul class="ml-3" style="overflow: visible;width:140%;">
                             @foreach (var file in Item.Files)
                             {
                                 <li>
+                                    <span>file.Name</span>
                                     <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
                                 </li>
                             }
@@ -69,6 +70,7 @@
                                     <ul class="ml-3" style="overflow: visible;width:200%;">
                                         @foreach (var file in Item.Files)
                                         {
+                                            <span>file.Name</span>
                                             <li>
                                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, Item)" title="Delete">
                                                     <i class="far fa-trash-alt"></i>
@@ -110,15 +112,14 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] public IItemService ItemsService { get; set; }
-    //[Inject] public IFileService FileService { get; set; }
-    [Inject] public ICategoryService CategoryService { get; set; }
-    //[Inject] protected IFileService FileService { get; set; }
+    [Inject] public IFileService FileService { get; set; }
+    [Inject] public ICategoryService? CategoryService { get; set; }
     [Parameter] public ListItemViewModel Item { get; set; }
     [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
     [CascadingParameter] public List<string> TagsSelection { get; set; }
     [Parameter] public bool ShowMoveButtons { get; set; }
-    [Inject] protected Data.AppState appState { get; set; }
+    [Inject] protected Data.AppState? appState { get; set; }
 
     private async Task EditItem(ListItemViewModel itemVm)
     {
@@ -139,21 +140,24 @@
         itemVm.IsEditing = !itemVm.IsEditing;
     }
 
-    private async Task GetFile(FileViewModel fileVm)
+    private async Task GetFile(FileSimpleViewModel fileSimpleVm)
     {
-        //var file = await FileService.GetFile(fileVm.Id);
-        //await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileVm.Name, "application/octet-stream", file.Bytes);
+        var file = await FileService.GetFile(fileSimpleVm.Id);
+        var bytes = Convert.FromBase64String(file.B64Bytes);
+        await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileSimpleVm.Name, "application/octet-stream", bytes);
     }
 
-    private async Task DeleteFile(FileViewModel fileVm, ListItemViewModel itemVm)
+    private async Task DeleteFile(FileSimpleViewModel fileVm, ListItemViewModel itemVm)
     {
         bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileVm.Name} ?");
         if (!isConfirmed)
         {
             return;
         }
-        itemVm.Files.Remove(fileVm);
-        //await FileService.DelFile(fileVm.Id);
+        if(await FileService.DeleteFile(fileVm.Id))
+        {
+            itemVm.Files.Remove(fileVm);
+        }
     }
 
     private async Task MoveItem(ListItemViewModel itemVm, MoveDirection direction)

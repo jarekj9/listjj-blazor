@@ -15,6 +15,6 @@ namespace Listjj.Infrastructure.ViewModels
         public List<string> Tags { get; set; } = new List<string>();
         public bool IsEditing { get; set; }
         public CategoryViewModel Category { get; set; }
-        public List<FileViewModel> Files { get; set; }
+        public List<FileSimpleViewModel> Files { get; set; }
     }
 }
