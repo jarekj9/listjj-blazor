@@ -136,6 +136,10 @@ namespace Listjj_frontend.Areas.Identity.Pages.Account
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     ////////////////////////////////////////////////////
+                    // by default user has email not confirmed and account is not working:
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _userManager.ConfirmEmailAsync(user, token);
+                    ////////////////////////////////////////////////////
                     // by default registered user has no roles:
                     //await _userManager.AddToRoleAsync(user, "User");
                     if (user.Email == "admin@Listjj")

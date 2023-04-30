@@ -1,4 +1,5 @@
 ﻿using Listjj.Infrastructure.ViewModels;
+using Listjj_frontend.Models;
 
 namespace Listjj_frontend.Data
 {
@@ -6,7 +7,7 @@ namespace Listjj_frontend.Data
     {
         public MappingProfiles()
         { 
-            //CreateMap<CategoryViewModel, Category>();
+            CreateMap<ApplicationUser, UserViewModel>();
         }
     }
 }
