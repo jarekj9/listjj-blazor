@@ -47,6 +47,16 @@ namespace Listjj.APIs
             return new JsonResult(itemsVms);
         }
 
+        [Route("api/[controller]/get_by_id")]
+        [HttpGet]
+        public async Task<JsonResult> GetById(string id)
+        {
+            var itemIdGuid = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
+            var item = await unitOfWork.ListItems.GetById(itemIdGuid);
+            var itemVm = mapper.Map<ListItemViewModel>(item);
+            return new JsonResult(itemVm);
+        }
+
         [Route("api/[controller]/items_by_categoryid")]
         [HttpGet]
         public async Task<JsonResult> GetItemsByCategoryId(string categoryId)

@@ -27,7 +27,7 @@ namespace Listjj_frontend.Services
 
         public async Task<ListItemViewModel> GetById(Guid id)
         {
-            var response = await apiClient.Get<ListItemViewModel>($"https://localhost:5001/api/item/item_by_id?id={id}");
+            var response = await apiClient.Get<ListItemViewModel>($"https://localhost:5001/api/item/get_by_id?id={id}");
             var item = response.HttpResponse.IsSuccessStatusCode ? response.Result : new ListItemViewModel();
             return item;
         }

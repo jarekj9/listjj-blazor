@@ -1,16 +1,15 @@
 @inject NavigationManager NavManager
-@layout ListjjLayout
+@layout MainLayout
 
 @page "/"
 
-<h1>Redirect Page</h1>
+<h1>backend page</h1>
 
-<p>Redirecting to Default Page</p>
+<p>nothing here</p>
 
 
 @code {
     protected override void OnAfterRender(bool firstRender)
     {
-        NavManager.NavigateTo("/list");
     }
 }
