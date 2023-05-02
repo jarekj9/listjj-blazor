@@ -4,6 +4,7 @@ using Listjj_frontend.Models;
 using Listjj_frontend.Services;
 using Listjj_frontend.Services.Abstract;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
@@ -44,6 +45,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddMudServices();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+//monitoring number of users connections
+builder.Services.AddSingleton<CircuitHandler, CircuitHandlerService>();
 
 
 var app = builder.Build();

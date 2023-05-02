@@ -1,13 +1,9 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
-using System.Collections.Generic;
-using System.Linq;
 using Listjj.Infrastructure.ViewModels;
-using Microsoft.AspNetCore.Components.Server.Circuits;
-using Listjj_frontend.Services;
 using Listjj_frontend.Services.Abstract;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace Listjj_frontend.Pages
 {
@@ -20,7 +16,7 @@ namespace Listjj_frontend.Pages
         [Inject] protected IFileService FileService { get; set; }
         [Inject] protected ITagsService TagsService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-        //[Inject] protected CircuitHandler CircuitHandler { get; set; }
+        [Inject] protected CircuitHandler CircuitHandler { get; set; }
         protected IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
         protected List<string> TagsSelection { get; set; } = new List<string>();
         protected List<ListItemViewModel> Items { get; set; } = new List<ListItemViewModel>();

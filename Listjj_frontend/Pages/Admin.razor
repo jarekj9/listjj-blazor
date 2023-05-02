@@ -3,6 +3,8 @@
 @using Listjj_frontend.Models;
 @using Listjj_frontend.Services.Abstract
 @using AutoMapper;
+@using Listjj_frontend.Services
+@using Microsoft.AspNetCore.Components.Server.Circuits
 @inherits PageBase
 
 @layout ListjjLayout
@@ -24,8 +26,8 @@
         </MudDrawer>
         <MudMainContent Class="pt-2 pl-2">
 
-@*            <p>Number of current user connections: @((CircuitHandler as CircuitHandlerService).Circuits.Count)</p>
-*@
+            <p>Number of current user connections: @((CircuitHandler as CircuitHandlerService).Circuits.Count)</p>
+
             <table class="table table-striped">
                 <thead class="thead-dark">
                     <tr>
@@ -86,7 +88,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //(CircuitHandler as CircuitHandlerService).CircuitsChanged += HandleCircuitsChanged;
+        (CircuitHandler as CircuitHandlerService).CircuitsChanged += HandleCircuitsChanged;
         await LoadData();
     }
 
@@ -97,7 +99,7 @@
         UsersVm = Mapper.Map<List<ApplicationUser>, List<UserViewModel>>(users);
     }
 
-    //public void Dispose() => (CircuitHandler as CircuitHandlerService).CircuitsChanged -= HandleCircuitsChanged;
+    public void Dispose() => (CircuitHandler as CircuitHandlerService).CircuitsChanged -= HandleCircuitsChanged;
 
     public void HandleCircuitsChanged(object sender, EventArgs args) => InvokeAsync(() => StateHasChanged());
 

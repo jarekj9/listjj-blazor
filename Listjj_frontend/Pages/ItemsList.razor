@@ -127,9 +127,7 @@
     public async Task UpdateList()
     {
         StateHasChanged();
-        //Expression<Func<ListItemViewModel, bool>> filter = await searchBox.MakeSearchFilter();
         Items = await ItemService.GetItemsByFilter(searchBox.SearchText, searchBox.fromDate, searchBox.toDate, appState.RecentCategoryId, appState.UserId);
-        //Items = await ItemService.GetAllByUserId(appState.UserId);
         StateHasChanged();
     }
 
