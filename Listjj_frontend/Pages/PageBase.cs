@@ -18,13 +18,11 @@ namespace Listjj_frontend.Pages
         [Inject] protected NavigationManager NavManager { get; set; }
         [Inject] protected Data.AppState appState { get; set; }
         [Inject] protected IFileService FileService { get; set; }
-        //[Inject] protected ICategoryCacheService CategoryCacheService { get; set; }
-        //[Inject] protected ITagsCacheService TagsCacheService { get; set; }
-        //[Inject] protected IMapper Mapper { get; set; }
+        [Inject] protected ITagsService TagsService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         //[Inject] protected CircuitHandler CircuitHandler { get; set; }
         protected IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
-
+        protected List<string> TagsSelection { get; set; } = new List<string>();
         protected List<ListItemViewModel> Items { get; set; } = new List<ListItemViewModel>();
         protected List<CategoryViewModel> Categories { get; set; }
         protected bool isDrawerOpen = true;
@@ -54,6 +52,7 @@ namespace Listjj_frontend.Pages
             {
                 Items = await ItemService.GetAllByUserId(appState.UserId);
             }
+            TagsSelection = await TagsService.GetByUserId(appState.UserId);
             isLoaded = true;
         }
 

@@ -114,7 +114,6 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
     [Inject] private IHostApplicationLifetime hostApplicationLifetime { get; set; }
-    protected List<string> TagsSelection { get; set; } = new List<string>();
     private AddItem addItem { get; set; } = new AddItem();
     private CategoryFilter categoryFilter { get; set; }
     private SearchBox searchBox;
