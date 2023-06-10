@@ -34,6 +34,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="appsettings.Docker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Pages\Components\TopBar.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
