@@ -14,33 +14,33 @@ namespace Listjj_frontend.Services
 
         public async Task<List<CategoryViewModel>> GetAllByUserId(Guid userId)
         {
-            var response = await apiClient.Get<List<CategoryViewModel>>($"https://localhost:5001/api/category/categories_by_userid?userId={userId}");
+            var response = await apiClient.Get<List<CategoryViewModel>>($"/api/category/categories_by_userid?userId={userId}");
             var categories = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<CategoryViewModel>();
             return categories;
         }
 
         public async Task<CategoryViewModel> GetById(Guid id)
         {
-            var response = await apiClient.Get<CategoryViewModel>($"https://localhost:5001/api/category/category_by_id?id={id}");
+            var response = await apiClient.Get<CategoryViewModel>($"/api/category/category_by_id?id={id}");
             var category = response.HttpResponse.IsSuccessStatusCode ? response.Result : new CategoryViewModel();
             return category;
         }
 
         public async Task<bool> AddorUpdateCategory(CategoryViewModel category)
         {
-            var response = await apiClient.Post<CategoryViewModel, bool>($"https://localhost:5001/api/category/addorupdate", category);
+            var response = await apiClient.Post<CategoryViewModel, bool>($"/api/category/addorupdate", category);
             return response.HttpResponse.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteCategory(Guid id)
         {
-            var response = await apiClient.Post<Guid, bool>($"https://localhost:5001/api/category/delete", id);
+            var response = await apiClient.Post<Guid, bool>($"/api/category/delete", id);
             return response.HttpResponse.IsSuccessStatusCode;
         }
 
         public async Task<Guid> GetRecentCategoryByUserId(Guid userId)
         {
-            var response = await apiClient.Get<Guid>($"https://localhost:5001/api/category/recent_categoryid_by_userid?userId={userId}");
+            var response = await apiClient.Get<Guid>($"/api/category/recent_categoryid_by_userid?userId={userId}");
             var categoryId = response.HttpResponse.IsSuccessStatusCode ? response.Result : Guid.Empty;
             return categoryId;
         }
@@ -49,7 +49,7 @@ namespace Listjj_frontend.Services
         {
             var updateCategoryRequest = new UpdateCategoryRequest() { UserId = userId, RecentCategoryId = recentCategoryId };
             var response = await apiClient.Post<UpdateCategoryRequest, bool>(
-                $"https://localhost:5001/api/category/update_recent_category", updateCategoryRequest
+                $"/api/category/update_recent_category", updateCategoryRequest
             );
             return response.HttpResponse.IsSuccessStatusCode;
         }
