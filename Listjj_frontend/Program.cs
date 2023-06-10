@@ -50,6 +50,12 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 //monitoring number of users connections
 builder.Services.AddSingleton<CircuitHandler, CircuitHandlerService>();
 
+// login with google:
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+});
 
 var app = builder.Build();
 
