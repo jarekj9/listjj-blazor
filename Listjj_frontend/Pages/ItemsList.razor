@@ -89,20 +89,24 @@
                 </a>
                 <div class="collapse" id="advancedDropdown">
                     <AuthorizeView Roles="Admin, User">
-                        <ApiKey />
-                        <ImportExport></ImportExport>
-                        @if (appState.RecentCategoryId != Guid.Empty)
-                        {
-                            <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
-                                <span class="input-zone p-3 m-2" style="float: left;">
-                                    Show move buttons
-                                </span>
-                            </button>
-                        }
+                        <Authorized>
+                            <ApiKey />
+                            <ImportExport></ImportExport>
+                            @if (appState.RecentCategoryId != Guid.Empty)
+                            {
+                                <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
+                                    <span class="input-zone p-3 m-2" style="float: left;">
+                                        Show move buttons
+                                    </span>
+                                </button>
+                            }
+                        </Authorized>
                     </AuthorizeView>
                      <AuthorizeView Roles="Admin">
-                        <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
-                        <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                         <Authorized>
+                            <button class="input-zone p-3 m-2" style="float: left;" @onclick="HandleRestartClick">Restart Application</button>
+                            <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
+                        </Authorized>
                     </AuthorizeView>
                 </div>
             }

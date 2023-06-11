@@ -33,16 +33,16 @@
             <input type="checkbox" checked="@Item.Active" @onchange="() => ClickActive(Item)">
         </td>
         <td>
-            <button class="btn btn-outline-danger icon-button mb-1 align-top" @onclick="() => DeleteItem(Item)" title="Delete"><i class="far fa-trash-alt"></i></button>
-            <button class="btn btn-outline-primary icon-button mb-1 align-top hide-on-mobile" @onclick="() => ShowEdit(Item)" title="Edit"><i class="far fa-edit"></i></button>
+        <button class="btn btn-outline-danger icon-button p-1 m-1 align-top" @onclick="() => DeleteItem(Item)" title="Delete"><i class="far fa-trash-alt"></i></button>
+        <button class="btn btn-outline-primary icon-button p-1 m-1 align-top hide-on-mobile" @onclick="() => ShowEdit(Item)" title="Edit"><i class="far fa-edit"></i></button>
             @if (ShowMoveButtons && appState.RecentCategoryId != Guid.Empty)
             {
-                <div class="d-inline-block row pl-1">
-                    <div class="col-12">
-                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, MoveDirection.Up))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
+            <div class="d-inline-block row p-0 pl-1 no-border">
+                    <div class="col-12 m-0 p-0">
+                    <button class="btn btn-sm btn-outline-dark icon-button p-1 m-1" @onclick="@(() => MoveItem(Item, MoveDirection.Up))" title="Move up"><i class="fa-solid fa-angles-up"></i></button>
                     </div>
-                    <div class="col-12">
-                        <button class="btn btn-sm btn-outline-dark icon-button mb-1" @onclick="@(() => MoveItem(Item, MoveDirection.Down))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
+                    <div class="col-12 m-0 p-0">
+                    <button class="btn btn-sm btn-outline-dark icon-button p-1 m-1" @onclick="@(() => MoveItem(Item, MoveDirection.Down))" title="Move down"><i class="fa-solid fa-angles-down"></i></button>
                     </div>
                 </div>
             }
@@ -101,8 +101,8 @@
                 <input type="checkbox" for="active" class="form-controll no-border" @bind="@Item.Active" />
             </td>
             <td>
-                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditItem(Item)" title="Save"><i class="far fa-save"></i></button>
-                <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(Item)" title="Cancel"><i class="far fa-window-close"></i></button>
+                <button class="btn btn-outline-primary icon-button p-1 m-1" @onclick="() => EditItem(Item)" title="Save"><i class="far fa-save"></i></button>
+                <button class="btn btn-outline-secondary icon-button p-1 m-1" @onclick="() => ShowEdit(Item)" title="Cancel"><i class="far fa-window-close"></i></button>
             </td>
             <td>
             </td>

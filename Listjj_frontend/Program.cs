@@ -40,6 +40,8 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ITagsService, TagsService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 //builder.Services.AddScoped<IFileService, FileService>();
 
 //mud blazor

@@ -7,7 +7,8 @@ namespace Listjj_frontend.Data
     {
         public MappingProfiles()
         { 
-            CreateMap<ApplicationUser, UserViewModel>();
+            CreateMap<ApplicationUser, UserViewModel>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom<UserRoleResolver>());
         }
     }
 }
