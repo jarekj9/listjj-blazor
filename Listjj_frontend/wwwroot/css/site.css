@@ -168,6 +168,7 @@ table {
 
     table > thead > tr > th {
         background-color: var(--notes-bar) !important;
+        color: var(--text-light);
         padding: 5px !important;
     }
 
