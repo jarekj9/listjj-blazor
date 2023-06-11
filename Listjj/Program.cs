@@ -12,7 +12,6 @@ namespace Listjj
     {
         public static void Main(string[] args)
         {
-            //CreateHostBuilder(args).Build().Run();
             var host = CreateWebHostBuilder(args).Build();
             using (var serviceScope = host.Services.CreateScope())
             {
