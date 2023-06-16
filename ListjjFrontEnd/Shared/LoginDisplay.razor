@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView>
+    <Authorized>
+        <CascadingAuthenticationState>
+            <p>Hello</p>
+        </CascadingAuthenticationState>
+        <a href="/logout">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/register">Register</a>
+        <a href="/login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView> 

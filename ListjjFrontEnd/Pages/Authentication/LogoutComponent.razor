@@ -1,0 +1,14 @@
+﻿@page "/logout"
+@using ListjjFrontEnd.Services.Abstract.Authentication;
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("/");
+    }
+
+}
