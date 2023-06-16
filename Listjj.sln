@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Listjj.Infrastructure", "Li
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{34920EAA-9815-4C08-9B78-87E0F82A91E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListjjTests", "ListjjTests\ListjjTests.csproj", "{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListjjTests", "ListjjTests\ListjjTests.csproj", "{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListjjFrontEnd", "ListjjFrontEnd\ListjjFrontEnd.csproj", "{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

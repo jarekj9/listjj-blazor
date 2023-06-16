@@ -5,6 +5,6 @@ namespace Listjj.Models
 {
   public class ApplicationUser : IdentityUser<Guid>
   {
-    public Guid ApiKey { get; set; }
+        public Guid ApiKey { get; set; }
   }
 }

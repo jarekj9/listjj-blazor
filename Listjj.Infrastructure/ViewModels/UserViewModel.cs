@@ -19,5 +19,6 @@ namespace Listjj.Infrastructure.ViewModels
         public string Role { get; set; }
 
         public bool IsEditing { get; set; }
+        public bool IsAuthenticated { get; set; }
     }
 }

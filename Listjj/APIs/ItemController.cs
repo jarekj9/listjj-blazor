@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using System.Web;
 using List.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Listjj.APIs
 {
@@ -28,6 +29,7 @@ namespace Listjj.APIs
             this.mapper = mapper;
         }
 
+        [Authorize]
         [Route("api/[controller]/all")]
         [HttpGet]
         public async Task<JsonResult> GetAllItems()
@@ -67,6 +69,7 @@ namespace Listjj.APIs
             return new JsonResult(itemsVms);
         }
 
+        [Authorize]
         [Route("api/[controller]/items_by_filter")]
         [HttpGet]
         public async Task<JsonResult> GetItemsByFilter(string searchWords, string fromDateStr, string toDateStr, string categoryId, string userId)

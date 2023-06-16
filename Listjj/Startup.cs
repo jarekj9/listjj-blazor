@@ -21,6 +21,9 @@ using Listjj.Repository;
 using Listjj.Transaction;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Listjj
 {
@@ -39,6 +42,17 @@ namespace Listjj
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            // CORS for Blazor WASM integration
+            services.AddCors(policy =>
+            {
+                policy.AddPolicy("_myAllowSpecificOrigins", builder =>
+                   builder.WithOrigins("https://localhost:7254")
+                   //builder.AllowAnyOrigin()
+                  .SetIsOriginAllowed((host) => true)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader());
+            });
 
             //using Microsoft.EntityFrameworkCore:
             services.AddDbContext<AppDbContext>(options =>
@@ -101,6 +115,23 @@ namespace Listjj
                 googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
                 googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
+
+            // enable JWT:
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["JwtIssuer"],
+                        ValidAudience = Configuration["JwtAudience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
+                    };
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -127,12 +158,13 @@ namespace Listjj
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection(); // unknown CORS issue if enabled
             app.UseStaticFiles();
 
             app.UseRouting();
 
             //Auth:
+            app.UseCors("_myAllowSpecificOrigins");
             app.UseAuthentication();
             app.UseAuthorization();
 
