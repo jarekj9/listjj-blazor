@@ -13,6 +13,7 @@ using System.Linq.Dynamic.Core;
 using System.Web;
 using List.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Listjj.APIs
 {
@@ -41,10 +42,10 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/items_by_userid")]
         [HttpGet]
-        public async Task<JsonResult> GetItemsByUserId(string userId)
+        public async Task<JsonResult> GetItemsByUserId()
         {
-            var userIdGuid = Guid.TryParse(userId, out var guid) ? guid : Guid.Empty;
-            var items = await unitOfWork.ListItems.GetAllByUserId(userIdGuid);
+            var userId = GetUserId();
+            var items = await unitOfWork.ListItems.GetAllByUserId(userId);
             var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
@@ -71,21 +72,20 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/items_by_filter")]
         [HttpGet]
-        public async Task<JsonResult> GetItemsByFilter(string searchWords, string fromDateStr, string toDateStr, string categoryId, string userId)
+        public async Task<JsonResult> GetItemsByFilter(string searchWords, string fromDateStr, string toDateStr, string categoryId)
         {
             searchWords = HttpUtility.UrlDecode(searchWords);
             var fromDate =   DateTime.TryParse(HttpUtility.UrlDecode(fromDateStr), out var parsedFrom) ? parsedFrom : DateTime.MinValue;
             var toDate = DateTime.TryParse(HttpUtility.UrlDecode(toDateStr), out var parsedTo) ? parsedTo : DateTime.MaxValue;
             var categoryIdGuid = Guid.TryParse(categoryId, out var parsedCategoryId) ? parsedCategoryId : Guid.Empty;
-            var userIdGuid = Guid.TryParse(userId, out var parsedUserId) ? parsedUserId : Guid.Empty;
-
-            var filter = MakeSearchFilter(userIdGuid, categoryIdGuid, fromDate, toDate, searchWords);
+            var filter = MakeSearchFilter(categoryIdGuid, fromDate, toDate, searchWords);
             var items = await unitOfWork.ListItems.ExecuteQuery(filter);
             var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
-        private Expression<Func<ListItem, bool>> MakeSearchFilter(Guid userId, Guid categoryId, DateTime fromDate, DateTime toDate, string searchText)
+        private Expression<Func<ListItem, bool>> MakeSearchFilter(Guid categoryId, DateTime fromDate, DateTime toDate, string searchText)
         {
+            var userId = GetUserId();
             Expression<Func<ListItem, bool>> filter = x => x.UserId == userId && x.Modified >= fromDate && x.Modified <= toDate;
 
             if (categoryId != Guid.Empty)
@@ -122,6 +122,11 @@ namespace Listjj.APIs
         public async Task<JsonResult> AddorUpdateItem([FromBody] ListItemViewModel itemVm)
         {
             var existingItem = await unitOfWork.ListItems.GetById(itemVm.Id);
+            itemVm.UserId = GetUserId();
+            if (itemVm.UserId == Guid.Empty)
+            {
+                return new JsonResult(false);
+            }
 
             if (existingItem != null)
             {
@@ -147,6 +152,12 @@ namespace Listjj.APIs
             unitOfWork.ListItems.Delete(id);
             await unitOfWork.Save();
             return new JsonResult(true);
+        }
+        private Guid GetUserId()
+        {
+            var userIdStr = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Guid.TryParse(userIdStr, out var parsed) ? parsed : Guid.Empty;
+            return userId;
         }
     }
 }

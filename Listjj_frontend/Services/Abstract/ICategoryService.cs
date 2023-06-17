@@ -4,11 +4,11 @@ namespace Listjj_frontend.Services.Abstract
 {
     public interface ICategoryService
     {
-        Task<List<CategoryViewModel>> GetAllByUserId(Guid userId);
+        Task<List<CategoryViewModel>> GetAllByUserId();
         Task<CategoryViewModel> GetById(Guid id);
         Task<bool> AddorUpdateCategory(CategoryViewModel category);
         Task<bool> DeleteCategory(Guid id);
-        Task<Guid> GetRecentCategoryByUserId(Guid userId);
-        Task<bool> UpdateRecentCategory(Guid userId, Guid recentCategoryId);
+        Task<Guid> GetRecentCategoryByUserId();
+        Task<bool> UpdateRecentCategory(Guid recentCategoryId);
     }
 }

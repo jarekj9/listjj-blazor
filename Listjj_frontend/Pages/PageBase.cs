@@ -37,9 +37,9 @@ namespace Listjj_frontend.Pages
                 string username = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
                 appState.SetLogin(true, idGuid, username);  // TODO: should be moved to some login class ?
             }
-            Categories = await CategoryService.GetAllByUserId(appState.UserId);
+            Categories = await CategoryService.GetAllByUserId();
 
-            appState.RecentCategoryId = await CategoryService.GetRecentCategoryByUserId(appState.UserId);
+            appState.RecentCategoryId = await CategoryService.GetRecentCategoryByUserId();
             if (appState.RecentCategoryId != Guid.Empty)
             {
                 Items = await ItemService.GetItemsByCategoryId(appState.RecentCategoryId);

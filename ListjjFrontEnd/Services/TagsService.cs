@@ -10,15 +10,15 @@ namespace ListjjFrontEnd.Services
             this.apiClient = apiClient;
         }
 
-        public async Task<List<string>> GetByUserId(Guid userId)
+        public async Task<List<string>> GetByUserId()
         {
-            var response = await apiClient.Get<List<string>>($"/api/tags/get_by_userid?id={userId}");
+            var response = await apiClient.Get<List<string>>($"/api/tags/get_by_userid");
             var tags = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<string>();
             return tags;
         }
-        public async Task<bool> UpdateByUserId(Guid userId, List<string> tags)
+        public async Task<bool> UpdateByUserId(List<string> tags)
         {
-            var response = await apiClient.Post<List<string>, bool>($"/api/tags/{userId}/update", tags);
+            var response = await apiClient.Post<List<string>, bool>($"/api/tags/update", tags);
             return response.HttpResponse.IsSuccessStatusCode;
         }
     }

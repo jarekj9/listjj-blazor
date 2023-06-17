@@ -12,9 +12,9 @@ namespace ListjjFrontEnd.Services
             this.apiClient = apiClient;
         }
 
-        public async Task<List<CategoryViewModel>> GetAllByUserId(Guid userId)
+        public async Task<List<CategoryViewModel>> GetAllByUserId()
         {
-            var response = await apiClient.Get<List<CategoryViewModel>>($"/api/category/categories_by_userid?userId={userId}");
+            var response = await apiClient.Get<List<CategoryViewModel>>($"/api/category/categories_by_userid");
             var categories = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<CategoryViewModel>();
             return categories;
         }
@@ -38,16 +38,16 @@ namespace ListjjFrontEnd.Services
             return response.HttpResponse.IsSuccessStatusCode;
         }
 
-        public async Task<Guid> GetRecentCategoryByUserId(Guid userId)
+        public async Task<Guid> GetRecentCategoryByUserId()
         {
-            var response = await apiClient.Get<Guid>($"/api/category/recent_categoryid_by_userid?userId={userId}");
+            var response = await apiClient.Get<Guid>($"/api/category/recent_categoryid_by_userid");
             var categoryId = response.HttpResponse.IsSuccessStatusCode ? response.Result : Guid.Empty;
             return categoryId;
         }
 
-        public async Task<bool> UpdateRecentCategory(Guid userId, Guid recentCategoryId)
+        public async Task<bool> UpdateRecentCategory(Guid recentCategoryId)
         {
-            var updateCategoryRequest = new UpdateCategoryRequest() { UserId = userId, RecentCategoryId = recentCategoryId };
+            var updateCategoryRequest = new UpdateCategoryRequest() { RecentCategoryId = recentCategoryId };
             var response = await apiClient.Post<UpdateCategoryRequest, bool>(
                 $"/api/category/update_recent_category", updateCategoryRequest
             );

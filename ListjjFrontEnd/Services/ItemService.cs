@@ -39,19 +39,19 @@ namespace ListjjFrontEnd.Services
             return items;
         }
 
-        public async Task<List<ListItemViewModel>> GetAllByUserId(Guid userId)
+        public async Task<List<ListItemViewModel>> GetAllByUserId()
         {
-            var response = await apiClient.Get<List<ListItemViewModel>>($"/api/item/items_by_userid?userId={userId}");
+            var response = await apiClient.Get<List<ListItemViewModel>>($"/api/item/items_by_userid");
             var items = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<ListItemViewModel>();
             return items;
         }
-        public async Task<List<ListItemViewModel>> GetItemsByFilter(string searchWords, DateTime? fromDate, DateTime? toDate, Guid categoryId, Guid userId)
+        public async Task<List<ListItemViewModel>> GetItemsByFilter(string searchWords, DateTime? fromDate, DateTime? toDate, Guid categoryId)
         {
             searchWords = HttpUtility.UrlEncode(searchWords);
             var fromDateStr = HttpUtility.UrlEncode(fromDate.ToString());
             var toDateStr = HttpUtility.UrlEncode(toDate.ToString());
             var response = await apiClient.Get<List<ListItemViewModel>>(
-                $"/api/item/items_by_filter?searchWords={searchWords}&fromDateStr={fromDateStr}&toDateStr={toDateStr}&categoryId={categoryId}&userId={userId}");
+                $"/api/item/items_by_filter?searchWords={searchWords}&fromDateStr={fromDateStr}&toDateStr={toDateStr}&categoryId={categoryId}");
             var items = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<ListItemViewModel>();
             return items;
         }
@@ -90,9 +90,7 @@ namespace ListjjFrontEnd.Services
                 nextItem.SequenceNumber = movedItemSequence;
                 response = await AddorUpdateItem(movedItem) && await AddorUpdateItem(nextItem);
             }
-            
             return response;
         }
-
     }
 }

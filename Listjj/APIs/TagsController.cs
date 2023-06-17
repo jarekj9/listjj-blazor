@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Listjj.APIs
 {
@@ -22,20 +23,26 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/get_by_userid")]
         [HttpGet]
-        public async Task<JsonResult> GetByUserId(string id)
+        public async Task<JsonResult> GetByUserId()
         {
-            var userIdGuid = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
-            var usersTags = await tagsCacheService.GetTagsSelectionAsync(userIdGuid);
+            var userId = GetUserId();
+            var usersTags = await tagsCacheService.GetTagsSelectionAsync(userId);
             return new JsonResult(usersTags);
         }
 
-        [Route("api/[controller]/{userId}/update")]
+        [Route("api/[controller]/update")]
         [HttpPost]
-        public async Task<JsonResult> AddorUpdateCategory(string userId, [FromBody] List<string> tags)
+        public async Task<JsonResult> AddorUpdateCategory([FromBody] List<string> tags)
         {
-            var userIdGuid = Guid.TryParse(userId, out var guid) ? guid : Guid.Empty;
-            await tagsCacheService.UpdateCache(userIdGuid, tags);
+            var userId = GetUserId();
+            await tagsCacheService.UpdateCache(userId, tags);
             return new JsonResult(true);
+        }
+        private Guid GetUserId()
+        {
+            var userIdStr = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Guid.TryParse(userIdStr, out var parsed) ? parsed : Guid.Empty;
+            return userId;
         }
     }
 }

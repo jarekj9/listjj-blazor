@@ -6,27 +6,30 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Listjj.Models;
-using Listjj.Pages;
 using System.Collections.Generic;
-using Listjj.Service;
 using Listjj.Infrastructure.DTOs;
-using Listjj.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Listjj.APIs
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CategoryController> logger;
         private readonly IMapper mapper;
         private readonly ICategoryCacheService categoryCacheService;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper, ICategoryCacheService categoryCacheService)
+        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper, ICategoryCacheService categoryCacheService, UserManager<ApplicationUser> userManager)
         {
             this.unitOfWork = unitOfWork;
             this.logger = logger;
             this.mapper = mapper;
             this.categoryCacheService = categoryCacheService;
+            this.userManager = userManager;
         }
 
         [Route("api/[controller]/all")]
@@ -50,9 +53,9 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/categories_by_userid")]
         [HttpGet]
-        public async Task<JsonResult> GetCategoriesByUserId(string userId)
+        public async Task<JsonResult> GetCategoriesByUserId()
         {
-            var userIdGuid = Guid.TryParse(userId, out var guid) ? guid : Guid.Empty;
+            var userIdGuid = GetUserId();
             var categories = await unitOfWork.Categories.GetAllByUserId(userIdGuid);
             var categoriesVms = mapper.Map<List<CategoryViewModel>>(categories);
             return new JsonResult(categoriesVms);
@@ -60,9 +63,9 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/recent_categoryid_by_userid")]
         [HttpGet]
-        public async Task<JsonResult> GetRecentCategoryIdByUserId(string userId)
+        public async Task<JsonResult> GetRecentCategoryIdByUserId()
         {
-            var userIdGuid = Guid.TryParse(userId, out var guid) ? guid : Guid.Empty;
+            var userIdGuid = GetUserId();
             var recentCategoryId = await categoryCacheService.GetRecentCategoryAsync(userIdGuid);
             return new JsonResult(recentCategoryId);
         }
@@ -71,7 +74,8 @@ namespace Listjj.APIs
         [HttpPost]
         public async Task<JsonResult> GetRecentCategoryIdByUserId([FromBody]UpdateCategoryRequest updateCategoryRequest)
         {
-            await categoryCacheService.UpdateRecentCategoryCache(updateCategoryRequest.UserId, updateCategoryRequest.RecentCategoryId);
+            var userIdGuid = GetUserId();
+            await categoryCacheService.UpdateRecentCategoryCache(userIdGuid, updateCategoryRequest.RecentCategoryId);
             return new JsonResult(true);
         }
 
@@ -80,8 +84,12 @@ namespace Listjj.APIs
         public async Task<JsonResult> AddorUpdateCategory([FromBody] CategoryViewModel categoryVm)
         {
             var existingCategory = await unitOfWork.Categories.GetById(categoryVm.Id);
-
-            if(existingCategory != null)
+            categoryVm.UserId = GetUserId();
+            if (categoryVm.UserId == Guid.Empty)
+            {
+                return new JsonResult(false);
+            }
+            if (existingCategory != null)
             {
                 mapper.Map<CategoryViewModel, Category>(categoryVm, existingCategory);
                 unitOfWork.Categories.Update(existingCategory);
@@ -103,6 +111,12 @@ namespace Listjj.APIs
             unitOfWork.Categories.Delete(id);
             await unitOfWork.Save();
             return new JsonResult(true);
+        }
+        private Guid GetUserId()
+        {
+            var userIdStr = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = Guid.TryParse(userIdStr, out var parsed) ? parsed : Guid.Empty;
+            return userId;
         }
     }
 }
