@@ -1,0 +1,14 @@
+﻿using Listjj.Infrastructure.ViewModels;
+
+namespace ListjjFrontEnd.Services.Abstract
+{
+    public interface ICategoryService
+    {
+        Task<List<CategoryViewModel>> GetAllByUserId(Guid userId);
+        Task<CategoryViewModel> GetById(Guid id);
+        Task<bool> AddorUpdateCategory(CategoryViewModel category);
+        Task<bool> DeleteCategory(Guid id);
+        Task<Guid> GetRecentCategoryByUserId(Guid userId);
+        Task<bool> UpdateRecentCategory(Guid userId, Guid recentCategoryId);
+    }
+}
