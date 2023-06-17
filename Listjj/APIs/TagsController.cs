@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Listjj.APIs
 {
+    [Authorize]
     public class TagsController : Controller
     {
         private readonly ILogger<TagsController> logger;

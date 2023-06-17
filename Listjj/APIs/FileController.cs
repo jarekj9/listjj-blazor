@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Listjj.Abstract;
 using Listjj.Infrastructure.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Listjj.APIs
 {
+    [Authorize]
     public class FileController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
