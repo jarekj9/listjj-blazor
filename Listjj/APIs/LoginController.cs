@@ -10,6 +10,9 @@ using System;
 using Listjj.Infrastructure.Models;
 using Listjj.Infrastructure.Data;
 using Listjj.Models;
+using StackExchange.Redis;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Listjj.APIs
 {
@@ -19,12 +22,14 @@ namespace Listjj.APIs
     {
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public LoginController(IConfiguration configuration,
-                               SignInManager<ApplicationUser> signInManager)
+                               SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
         {
             _configuration = configuration;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -35,11 +40,17 @@ namespace Listjj.APIs
             if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
             var user = await _signInManager.UserManager.FindByEmailAsync(login.Email);
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, login.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
+
+            var usersRole = (await _signInManager.UserManager.GetRolesAsync(user)).FirstOrDefault();
+            if(!string.IsNullOrWhiteSpace(usersRole))
+            { 
+                claims.Add(new Claim(ClaimTypes.Role, usersRole));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

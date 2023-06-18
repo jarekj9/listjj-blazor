@@ -27,7 +27,7 @@ namespace ListjjFrontEnd.Services.Authentication
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)
         {
-            var response = await _httpClient.PostAsJsonAsync<RegisterModel>("http://localhost:5000/api/accounts", registerModel);
+            var response = await _httpClient.PostAsJsonAsync<RegisterModel>("http://localhost:5000/api/accounts/register", registerModel);
             var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
             return result;
         }

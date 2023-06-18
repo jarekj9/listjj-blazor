@@ -1,41 +1,21 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
-@using ListjjFrontEnd.Services.Abstract
-@using Listjj.Infrastructure.ViewModels
 
 <PageTitle>Index</PageTitle>
-
-<h1>Hello, world!</h1>
 
 Welcome to your new app.
 <AuthorizeView>
     <Authorized>
         <h1>AUTHORIZED</h1>
-        @foreach(var category in Categories)
-        {
-            <p>@category.Name</p>
-        }
     </Authorized>
 </AuthorizeView>
-
-<SurveyPrompt Title="How is Blazor working for you?" />
 
 
 @code 
 {
-    [Inject] public IItemService ItemService { get; set; }
-    [Inject] public ICategoryService CategoryService { get; set; }
-    public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-
+    [Inject] protected NavigationManager NavManager { get; set; }
     protected override async Task OnInitializedAsync() 
     {
-
-        var category = new CategoryViewModel() { Name="testing666"};
-        var x = await CategoryService.AddorUpdateCategory(category);
-
-        Categories = await CategoryService.GetAllByUserId();
-
+        NavManager.NavigateTo("list");
     }
-
-
 }

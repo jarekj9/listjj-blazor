@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace Listjj.APIs
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
         private static UserViewModel LoggedOutUser = new UserViewModel { IsAuthenticated = false };
-
         private readonly UserManager<ApplicationUser> _userManager;
+
 
         public AccountsController(UserManager<ApplicationUser> userManager)
         {
@@ -23,11 +22,16 @@ namespace Listjj.APIs
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] RegisterModel model)
+        [Route("api/[controller]/register")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var newUser = new ApplicationUser { UserName = model.Email, Email = model.Email };
-
             var result = await _userManager.CreateAsync(newUser, model.Password);
+
+            if(newUser.Email == "admin@Listjj")
+            {
+                await _userManager.AddToRoleAsync(newUser, "Admin");
+            }
 
             if (!result.Succeeded)
             {
