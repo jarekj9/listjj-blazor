@@ -1,19 +1,35 @@
+using Listjj.Infrastructure.ViewModels;
 using ListjjFrontEnd.Services.Abstract;
 
 namespace ListjjFrontEnd.Services
 {
     public class UserService : IUserService
     {
-        //private readonly UserManager<ApplicationUser> userManager;
-        //public UserService(UserManager<ApplicationUser> userManager)
-        //{
-        //    this.userManager = userManager;
-        //}
+        private readonly IApiClient apiClient;
+        public UserService(IApiClient apiClient)
+        {
+            this.apiClient = apiClient;
+        }
 
-        //public string GetRole(ApplicationUser user)
-        //{
-        //    var roles = Task.Run(() => userManager.GetRolesAsync(user)).Result as List<string>;
-        //    return roles.Count > 0 ? roles[0] : "";
-        //}
+        public async Task<List<UserViewModel>> GetAllUsers()
+        {
+            var response = await apiClient.Get<List<UserViewModel>>($"/api/users/all");
+            var users = response.HttpResponse.IsSuccessStatusCode ? response.Result : new List<UserViewModel>();
+            return users;
+        }
+
+        public async Task<bool> AddorUpdate(UserViewModel user)
+        {
+            var response = await apiClient.Post<UserViewModel,bool>($"/api/users/addorupdate", user);
+            var result = response.HttpResponse.IsSuccessStatusCode ? response.Result : false;
+            return result;
+        }
+
+        public async Task<bool> Delete(UserViewModel user)
+        {
+            var response = await apiClient.Post<UserViewModel, bool>($"/api/users/delete", user);
+            var result = response.HttpResponse.IsSuccessStatusCode ? response.Result : false;
+            return result;
+        }
     }
 }

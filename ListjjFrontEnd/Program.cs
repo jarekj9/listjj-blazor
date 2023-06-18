@@ -23,6 +23,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // General app services
 builder.Services.AddScoped<IApiClient, ApiClient>();
 builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileService, FileService>();

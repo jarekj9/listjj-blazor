@@ -1,9 +1,11 @@
-
+using Listjj.Infrastructure.ViewModels;
 
 namespace ListjjFrontEnd.Services.Abstract
 {
     public interface IUserService
     {
-        //string GetRole(ApplicationUser user);
+        Task<List<UserViewModel>> GetAllUsers();
+        Task<bool> AddorUpdate(UserViewModel user);
+        Task<bool> Delete(UserViewModel user);
     }
 }

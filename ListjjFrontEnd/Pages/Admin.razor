@@ -2,6 +2,7 @@
 @using ListjjFrontEnd.Services.Abstract
 @using ListjjFrontEnd.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using ListjjFrontEnd.Pages.Components
 @inherits PageBase
 
 @layout ListjjLayout
@@ -53,7 +54,7 @@
                                     <option value="">None</option>
                                     @foreach (var role in allRoles)
                                     {
-                                        <option value="@role">@role</option>
+                                        <option value="@role.Name">@role.Name</option>
                                     }
                                 </select>
                             </td>
@@ -74,7 +75,9 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
-    private List<string> allRoles = new List<string>();
+    [Inject] private IUserService UserService { get; set; }
+    [Inject] private IRolesService RolesService { get; set; }
+    private List<RoleViewModel> allRoles = new List<RoleViewModel>();
     private List<UserViewModel> UsersVm = new List<UserViewModel>();
 
     protected override async Task OnInitializedAsync()
@@ -84,9 +87,8 @@
 
     private new async Task LoadData()
     {
-        //allRoles = RoleManager.Roles.Select(r => r.Name).ToList();
-        //var users = (await UnitOfWork.Users.GetAll()).ToList();
-        //UsersVm = Mapper.Map<List<ApplicationUser>, List<UserViewModel>>(users);
+        allRoles = await RolesService.GetAllRoles();
+        UsersVm = await UserService.GetAllUsers();
     }
 
     public async Task UpdateList()
@@ -97,15 +99,20 @@
 
     private async Task DeleteUser(UserViewModel userVm)
     {
-        //bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete user {userVm.Email} ?");
-        //if (!isConfirmed)
-        //{
-        //    return;
-        //}
-        //var user = await UserManager.FindByIdAsync(userVm.Id.ToString());
-        //await UserManager.DeleteAsync(user);
-        //await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {user.UserName}");
-        await UpdateList();
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete user {userVm.Email} ?");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        if(await UserService.Delete(userVm))
+        {
+            await JSRuntime.InvokeAsync<bool>("notify", $"Deleted {userVm.Email}");
+            await UpdateList();
+        }
+        else
+        {
+            await JSRuntime.InvokeAsync<bool>("notifyError", $"Can't delete {userVm.Email}");
+        }
     }
 
     private void ShowEdit(UserViewModel userVm)
@@ -115,24 +122,17 @@
 
     protected async Task EditUser(UserViewModel userVm)
     {
-        //var user = await UserManager.FindByIdAsync(userVm.Id.ToString());
-        //await UserManager.SetUserNameAsync(user, userVm.Email);
-        //if(userVm.Password != "")
-        //{
-        //    await UserManager.RemovePasswordAsync(user);
-        //    await UserManager.AddPasswordAsync(user, userVm.Password);
-        //}
-
-        //var assignedRoles = await UserManager.GetRolesAsync(user);
-        //await UserManager.RemoveFromRolesAsync(user, assignedRoles);
-        //if (!string.IsNullOrEmpty(userVm.Role))
-        //{
-        //    await UserManager.AddToRoleAsync(user, userVm.Role);
-        //}
-
-        userVm.IsEditing = false;
-        await JSRuntime.InvokeAsync<bool>("notify", $"Updated {userVm.Email}");
-        await UpdateList();
+        var result = await UserService.AddorUpdate(userVm);
+        if (result)
+        {
+            userVm.IsEditing = false;
+            await JSRuntime.InvokeAsync<bool>("notify", $"Updated {userVm.Email}");
+            await UpdateList();
+        }
+        else
+        {
+            await JSRuntime.InvokeAsync<bool>("notifyError", $"Can't update {userVm.Email}");
+        }
     }
 
 }
