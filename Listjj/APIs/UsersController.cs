@@ -44,13 +44,16 @@ namespace Listjj.APIs
             var user = await userManager.FindByIdAsync(userVm.Id.ToString());
             if (user == null)
             {
-                var newUser = mapper.Map<ApplicationUser>(userVm);
-                var addResult = await userManager.CreateAsync(newUser);
-                return new JsonResult(addResult.Succeeded);
+                user = mapper.Map<ApplicationUser>(userVm);
+                user.UserName = user.Email;
+                result = (await userManager.CreateAsync(user)).Succeeded;
+            }
+            else
+            {
+                mapper.Map<UserViewModel, ApplicationUser>(userVm, user);
+                result = (await userManager.UpdateAsync(user)).Succeeded;
             }
 
-            mapper.Map<UserViewModel, ApplicationUser>(userVm, user);
-            result = (await userManager.UpdateAsync(user)).Succeeded;
             result = await SetUsersPassword(user, userVm.Password) & result ? result : false;
             result = await SetUsersRole(user, userVm.Role) & result ? result : false;
             result = (await userManager.SetUserNameAsync(user, userVm.Email)).Succeeded & result ? result : false;

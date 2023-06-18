@@ -1,5 +1,6 @@
 @inject IJSRuntime JSRuntime
 @using Listjj.Infrastructure.ViewModels
+@using ListjjFrontEnd.Services.Abstract
 
 @inherits PageBase
 
@@ -47,24 +48,22 @@
 
     [Parameter] public EventCallback UpdateList { get; set; }
     [Parameter] public List<RoleViewModel> AllRoles { get; set; }
+    [Inject] private IUserService UserService { get; set; }
     private UserViewModel userVm = new UserViewModel();
-
-
 
     protected async Task HandleValidSubmit()
     {
-        //var newUser = new ApplicationUser();
-        //newUser.UserName = userVm.Email;
-        //newUser.Email = userVm.Email;
-        //await UserManager.CreateAsync(newUser);
-        //await UserManager.AddPasswordAsync(newUser, userVm.Password);
-        //if (!string.IsNullOrEmpty(userVm.Role))
-        //{
-        //    await UserManager.AddToRoleAsync(newUser, userVm.Role);
-        //}
-        //await JSRuntime.InvokeAsync<bool>("notify", $"Added {userVm.Email}");
-        //await UpdateList.InvokeAsync();
-        //userVm = new UserViewModel();
+        var result = await UserService.AddorUpdate(userVm);
+        if (result)
+        {
+            userVm.IsEditing = false;
+            await JSRuntime.InvokeAsync<bool>("notify", $"Added {userVm.Email}");
+            userVm = new UserViewModel();
+            await UpdateList.InvokeAsync();
+        }
+        else
+        {
+            await JSRuntime.InvokeAsync<bool>("notifyError", $"Can't add {userVm.Email}");
+        }
     }
-
 }
