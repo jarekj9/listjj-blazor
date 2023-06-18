@@ -5,15 +5,13 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Listjj", "Listjj\Listjj.csproj", "{EB24BD38-B35A-4062-96E7-94E265FAD960}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Listjj_frontend", "Listjj_frontend\Listjj_frontend.csproj", "{3C92EC8E-EA0B-4A02-A663-775DEB216286}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Listjj.Infrastructure", "Listjj.Infrastructure\Listjj.Infrastructure.csproj", "{1AFBCE10-03B5-4F94-A44C-AD4D13F7590A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{34920EAA-9815-4C08-9B78-87E0F82A91E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListjjTests", "ListjjTests\ListjjTests.csproj", "{20A0A7B8-96EE-4E3A-84E2-DBD8DAD5DBF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListjjFrontEnd", "ListjjFrontEnd\ListjjFrontEnd.csproj", "{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListjjFrontEnd", "ListjjFrontEnd\ListjjFrontEnd.csproj", "{5FA47A0C-4635-46AC-AA6D-26B2BC8BA2BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{EB24BD38-B35A-4062-96E7-94E265FAD960}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB24BD38-B35A-4062-96E7-94E265FAD960}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB24BD38-B35A-4062-96E7-94E265FAD960}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C92EC8E-EA0B-4A02-A663-775DEB216286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C92EC8E-EA0B-4A02-A663-775DEB216286}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C92EC8E-EA0B-4A02-A663-775DEB216286}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C92EC8E-EA0B-4A02-A663-775DEB216286}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AFBCE10-03B5-4F94-A44C-AD4D13F7590A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1AFBCE10-03B5-4F94-A44C-AD4D13F7590A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AFBCE10-03B5-4F94-A44C-AD4D13F7590A}.Release|Any CPU.ActiveCfg = Release|Any CPU

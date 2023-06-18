@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Listjj_frontend\Listjj_frontend.csproj" />
+    <ProjectReference Include="..\ListjjFrontEnd\ListjjFrontEnd.csproj" />
   </ItemGroup>
 
 </Project>

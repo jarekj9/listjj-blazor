@@ -1,6 +1,6 @@
 using Listjj.Infrastructure.ViewModels;
-using Listjj_frontend.Services;
-using Listjj_frontend.Services.Abstract;
+using ListjjFrontEnd.Services;
+using ListjjFrontEnd.Services.Abstract;
 using Moq;
 
 namespace ListjjTests

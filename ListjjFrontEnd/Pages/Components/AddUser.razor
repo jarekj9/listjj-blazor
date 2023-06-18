@@ -1,0 +1,70 @@
+@inject IJSRuntime JSRuntime
+@using Listjj.Infrastructure.ViewModels
+
+@inherits PageBase
+
+<EditForm Model="@userVm" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group p-3"> 
+        <div class="container-fluid pt-1">
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="email">Email: </label>
+                    <InputText Id="email" type="email" class="form-controll" @bind-Value="@userVm.Email" style="width: 70%; height: 100%;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel" for="passwordInput">Password: </label>
+                    <InputText Id="passwordInput" type="password" class="form-controll" @bind-Value="@userVm.Password" style="width: 70%; height: 100%;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap addDiv">
+                    <label class="control-label addLabel align-top" for="categoryDescription">Role: </label>
+                    <InputSelect id="roleselect"  @bind-Value="@userVm.Role">
+                        <option value="">None</option>
+                        @foreach (var role in AllRoles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </InputSelect>
+
+                </div>
+            <ValidationMessage For="@(() => userVm.Password)" />
+            <ValidationMessage For="@(() => userVm.Email)" />
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-nowrap mt-3 addDiv">
+                    <button type="submit" class="btn btn-outline-primary" value="save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter] public EventCallback UpdateList { get; set; }
+    [Parameter] public List<string> AllRoles { get; set; }
+    private UserViewModel userVm = new UserViewModel();
+
+
+
+    protected async Task HandleValidSubmit()
+    {
+        //var newUser = new ApplicationUser();
+        //newUser.UserName = userVm.Email;
+        //newUser.Email = userVm.Email;
+        //await UserManager.CreateAsync(newUser);
+        //await UserManager.AddPasswordAsync(newUser, userVm.Password);
+        //if (!string.IsNullOrEmpty(userVm.Role))
+        //{
+        //    await UserManager.AddToRoleAsync(newUser, userVm.Role);
+        //}
+        //await JSRuntime.InvokeAsync<bool>("notify", $"Added {userVm.Email}");
+        //await UpdateList.InvokeAsync();
+        //userVm = new UserViewModel();
+    }
+
+}
