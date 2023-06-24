@@ -62,7 +62,7 @@
                     <TagsInput Tags="Item.Tags" />
                 </CascadingValue>
                 <div class="mt-2 no-border">
-                    <FileUpload ItemVm="Item">
+                    <FileUpload ItemVm="Item" OnFileUpload="RefreshItem">
                         <FilesRows>
                             @if (Item?.Files?.Count > 0)
                             {
@@ -70,9 +70,8 @@
                                     <ul class="ml-3" style="overflow: visible;width:200%;">
                                         @foreach (var file in Item.Files)
                                         {
-                                            <span>file.Name</span>
                                             <li>
-                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file, Item)" title="Delete">
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file)" title="Delete">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                                 <a class="link-primary" @onclick="() => GetFile(file)">@file.Name</a> @(file.Size/1000) KB
@@ -147,7 +146,7 @@
         await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileSimpleVm.Name, "application/octet-stream", bytes);
     }
 
-    private async Task DeleteFile(FileSimpleViewModel fileVm, ListItemViewModel itemVm)
+    private async Task DeleteFile(FileSimpleViewModel fileVm)
     {
         bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", $"Are you sure, that you want to delete File {fileVm.Name} ?");
         if (!isConfirmed)
@@ -156,7 +155,7 @@
         }
         if(await FileService.DeleteFile(fileVm.Id))
         {
-            itemVm.Files.Remove(fileVm);
+            Item.Files.Remove(fileVm);
         }
     }
 
@@ -186,4 +185,10 @@
         itemVm.Active = !itemVm.Active;
         await ItemsService.AddorUpdateItem(itemVm);
     }
+
+    private async Task RefreshItem()
+    {
+        Item = await ItemsService.GetById(Item.Id);
+    }
+
 }

@@ -28,6 +28,11 @@ namespace Listjj.Repository
             return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(x => x.CategoryId == id).ToListAsync();
         }
 
+        public async Task<ListItem> GetByIdWithFiles(Guid id)
+        {
+            return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(i => i.Id == id).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> Move(Guid id, string direction)
         {
             var movedItem = await _context.ListItems.FirstOrDefaultAsync(i => i.Id == id);

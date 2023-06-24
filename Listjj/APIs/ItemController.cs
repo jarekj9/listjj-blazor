@@ -55,7 +55,7 @@ namespace Listjj.APIs
         public async Task<JsonResult> GetById(string id)
         {
             var itemIdGuid = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
-            var item = await unitOfWork.ListItems.GetById(itemIdGuid);
+            var item = await unitOfWork.ListItems.GetByIdWithFiles(itemIdGuid);
             var itemVm = mapper.Map<ListItemViewModel>(item);
             return new JsonResult(itemVm);
         }

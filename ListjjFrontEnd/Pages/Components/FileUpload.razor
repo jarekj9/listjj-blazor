@@ -22,6 +22,7 @@
 @code
 {
     [Parameter] public RenderFragment? FilesRows { get; set; }
+    [Parameter] public EventCallback OnFileUpload { get; set; }
     [Parameter] public ListItemViewModel ItemVm { get; set; }
     private bool filesLoading = false;
 
@@ -35,16 +36,17 @@
             var bytes = ms.ToArray();
             var fileVm = new FileViewModel()
                 {
-                    //Id = Guid.NewGuid(),
                     B64Bytes = Convert.ToBase64String(bytes),
                     ListItemId = ItemVm.Id,
                     Name = file.Name,
                     Size = bytes.Count()
                 };
 
-        var result = await FileService.AddFile(fileVm);
+            var result = await FileService.AddFile(fileVm);
         }
         filesLoading = false;
+
+        await OnFileUpload.InvokeAsync();
     }
 
 }

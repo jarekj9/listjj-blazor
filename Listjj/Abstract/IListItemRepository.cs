@@ -10,6 +10,7 @@ namespace Listjj.Abstract
     {
         Task<List<ListItem>> GetAllByUserId(Guid id);
         Task<List<ListItem>> GetAllByCategoryId(Guid id);
+        Task<ListItem> GetByIdWithFiles(Guid id);
         Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter);
         Task<bool> Move(Guid id, string direction);
     }
