@@ -19,7 +19,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @if (@Key == Guid.Empty)
+                @if (@Key == Guid.Empty.ToString() || @Key == string.Empty)
                 {
                     <p>If you forgot old key, new can be generated. Old key will be deleted.</p>
                 }
@@ -44,17 +44,17 @@
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }
-    private Guid Key { get; set; }
+    [Inject] public IExternalAccessApiService ExternalAccessApiService { get; set; }
+    private string Key { get; set; }
 
     protected async Task GenerateKey()
     {
-        //var user = await UnitOfWork.Users.GetById(appState.UserId);
-        //bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure you want to regenerate api key ?", $"Old is: '{user.ApiKey}'");
-        //if (!isConfirmed)
-        //{
-        //    return;
-        //}
-
-        //Key = await UnitOfWork.Users.CreateApiKey(user);
+        var userApiKey = await ExternalAccessApiService.GetApiKey();
+        bool isConfirmed = await JSRuntime.InvokeAsync<bool>("swalConfirm", "Are you sure you want to regenerate api key ?", $"Old is: '{userApiKey}'");
+        if (!isConfirmed)
+        {
+            return;
+        }
+        Key = await ExternalAccessApiService.GenerateApiKey();
     }
 }

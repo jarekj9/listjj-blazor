@@ -47,7 +47,7 @@ namespace Listjj
             services.AddCors(policy =>
             {
                 policy.AddPolicy("_myAllowSpecificOrigins", builder =>
-                   builder.WithOrigins("https://localhost:7254")
+                   builder.WithOrigins("https://localhost:7254", "https://listjj-stg.machinejj.duckdns.org:8086")
                    //builder.AllowAnyOrigin()
                   .SetIsOriginAllowed((host) => true)
                   .AllowAnyMethod()

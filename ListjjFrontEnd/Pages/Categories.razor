@@ -6,8 +6,18 @@
 @layout ListjjLayout
 @page "/categories"
 
-<AuthorizeView Roles="User, Admin">
-    <Authorized>
+@if (appState.IsLoggedIn)
+{
+    <AuthorizeView Roles="User, Admin">
+        <NotAuthorized>
+            <div class="alert alert-danger mt-2" role="alert">
+                ACCOUNT HAS BEEN NOT AUTHORIZED
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+}
+
+
         <MudLayout>
             <MudAppBar Elevation="1" Dense="true">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => isDrawerOpen = !isDrawerOpen)" />
@@ -17,7 +27,11 @@
                 <MudDrawerHeader>
                     <MudText Typo="Typo.h6">Add Category</MudText>
                 </MudDrawerHeader>
-                <AddCategory UpdateList="UpdateList"></AddCategory>
+                <AuthorizeView Roles="User, Admin">
+                    <Authorized>
+                        <AddCategory UpdateList="UpdateList"></AddCategory>
+                    </Authorized>
+                </AuthorizeView>
             </MudDrawer>
             <MudMainContent Class="pt-2 pl-2">
                 @if (Categories is null)
@@ -65,11 +79,6 @@
                 }
             </MudMainContent>
         </MudLayout>
-    </Authorized>
-    <NotAuthorized>
-        No access.
-    </NotAuthorized>
-</AuthorizeView>
 
 
 @code {

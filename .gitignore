@@ -7,3 +7,4 @@
 **/deploy-rpi.sh
 **/cert.pfx
 **/*.env
+published_wasm/

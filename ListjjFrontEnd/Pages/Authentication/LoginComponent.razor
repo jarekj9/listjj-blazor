@@ -3,7 +3,6 @@
 @using Listjj.Infrastructure.Models;
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
-
 <h1>Login</h1>
 
 @if (ShowErrors)
@@ -46,10 +45,9 @@
         ShowErrors = false;
 
         var result = await AuthService.Login(loginModel);
-
         if (result.Successful)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/list", true);
         }
         else
         {

@@ -40,8 +40,8 @@
                         <td></td>
                         <td>@user.Role</td>
                         <td>
-                            <button class="btn btn-outline-danger icon-button mb-1" @onclick="() => DeleteUser(user)" title="Delete"><i class="far fa-trash-alt"></i></button>
-                            <button class="btn btn-outline-primary icon-button mb-1 hide-on-mobile" @onclick="() => ShowEdit(user)" title="Edit"><i class="far fa-edit"></i></button>
+                            <button class="btn btn-outline-danger icon-button p-1 m-1" @onclick="() => DeleteUser(user)" title="Delete"><i class="far fa-trash-alt"></i></button>
+                            <button class="btn btn-outline-primary icon-button p-1 m-1 hide-on-mobile" @onclick="() => ShowEdit(user)" title="Edit"><i class="far fa-edit"></i></button>
                         </td>
                     </tr>
                     @if (user.IsEditing)
@@ -59,8 +59,8 @@
                                 </select>
                             </td>
                             <td>
-                                <button class="btn btn-outline-primary icon-button mb-1" @onclick="() => EditUser(user)" title="Save"><i class="far fa-save"></i></button>
-                                <button class="btn btn-outline-secondary icon-button mb-1" @onclick="() => ShowEdit(user)" title="Cancel"><i class="far fa-window-close"></i></button>
+                                <button class="btn btn-outline-primary icon-button p-1 m-1" @onclick="() => EditUser(user)" title="Save"><i class="far fa-save"></i></button>
+                                <button class="btn btn-outline-secondary icon-button p-1 m-1" @onclick="() => ShowEdit(user)" title="Cancel"><i class="far fa-window-close"></i></button>
                             </td>
                         </tr>
                     }

@@ -15,19 +15,23 @@ namespace ListjjFrontEnd.Services.Authentication
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
+        private readonly IConfiguration configuration;
+        private readonly string apiEndpoint;
 
         public AuthService(HttpClient httpClient,
                            AuthenticationStateProvider authenticationStateProvider,
-                           ILocalStorageService localStorage)
+                           ILocalStorageService localStorage, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _authenticationStateProvider = authenticationStateProvider;
             _localStorage = localStorage;
+            this.configuration = configuration;
+            apiEndpoint = configuration.GetValue<string>("ApiEndpoint");
         }
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)
         {
-            var response = await _httpClient.PostAsJsonAsync<RegisterModel>("http://localhost:5000/api/accounts/register", registerModel);
+            var response = await _httpClient.PostAsJsonAsync<RegisterModel>($"{apiEndpoint}/api/accounts/register", registerModel);
             var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
             return result;
         }
@@ -35,7 +39,7 @@ namespace ListjjFrontEnd.Services.Authentication
         public async Task<LoginResult> Login(LoginModel loginModel)
         {
             var loginAsJson = JsonSerializer.Serialize(loginModel);
-            var response = await _httpClient.PostAsync("http://localhost:5000/api/Login", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
+            var response = await _httpClient.PostAsync($"{apiEndpoint}/api/Login", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
             var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (!response.IsSuccessStatusCode)

@@ -52,8 +52,7 @@ namespace Listjj.APIs
             }
             Guid.TryParse(key, out var parsedKey);
             var user = await UnitOfWork.Users.GetByApiKey(parsedKey);
-            //var userId = UserService.FindUserIdByApiKey(parsedKey);
-            if (parsedKey == Guid.Empty || user.Id == new Guid())
+            if (user == null || parsedKey == Guid.Empty || user.Id == new Guid())
             {
                 return (success: false, message: "Unauthorized access.", userId: Guid.Empty);
             }

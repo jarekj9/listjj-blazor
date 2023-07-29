@@ -29,6 +29,7 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ITagsService, TagsService>();
+builder.Services.AddScoped<IExternalAccessApiService, ExternalAccessApiService>();
 
 
 builder.Services.AddMudServices();

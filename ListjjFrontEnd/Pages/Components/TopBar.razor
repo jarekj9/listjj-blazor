@@ -3,16 +3,16 @@
 <AuthorizeView>
     <Authorized>
         <span class="nav-item">
-            <a class="nav-link" href="/list">Items </a>
+            <a class="nav-link p-2" href="/list">Items </a>
         </span>
         <span class="nav-item">
-            <a class="nav-link" href="/categories">Categories </a>
+            <a class="nav-link p-2" href="/categories">Categories </a>
         </span>
         <span class="nav-item">
-            <a class="nav-link" href="logout" title="Logged in as @context.User.Identity.Name">Log out</a>
+            <a class="nav-link p-2" href="logout" title="Logged in as @context.User.Identity.Name">Log out</a>
         </span>
         <span class="nav-item">
-            <a class="nav-link" href="#" @onclick="ScrollTopButtonClick" @onclick:preventDefault>Scroll Top</a>
+            <a class="nav-link p-2" href="#" @onclick="ScrollTopButtonClick" @onclick:preventDefault>Scroll Top</a>
         </span>
     </Authorized>
     <NotAuthorized>

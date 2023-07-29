@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net;
 
 namespace ListjjFrontEnd.Services
 {
@@ -16,12 +17,14 @@ namespace ListjjFrontEnd.Services
         private readonly IConfiguration configuration;
         private readonly string apiEndpoint;
         private readonly ILocalStorageService localStorage;
+        private readonly IAuthService authService;
 
-        public ApiClient(HttpClient httpClient, IConfiguration configuration, ILocalStorageService localStorage)
+        public ApiClient(HttpClient httpClient, IConfiguration configuration, ILocalStorageService localStorage, IAuthService authService)
         {
             this.httpClient = httpClient;
             this.configuration = configuration;
             this.localStorage = localStorage;
+            this.authService = authService;
             apiEndpoint = configuration.GetValue<string>("ApiEndpoint");
         }
 
@@ -30,6 +33,10 @@ namespace ListjjFrontEnd.Services
             await SetAuthToken();
 
             var response = await httpClient.GetAsync($"{apiEndpoint}{urlPart}");
+            if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                authService.Logout();
+            }
             if (response?.Content == null)
             {
                 return (default, null);
@@ -44,6 +51,7 @@ namespace ListjjFrontEnd.Services
             {
                 jsonResponseContent = default;
             }
+
             return (JsonConvert.DeserializeObject<TResponse>(responseContent), response);
         }
 
@@ -52,6 +60,10 @@ namespace ListjjFrontEnd.Services
             await SetAuthToken();
 
             var response = await httpClient.PostAsJsonAsync($"{apiEndpoint}{urlPart}", requestData);
+            if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                authService.Logout();
+            }
             if (response?.Content == null)
             {
                 return (default, null);
