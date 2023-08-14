@@ -43,7 +43,7 @@
         </MudDrawer>
         <MudMainContent Class="pt-1 pl-2">
 
-          <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" />
+        <SearchBox @ref="searchBox" CategoryFilterCategoryId="appState.RecentCategoryId" UpdateList="UpdateList" OnShowMoveButtonsClick="ShowMoveButtons" />
             @if (Items is null)
             {
                 <MudProgressCircular Color="Color.Dark" Style="height:70px;width:70px;" Indeterminate="true" />
@@ -138,6 +138,11 @@
         }
         StateHasChanged();
 
+    }
+    private void ShowMoveButtons()
+    {
+        showMoveButtons = !showMoveButtons;
+        StateHasChanged();
     }
 
 }
