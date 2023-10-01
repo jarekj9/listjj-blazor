@@ -114,6 +114,7 @@
     [Parameter] public ListItemViewModel Item { get; set; }
     [Parameter] public List<CategoryViewModel> CategoriesVm { get; set; }
     [Parameter] public EventCallback UpdateList { get; set; }
+    [Parameter] public EventCallback OnClickActive { get; set; }
     [CascadingParameter] public List<string> TagsSelection { get; set; }
     [Parameter] public bool ShowMoveButtons { get; set; }
     [Inject] protected Data.AppState? appState { get; set; }
@@ -182,6 +183,7 @@
     {
         itemVm.Active = !itemVm.Active;
         await ItemsService.AddorUpdateItem(itemVm);
+        await OnClickActive.InvokeAsync();
     }
 
     private async Task RefreshItem()

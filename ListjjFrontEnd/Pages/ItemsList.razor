@@ -74,7 +74,7 @@
                             @foreach (var item in Items)
                             {
                                 <CascadingValue Value="@TagsSelection">
-                                    <ItemsTableRow Item=item CategoriesVm="Categories" UpdateList="UpdateList" ShowMoveButtons=showMoveButtons />
+                                <ItemsTableRow Item=item CategoriesVm="Categories" UpdateList="UpdateList" OnClickActive="PopupWithActiveValuesSum" ShowMoveButtons=showMoveButtons />
                                 </CascadingValue>
                             }
                         </Authorized>
@@ -143,6 +143,12 @@
     {
         showMoveButtons = !showMoveButtons;
         StateHasChanged();
+    }
+
+    private async void PopupWithActiveValuesSum()
+    {
+        var sum = Items.Where(i => i.Active == true).Select(i => i.Value).Sum();
+        await JSRuntime.InvokeAsync<bool>("notifyInfo", $"Active Total: {sum}");
     }
 
 }

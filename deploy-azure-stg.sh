@@ -10,5 +10,6 @@ ansible machinejj -a 'docker image rm listjj_frontend_blazor_stg'
 ansible machinejj -a 'docker rm -f listjj_api_stg'
 ansible machinejj -a 'docker image rm listjj_blazor_api_stg'
 ansible machinejj -a 'docker-compose -f /home/jarek/docker/Listjj-stg/docker-compose.yml up -d'
+ansible machinejj -a 'docker image prune -f'
 
 

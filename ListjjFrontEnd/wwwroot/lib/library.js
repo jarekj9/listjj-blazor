@@ -76,6 +76,13 @@ window.notifyError = async function (text) {
     toastr.error(text);
     return true;
 }
+window.notifyInfo = async function (text) {
+    toastr.options.progressBar = true;
+    toastr.options.timeOut = 2000;
+    toastr.options.extendedTimeOut = 2000;
+    toastr.info(text);
+    return true;
+}
 
 // bootstrap modal
 window.modalClose = function() {
