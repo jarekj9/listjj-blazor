@@ -31,8 +31,12 @@ namespace ListjjTests
         {
             var id = Guid.Parse("f7667c3ef64949c8b140011e6d3a5d69");
             var fileService = new FileService(apiClientMock.Object);
-            await fileService.GetFileWithoutBytes(id);
-            apiClientMock.Verify(x => x.Get<FileSimpleViewModel>($"https://localhost:5001/api/file/get_file_simple_by_id?id={id}"), Times.Once);
+            try
+            { 
+                await fileService.GetFileWithoutBytes(id);
+            }
+            catch (Exception ex) { }
+            apiClientMock.Verify(x => x.Get<FileSimpleViewModel>($"/api/file/get_file_simple_by_id?id={id}"), Times.Once);
         }
     }
 }

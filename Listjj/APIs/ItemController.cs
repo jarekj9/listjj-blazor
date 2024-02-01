@@ -14,6 +14,8 @@ using System.Web;
 using List.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Listjj.Infrastructure.Enums;
+using static MudBlazor.CategoryTypes;
 
 namespace Listjj.APIs
 {
@@ -131,11 +133,13 @@ namespace Listjj.APIs
             if (existingItem != null)
             {
                 mapper.Map<ListItemViewModel, ListItem>(itemVm, existingItem);
+                existingItem.Modified = DateTime.UtcNow;
                 unitOfWork.ListItems.Update(existingItem);
             }
             else
             {
                 var newItem = mapper.Map<ListItem>(itemVm);
+                newItem.Modified = DateTime.UtcNow;
                 var allSequenceNumbers = (await unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
                 newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
                 unitOfWork.ListItems.Add(newItem);
@@ -144,6 +148,56 @@ namespace Listjj.APIs
             await unitOfWork.Save();
             return new JsonResult(true);
         }
+
+        [Route("api/[controller]/move")]
+        [HttpPost]
+        public async Task<JsonResult> Move([FromBody] Guid id, [FromQuery] MoveDirection direction)
+        {
+            var movedItem = await unitOfWork.ListItems.GetById(id);
+            var movedItemSequence = movedItem?.SequenceNumber ?? 0;
+
+            if (direction == MoveDirection.Up && movedItem != null)
+            {
+                var previousItem = (await unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
+                    .Where(i => i.SequenceNumber < movedItemSequence)
+                    .OrderBy(i => i.SequenceNumber).LastOrDefault();
+                var previousItemSequence = previousItem?.SequenceNumber ?? -1;
+                if (previousItemSequence == -1)
+                {
+                    return new JsonResult(false);
+                }
+                movedItem.SequenceNumber = previousItemSequence;
+                previousItem.SequenceNumber = movedItemSequence;
+                unitOfWork.ListItems.Update(movedItem);
+                unitOfWork.ListItems.Update(previousItem);
+            }
+
+            if (direction == MoveDirection.Down && movedItem != null)
+            {
+                var nextItem = (await unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
+                    .Where(i => i.SequenceNumber > movedItemSequence)
+                    .OrderBy(i => i.SequenceNumber).FirstOrDefault();
+                var nextItemSequence = nextItem?.SequenceNumber ?? -1;
+                if (nextItemSequence == -1)
+                {
+                    return new JsonResult(false);
+                }
+                movedItem.SequenceNumber = nextItemSequence;
+                nextItem.SequenceNumber = movedItemSequence;
+                unitOfWork.ListItems.Update(movedItem);
+                unitOfWork.ListItems.Update(nextItem);
+            }
+            try
+            {
+                await unitOfWork.Save();
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(false);
+            }
+        }
+
 
         [Route("api/[controller]/delete")]
         [HttpPost]
