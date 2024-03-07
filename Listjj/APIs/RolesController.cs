@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,User")]
     public class RolesController : Controller
     {
         private readonly ILogger<RolesController> logger;

@@ -14,7 +14,7 @@ using System.Security.Claims;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,User")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

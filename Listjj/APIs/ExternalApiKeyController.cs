@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Listjj.Models;
-using Listjj.Transaction;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,User")]
     public class ExternalApiKeyController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

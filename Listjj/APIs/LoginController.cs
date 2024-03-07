@@ -91,6 +91,7 @@ namespace Listjj.APIs
         {
             var claims = new List<Claim>
             {
+                new Claim("username", login.Email),
                 new Claim(ClaimTypes.Name, login.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
@@ -98,6 +99,7 @@ namespace Listjj.APIs
             var usersRole = (await _signInManager.UserManager.GetRolesAsync(user)).FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(usersRole))
             {
+                claims.Add(new Claim("role", usersRole));
                 claims.Add(new Claim(ClaimTypes.Role, usersRole));
             }
 

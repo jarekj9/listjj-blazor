@@ -1,5 +1,3 @@
-#!/bin/bash
-
 sudo docker build -f Dockerfile -t jarekj9/listjj_blazor_api:latest .
 docker push jarekj9/listjj_blazor_api:latest
 sudo docker build -f Dockerfile_frontend -t jarekj9/listjj_frontend_blazor:latest .

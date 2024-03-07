@@ -15,11 +15,10 @@ using List.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Listjj.Infrastructure.Enums;
-using static MudBlazor.CategoryTypes;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,User")]
     public class ItemController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

@@ -12,7 +12,7 @@ using System;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly ILogger<UsersController> logger;

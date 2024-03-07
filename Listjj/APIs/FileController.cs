@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Listjj.APIs
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,User")]
     public class FileController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
