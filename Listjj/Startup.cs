@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor.Services;
 
 using Listjj.Data;
 using Listjj.Service;
@@ -46,7 +45,7 @@ namespace Listjj
             // CORS for Blazor WASM integration
             services.AddCors(policy =>
             {
-                policy.AddPolicy("_myAllowSpecificOrigins", builder =>
+                policy.AddPolicy("CORSOrigins", builder =>
                    builder.WithOrigins(
                        "https://localhost:7254",
                        "https://localhost:3000",
@@ -54,10 +53,11 @@ namespace Listjj
                        "https://listjj-s2.machinejj.duckdns.org:8086",
                        "https://listjj-react.machinejj.duckdns.org:8086"
                     )
-                   //builder.AllowAnyOrigin()
+                  //builder.AllowAnyOrigin()
                   .SetIsOriginAllowed((host) => true)
                   .AllowAnyMethod()
-                  .AllowAnyHeader());
+                  .AllowAnyHeader()
+                  .AllowCredentials());
             });
 
             //using Microsoft.EntityFrameworkCore:
@@ -93,9 +93,6 @@ namespace Listjj
 
             //monitoring number of users connections
             services.AddSingleton<CircuitHandler, CircuitHandlerService>();
-
-            //mud blazor
-            services.AddMudServices();
 
             //for APIs:
             services.AddMvc(setupAction: options => options.EnableEndpointRouting = false);
@@ -170,7 +167,8 @@ namespace Listjj
             app.UseRouting();
 
             //Auth:
-            app.UseCors("_myAllowSpecificOrigins");
+            app.UseCors("CORSOrigins");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
