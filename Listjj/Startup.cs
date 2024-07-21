@@ -5,11 +5,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using System.Net.Security;
+using System.Security.Authentication;
 
 using Listjj.Data;
 using Listjj.Service;
 using Listjj.Abstract;
 using Listjj.Models;
+using Listjj.Consumers;
+using Listjj.Infrastructure.Events;
+
 
 // Auth:
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +29,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Listjj
 {
@@ -134,6 +142,49 @@ namespace Listjj
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
                     };
                 });
+
+            ////////////////////////// Masstransit
+            services.AddScoped<IProducerService, ProducerService>();
+            var queuePrefix = "listjj";
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            services.AddMassTransit(config =>
+            {
+                config.AddConsumer<TestEventConsumer>();
+                config.UsingRabbitMq((context, cfg) =>
+                {
+                    config.AddConsumer<TestEventConsumer>();
+                    var rabbitMqTlsConfig = Configuration.GetSection("RabbitMqTlsConfig");
+                    if (rabbitMqTlsConfig.GetValue<bool>("UseTls"))
+                    {
+                        cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
+                        {
+                            h.Username(rabbitMqTlsConfig["UserName"]);
+                            h.Password(rabbitMqTlsConfig["Password"]);
+                            h.UseSsl(s =>
+                            {
+                                s.Protocol = SslProtocols.Tls12;
+                                s.ServerName = rabbitMqTlsConfig["ServerCertCommonName"];
+                                s.AllowPolicyErrors(SslPolicyErrors.RemoteCertificateChainErrors);
+                                s.Certificate = new X509Certificate2(
+                                    rabbitMqTlsConfig["ClientCertPath"], rabbitMqTlsConfig["ClientCertPassword"],
+                                    X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable
+                                );
+                            });
+                        });
+                    }
+                    else
+                    {
+                        cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
+                        {
+                            h.Username(rabbitMqTlsConfig["UserName"]);
+                            h.Password(rabbitMqTlsConfig["Password"]);
+                        });
+                    }
+                    cfg.ReceiveEndpoint($"{queuePrefix}_{nameof(TestEvent)}", c => { c.ConfigureConsumer<TestEventConsumer>(context); });
+                });
+            });
+            //////////////////////////
+
 
         }
 
