@@ -5,7 +5,7 @@
    vmImage: 'ubuntu-latest' 
 
  variables:
-   imageName: 'Listjj-image'
+   imageName: 'jarekj9/listjj_blazor_api'
 
  steps:
  - task: Docker@2
