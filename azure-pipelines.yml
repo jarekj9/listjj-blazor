@@ -2,7 +2,7 @@
  - master
 
  pool:
-   vmImage: 'mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim' 
+   vmImage: 'ubuntu-latest' 
 
  variables:
    imageName: 'Listjj-image'
