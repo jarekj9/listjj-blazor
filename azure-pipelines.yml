@@ -32,7 +32,7 @@
    inputs:
      repository: $(frontendBlazorImageName)
      command: build
-     Dockerfile: ./Dockerfile
+     Dockerfile: ./Dockerfile_frontend
      tags: |
        latest
 
