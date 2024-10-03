@@ -31,6 +31,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using StackExchange.Redis;
 
 namespace Listjj
 {
@@ -68,20 +69,36 @@ namespace Listjj
                   .AllowCredentials());
             });
 
+            //MySQL
             //using Microsoft.EntityFrameworkCore:
+            //services.AddDbContext<AppDbContext>(options =>
+            //    options.UseMySql(
+            //        Configuration.GetConnectionString("MySqlDbContext"), new MySqlServerVersion(new Version(10, 5, 9))
+            //    )
+            //);
+
+            //MSSQL
             services.AddDbContext<AppDbContext>(options =>
-                options.UseMySql(
-                    Configuration.GetConnectionString("SqlDbContext"), new MySqlServerVersion(new Version(10, 5, 9))
-                )
+                options.UseSqlServer(Configuration.GetConnectionString("MsSqlDbContext"))
             );
+
+
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
-            //Redis Caching
-            services.AddStackExchangeRedisCache(opt => opt.Configuration = Configuration.GetConnectionString("Redis"));
+            //Redis Caching:
+            services.AddStackExchangeRedisCache(opt =>
+            {
+                var configurationOptions = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"));
+                //if(Configuration.GetConnectionString("Redis").Contains("ssl=True"))
+                //{
+                //    configurationOptions.Ssl = true;
+                //}
+                opt.ConfigurationOptions = configurationOptions;
+            });
 
             services.AddHttpContextAccessor();  // for user identity
             services.AddScoped<IFileService, FileService>();
