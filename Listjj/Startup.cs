@@ -93,10 +93,6 @@ namespace Listjj
             services.AddStackExchangeRedisCache(opt =>
             {
                 var configurationOptions = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"));
-                //if(Configuration.GetConnectionString("Redis").Contains("ssl=True"))
-                //{
-                //    configurationOptions.Ssl = true;
-                //}
                 opt.ConfigurationOptions = configurationOptions;
             });
 
