@@ -54,14 +54,9 @@ namespace Listjj
             // CORS for Blazor WASM integration
             services.AddCors(policy =>
             {
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
                 policy.AddPolicy("CORSOrigins", builder =>
-                   builder.WithOrigins(
-                       "https://localhost:7254",
-                       "https://localhost:3000",
-                       "https://listjj-s1.machinejj.duckdns.org:8086",
-                       "https://listjj-s2.machinejj.duckdns.org:8086",
-                       "https://listjj-react.machinejj.duckdns.org:8086"
-                    )
+                   builder.WithOrigins(origins)
                   //builder.AllowAnyOrigin()
                   .SetIsOriginAllowed((host) => true)
                   .AllowAnyMethod()
@@ -157,45 +152,48 @@ namespace Listjj
                 });
 
             ////////////////////////// Masstransit
-            services.AddScoped<IProducerService, ProducerService>();
-            var queuePrefix = "listjj";
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            services.AddMassTransit(config =>
-            {
-                config.AddConsumer<TestEventConsumer>();
-                config.UsingRabbitMq((context, cfg) =>
+            if(Configuration.GetSection("RabbitMqTlsConfig") != null)
+            { 
+                services.AddScoped<IProducerService, ProducerService>();
+                var queuePrefix = "listjj";
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                services.AddMassTransit(config =>
                 {
                     config.AddConsumer<TestEventConsumer>();
-                    var rabbitMqTlsConfig = Configuration.GetSection("RabbitMqTlsConfig");
-                    if (rabbitMqTlsConfig.GetValue<bool>("UseTls"))
+                    config.UsingRabbitMq((context, cfg) =>
                     {
-                        cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
+                        config.AddConsumer<TestEventConsumer>();
+                        var rabbitMqTlsConfig = Configuration.GetSection("RabbitMqTlsConfig");
+                        if (rabbitMqTlsConfig.GetValue<bool>("UseTls"))
                         {
-                            h.Username(rabbitMqTlsConfig["UserName"]);
-                            h.Password(rabbitMqTlsConfig["Password"]);
-                            h.UseSsl(s =>
+                            cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
                             {
-                                s.Protocol = SslProtocols.Tls12;
-                                s.ServerName = rabbitMqTlsConfig["ServerCertCommonName"];
-                                s.AllowPolicyErrors(SslPolicyErrors.RemoteCertificateChainErrors);
-                                s.Certificate = new X509Certificate2(
-                                    rabbitMqTlsConfig["ClientCertPath"], rabbitMqTlsConfig["ClientCertPassword"],
-                                    X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable
-                                );
+                                h.Username(rabbitMqTlsConfig["UserName"]);
+                                h.Password(rabbitMqTlsConfig["Password"]);
+                                h.UseSsl(s =>
+                                {
+                                    s.Protocol = SslProtocols.Tls12;
+                                    s.ServerName = rabbitMqTlsConfig["ServerCertCommonName"];
+                                    s.AllowPolicyErrors(SslPolicyErrors.RemoteCertificateChainErrors);
+                                    s.Certificate = new X509Certificate2(
+                                        rabbitMqTlsConfig["ClientCertPath"], rabbitMqTlsConfig["ClientCertPassword"],
+                                        X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable
+                                    );
+                                });
                             });
-                        });
-                    }
-                    else
-                    {
-                        cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
+                        }
+                        else
                         {
-                            h.Username(rabbitMqTlsConfig["UserName"]);
-                            h.Password(rabbitMqTlsConfig["Password"]);
-                        });
-                    }
-                    cfg.ReceiveEndpoint($"{queuePrefix}_{nameof(TestEvent)}", c => { c.ConfigureConsumer<TestEventConsumer>(context); });
+                            cfg.Host(new Uri(rabbitMqTlsConfig["RabbitMqRootUri"]), h =>
+                            {
+                                h.Username(rabbitMqTlsConfig["UserName"]);
+                                h.Password(rabbitMqTlsConfig["Password"]);
+                            });
+                        }
+                        cfg.ReceiveEndpoint($"{queuePrefix}_{nameof(TestEvent)}", c => { c.ConfigureConsumer<TestEventConsumer>(context); });
+                    });
                 });
-            });
+            }
             //////////////////////////
 
 
