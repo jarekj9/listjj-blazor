@@ -16,6 +16,9 @@ using Listjj.Models;
 using Listjj.Consumers;
 using Listjj.Infrastructure.Events;
 
+using StackExchange.Redis;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
 
 // Auth:
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +34,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using StackExchange.Redis;
+
 
 namespace Listjj
 {
@@ -51,32 +54,47 @@ namespace Listjj
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            ///// Open Telemetry /////
+            var openTelemetryEntpoint = Configuration.GetSection("OpenTelemetryEndpoint").Get<string>();
+            if (!openTelemetryEntpoint.IsNullOrEmpty())
+            { 
+                services.AddOpenTelemetry().WithTracing(b =>
+                {
+                    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Listjj api"))
+                    .AddAspNetCoreInstrumentation()
+                    .AddOtlpExporter(opts => { opts.Endpoint = new Uri(openTelemetryEntpoint); });
+                });
+            }
+            //AddOpenTelemetryExtension("Listjj api");
+            //////////////////////////
+
+
             // CORS for Blazor WASM integration
             services.AddCors(policy =>
             {
                 var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
                 policy.AddPolicy("CORSOrigins", builder =>
                    builder.WithOrigins(origins)
-                  //builder.AllowAnyOrigin()
                   .SetIsOriginAllowed((host) => true)
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials());
             });
 
-            //MySQL
-            //using Microsoft.EntityFrameworkCore:
-            //services.AddDbContext<AppDbContext>(options =>
-            //    options.UseMySql(
-            //        Configuration.GetConnectionString("MySqlDbContext"), new MySqlServerVersion(new Version(10, 5, 9))
-            //    )
-            //);
 
-            //MSSQL
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("MsSqlDbContext"))
-            );
-
+            // Use mariadb or mssql, remember to change migrations
+            var mysqlConnString = Configuration.GetConnectionString("MySqlDbContext");
+            var mssqlConnString = Configuration.GetConnectionString("MsSqlDbContext");
+            if(!mysqlConnString.IsNullOrEmpty())
+            {
+                services.AddDbContext<AppDbContext>(options =>
+                    options.UseMySql(mysqlConnString, new MySqlServerVersion(new Version(10, 5, 9)))
+                );
+            }
+            else
+            {
+                services.AddDbContext<AppDbContext>(options => options.UseSqlServer(mssqlConnString));
+            }
 
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<ApplicationRole>()
@@ -151,8 +169,8 @@ namespace Listjj
                     };
                 });
 
-            ////////////////////////// Masstransit
-            if(Configuration.GetSection("RabbitMqTlsConfig") != null)
+            ////////////////////////// Masstransit TLS
+            if(Configuration.GetSection("RabbitMqTlsConfig").Value != null)
             { 
                 services.AddScoped<IProducerService, ProducerService>();
                 var queuePrefix = "listjj";
@@ -236,9 +254,7 @@ namespace Listjj
 
             app.UseEndpoints(endpoints =>
             {
-                //Auth:
                 endpoints.MapControllers();
-
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
@@ -251,7 +267,7 @@ namespace Listjj
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
             });
 
-            // DB Migration:
+            // execute DB Migration:
             // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             // {
             //     var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
