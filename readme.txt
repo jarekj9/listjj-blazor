@@ -18,3 +18,4 @@ docker image prune -af
 #arm build:
 
 docker buildx build -f Dockerfile_multiarch --platform linux/arm64 --no-cache -t jarekj9/listjj_blazor_api:arm --push .
+docker buildx build -f Dockerfile_frontend_multiarch --platform linux/arm64 --no-cache -t jarekj9/listjj_frontend_blazor:arm --push .
