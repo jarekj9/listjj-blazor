@@ -1,8 +1,0 @@
-**/obj/
-**/bin/
-**/.vs/
-**/.vscode/
-**/appsettings.json
-**/deploy-rpi.sh
-**/cert.pfx
-**/*.env

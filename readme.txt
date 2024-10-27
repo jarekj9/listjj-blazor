@@ -1,4 +1,3 @@
-#!/bin/bash
 
 sudo docker build -f Dockerfile -t jarekj9/listjj_blazor_api:latest .
 docker push jarekj9/listjj_blazor_api:latest
@@ -14,3 +13,8 @@ ansible machinejj -a 'docker stack deploy -c /home/jarek/docker/Listjj-s1/docker
 ansible machinejj -a 'docker image prune -af'
 docker image prune -af
 
+
+
+#arm build:
+
+docker buildx build -f Dockerfile_multiarch --platform linux/arm64 --no-cache -t jarekj9/listjj_blazor_api:arm --push .

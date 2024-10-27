@@ -8,3 +8,5 @@
 **/cert.pfx
 **/*.env
 published_wasm/
+*.bak
+
