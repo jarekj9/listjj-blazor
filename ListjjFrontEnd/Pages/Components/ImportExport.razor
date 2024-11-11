@@ -5,14 +5,14 @@
 
 @inherits PageBase
 
-    <span class="input-zone p-3 m-2" style="float: left;" @onclick="DownloadFile">
+<button class="btn btn-outline-primary" @onclick="DownloadFile">
         Export
-    </span>
-    <span class="input-zone p-3 m-2" style="float: left;">
-        <InputFile OnChange="@Upload"/>
-        Drop file to import notes
-    </span>
+</button>
 
+<label class="btn btn-outline-primary">
+    Chooses file to upload.
+    <InputFile hidden OnChange="@Upload" multiple accept=".csv" />
+</label>
 
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; }

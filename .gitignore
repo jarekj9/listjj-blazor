@@ -9,4 +9,4 @@
 **/*.env
 published_wasm/
 *.bak
-
+**/rabbit_certificate/

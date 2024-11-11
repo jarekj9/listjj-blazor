@@ -92,7 +92,7 @@
                     <AuthorizeView Roles="Admin, User">
                         <Authorized>
                             <ApiKey />
-                            <ImportExport></ImportExport>
+                            <ImportExport />
                             @if (appState.RecentCategoryId != Guid.Empty)
                             {
                                 <button type="button" @onclick="() => showMoveButtons = !showMoveButtons">
@@ -101,12 +101,6 @@
                                     </span>
                                 </button>
                             }
-                        </Authorized>
-                    </AuthorizeView>
-                     <AuthorizeView Roles="Admin">
-                         <Authorized>
-                            <button class="input-zone p-3 m-2" style="float: left;">Restart Application</button>
-                            <a href="/admin" class="input-zone p-3 m-2" style="float: left;">Admin</a>
                         </Authorized>
                     </AuthorizeView>
                 </div>
