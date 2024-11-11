@@ -1,0 +1,16 @@
+﻿@using ListjjFrontEnd.Services.Abstract.Authentication
+@using ListjjFrontEnd.Services.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+<div id="google-button"></div>
+
+@code {
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] IAuthService AuthService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var authService = DotNetObjectReference.Create<IAuthService>(AuthService);
+        await JSRuntime.InvokeVoidAsync("initialize", "1034243776717-9qsk2ud7ltr621vf14dph6o0nuqbd4bq.apps.googleusercontent.com", authService);
+        var element = await JSRuntime.InvokeAsync<IJSObjectReference>("document.getElementById", "google-button");
+        await JSRuntime.InvokeVoidAsync("google.accounts.id.renderButton", element, new { theme = "filled_blue", size = "large" });
+    }
+}

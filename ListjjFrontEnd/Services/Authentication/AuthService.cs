@@ -7,6 +7,10 @@ using System.Text;
 using Listjj.Infrastructure.Models;
 using Listjj.Infrastructure.Data;
 using System.Net.Http.Json;
+using Microsoft.JSInterop;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components;
 
 namespace ListjjFrontEnd.Services.Authentication
 {
@@ -17,13 +21,15 @@ namespace ListjjFrontEnd.Services.Authentication
         private readonly ILocalStorageService _localStorage;
         private readonly IConfiguration configuration;
         private readonly string apiEndpoint;
+        private readonly NavigationManager _navigationManager;
 
         public AuthService(HttpClient httpClient,
-                           AuthenticationStateProvider authenticationStateProvider,
+                           AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager,
                            ILocalStorageService localStorage, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _authenticationStateProvider = authenticationStateProvider;
+            _navigationManager = navigationManager;
             _localStorage = localStorage;
             this.configuration = configuration;
             apiEndpoint = configuration.GetValue<string>("ApiEndpoint");
@@ -59,6 +65,26 @@ namespace ListjjFrontEnd.Services.Authentication
             await _localStorage.RemoveItemAsync("authToken");
             ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
             _httpClient.DefaultRequestHeaders.Authorization = null;
+        }
+
+
+        [JSInvokable]
+        public async Task GoogleLogin(GoogleResponse googleResponse)
+        {
+            var principal = new ClaimsPrincipal();
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(googleResponse.Credential) as JwtSecurityToken;
+            var email = jsonToken?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+            var name = jsonToken?.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var loginResult = await Login(new LoginModel() { Email = email, Password = "WillBeIgnored123", GoogleJwt = googleResponse.Credential });
+            if(loginResult.Successful)
+            {
+                _navigationManager.NavigateTo("/list");
+            }
+            else
+            {
+                _navigationManager.NavigateTo("/login");
+            }
         }
     }
 }
