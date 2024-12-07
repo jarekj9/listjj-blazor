@@ -4,6 +4,8 @@ param appName string = 'listjj-api'
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
+param mssqlConnString string
+
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'service-plan-listjj'
@@ -25,8 +27,8 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
     siteConfig: {
       appSettings: [
         {
-          name: 'UseOnlyInMemoryDatabase'
-          value: 'true'
+          name: 'ConnectionStrings__MsSqlDbContext'
+          value: mssqlConnString 
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
