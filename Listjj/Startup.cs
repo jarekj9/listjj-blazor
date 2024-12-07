@@ -72,7 +72,7 @@ namespace Listjj
             // CORS for Blazor WASM integration
             services.AddCors(policy =>
             {
-                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>() ?? ["*"];
                 policy.AddPolicy("CORSOrigins", builder =>
                    builder.WithOrigins(origins)
                   .SetIsOriginAllowed((host) => true)
