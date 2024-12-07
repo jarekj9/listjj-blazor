@@ -4,12 +4,11 @@ param appName string = 'listjj-api'
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
-resource mssqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
-  name: 'listjj-keyvault/mssqlConnString'
-  properties: {
-      contentType: 'string'
-      value: 'string'
-  }
+param subscriptionId string = 'c5097964-89eb-42c7-9626-accc9e7a3515'
+
+resource kv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: kvName
+  scope: resourceGroup(subscriptionId, resourceGroup() )
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
@@ -32,7 +31,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
       appSettings: [
         {
           name: 'ConnectionStrings__MsSqlDbContext'
-          value: mssqlConnStringSecret.properties.value
+          value: kv.getSecret('mssqlConnStringSecret')
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
