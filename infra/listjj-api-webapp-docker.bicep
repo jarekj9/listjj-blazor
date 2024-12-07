@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 param subscriptionId string = 'c5097964-89eb-42c7-9626-accc9e7a3515'
 
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: kvName
+  name: 'listjj-keyvault'
   scope: resourceGroup(subscriptionId, resourceGroup() )
 }
 
