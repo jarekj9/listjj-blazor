@@ -6,6 +6,10 @@ param location string = resourceGroup().location
 
 resource mssqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   name: 'listjj-keyvault/mssqlConnString'
+  properties: {
+      contentType = "string"
+      value = "string"
+  }
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
