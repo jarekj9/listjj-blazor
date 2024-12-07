@@ -34,6 +34,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq;
 
 
 namespace Listjj
@@ -70,16 +71,30 @@ namespace Listjj
 
 
             // CORS for Blazor WASM integration
-            services.AddCors(policy =>
+            var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+            if (origins.Any())
             {
-                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>() ?? ["*"];
-                policy.AddPolicy("CORSOrigins", builder =>
-                   builder.WithOrigins(origins)
-                  .SetIsOriginAllowed((host) => true)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials());
-            });
+                services.AddCors(policy =>
+                {
+                    policy.AddPolicy("CORSOrigins", builder =>
+                       builder.WithOrigins(origins)
+                      .SetIsOriginAllowed((host) => true)
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials());
+                });
+            }
+            else
+            {
+                services.AddCors(policy =>
+                {
+                    policy.AddPolicy("CORSOrigins", builder =>
+                       builder.WithOrigins("*")
+                      .SetIsOriginAllowed((host) => true)
+                      .AllowAnyMethod()
+                      .AllowAnyHeader());
+                });
+            }
 
 
             // Use mariadb or mssql, remember to change migrations
