@@ -4,11 +4,11 @@ param appName string = 'listjj-api'
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
-param subscriptionId string = 'c5097964-89eb-42c7-9626-accc9e7a3515'
+//param subscriptionId string = 'c5097964-89eb-42c7-9626-accc9e7a3515'
 
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: 'listjj-keyvault'
-  scope: resourceGroup(subscriptionId, resourceGroup() )
+  scope: resourceGroup()
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
