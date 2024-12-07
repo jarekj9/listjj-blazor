@@ -32,4 +32,6 @@ stages:
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
         deploymentMode: 'Incremental'
         overrideParameters: >
+          appName='listjj-api'
+          location='$(location)'
           mssqlConnString='$(mssqlConnString)'
