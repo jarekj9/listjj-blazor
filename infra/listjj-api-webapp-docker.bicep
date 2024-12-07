@@ -29,7 +29,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
       appSettings: [
         {
           name: 'ConnectionStrings__MsSqlDbContext'
-          value: reference(kv.id, '2021-06-01', 'Full').secrets.mssqlConnStringSecret
+          value: reference(kv.id, '2023-07-01', 'Full').secrets.mssqlConnStringSecret
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
