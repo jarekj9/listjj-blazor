@@ -103,11 +103,19 @@ namespace Listjj
             services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
             //Redis Caching:
-            services.AddStackExchangeRedisCache(opt =>
+            var redisConnString = Configuration.GetConnectionString("Redis");
+            if (!redisConnString.IsNullOrEmpty())
             {
-                var configurationOptions = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"));
-                opt.ConfigurationOptions = configurationOptions;
-            });
+                services.AddStackExchangeRedisCache(opt =>
+                {
+                    var configurationOptions = ConfigurationOptions.Parse(redisConnString);
+                    opt.ConfigurationOptions = configurationOptions;
+                });
+            }
+            else
+            {
+                services.AddDistributedMemoryCache();
+            }
 
             services.AddHttpContextAccessor();  // for user identity
             services.AddScoped<IFileService, FileService>();
