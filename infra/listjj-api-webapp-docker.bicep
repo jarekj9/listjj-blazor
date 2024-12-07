@@ -1,5 +1,3 @@
-using 'listjj-api-webapp-docker.parameters.json'
-
 @description('Appname')
 param appName string = 'listjj-api'
 
