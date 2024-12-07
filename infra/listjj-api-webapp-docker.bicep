@@ -1,10 +1,10 @@
 @description('Appname')
-param appName string
+param appName string = 'listjj-api'
 
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
-param mssqlConnString string
+param mssqlConnString string = mssqlConnString
 
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
