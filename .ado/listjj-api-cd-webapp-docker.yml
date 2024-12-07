@@ -12,9 +12,6 @@ variables:
   location: 'westeurope'
   subscriptionId: 'c5097964-89eb-42c7-9626-accc9e7a3515'
 
-# Add the secret variable in the pipeline
-  mssqlConnString: '$(mssqlConnString)' # This should be set as a secret variable in Azure DevOps UI.
-
 stages:
 - stage: Deploy
   jobs:
