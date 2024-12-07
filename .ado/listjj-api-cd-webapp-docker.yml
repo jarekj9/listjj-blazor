@@ -31,5 +31,5 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
         deploymentMode: 'Incremental'
-        csmParameters: >
-          mssqlConnString=$(mssqlConnString)
+        overrideParameters: |
+          mssqlConnString='$(mssqlConnString)'
