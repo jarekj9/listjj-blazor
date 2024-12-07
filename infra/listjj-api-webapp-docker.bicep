@@ -4,7 +4,10 @@ param appName string = 'listjj-api'
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
-param mssqlConnString string = reference('listjj-keyvault', '1.0', 'mssqlConnString')
+// Use reference inside resource block
+resource mssqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01' = {
+  name: 'listjj-keyvault/mssqlConnString'
+}
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'service-plan-listjj'
@@ -21,13 +24,12 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
 resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appName
   location: location
-  tags: {}
   properties: {
     siteConfig: {
       appSettings: [
         {
           name: 'ConnectionStrings__MsSqlDbContext'
-          value: mssqlConnString 
+          value: mssqlConnStringSecret.properties.value
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
