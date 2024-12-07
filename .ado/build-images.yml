@@ -1,0 +1,46 @@
+ trigger:
+ - master
+
+ pool:
+   vmImage: 'ubuntu-latest' 
+
+ variables:
+   apiImageName: 'jarekj9/listjj_blazor_api'
+   frontendBlazorImageName: 'jarekj9/listjj_frontend_blazor'
+
+ steps:
+ - task: Docker@2
+   displayName: Build api image
+   inputs:
+     repository: $(apiImageName)
+     command: build
+     Dockerfile: ./Dockerfile
+     tags: |
+       latest
+
+ - task: Docker@2
+   displayName: Push api image
+   inputs:
+    containerRegistry: 'dockerhub'
+    repository: $(apiImageName)
+    command: 'push'
+    tags: |
+      latest
+
+ - task: Docker@2
+   displayName: Build blazor frontend image
+   inputs:
+     repository: $(frontendBlazorImageName)
+     command: build
+     Dockerfile: ./Dockerfile_frontend
+     tags: |
+       latest
+
+ - task: Docker@2
+   displayName: Push blazor frontend image
+   inputs:
+    containerRegistry: 'dockerhub'
+    repository: $(frontendBlazorImageName)
+    command: 'push'
+    tags: |
+      latest
