@@ -4,7 +4,7 @@ resources:
       trigger: none
 
 variables:
-  azureServiceConnection: 'j-jan-listjj-service-connection'
+  azureServiceConnection: 'j-jan-listjj-blazor-service-connection'
   resourceGroup: 'RGJJ-listjj'
   location: 'westeurope'
   subscriptionId: 'c5097964-89eb-42c7-9626-accc9e7a3515'
