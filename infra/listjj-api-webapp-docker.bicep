@@ -1,5 +1,5 @@
 @description('Appname')
-param appName string = 'listjj-api'
+param appName string
 
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
