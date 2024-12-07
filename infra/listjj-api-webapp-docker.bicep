@@ -1,3 +1,9 @@
+@description('Appname')
+param appName string = 'listjj-api'
+
+@description('Use the Resource Group Location')
+param location string = resourceGroup().location
+
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: 'listjj-keyvault'
   scope: resourceGroup()
