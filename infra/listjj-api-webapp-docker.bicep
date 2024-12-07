@@ -4,8 +4,7 @@ param appName string = 'listjj-api'
 @description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
-// Use reference inside resource block
-resource mssqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01' = {
+resource mssqlConnStringSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   name: 'listjj-keyvault/mssqlConnString'
 }
 
