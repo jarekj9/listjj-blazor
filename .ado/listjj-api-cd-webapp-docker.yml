@@ -1,3 +1,6 @@
+trigger:
+- master
+
 resources:
   repositories:
     - repository: self
