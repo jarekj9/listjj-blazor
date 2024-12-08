@@ -20,7 +20,7 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy App Service using Bicep
+      displayName: Deploy Listjj Api App Service using Bicep
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(azureServiceConnection)
@@ -31,5 +31,17 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
         overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
+        deploymentMode: 'Incremental'
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Blazor Front App Service using Bicep
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: $(azureServiceConnection)
+        subscriptionId: $(subscriptionId)
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: '$(resourceGroup)'
+        location: '$(location)'
+        templateLocation: 'Linked artifact'
+        csmFile: 'infra/listjj-blazorfront-webapp-docker.bicep'
         deploymentMode: 'Incremental'
 
