@@ -69,8 +69,7 @@ stages:
 
     - script: |
         echo "############################## DEBUG "##############################"
-        echo $(Build.SourcesDirectory)
-        ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
+        echo ListjjFrontEnd/wwwroot/appsettings.Development.json
         sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" ListjjFrontEnd/wwwroot/appsettings.Development.json
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
