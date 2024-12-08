@@ -30,7 +30,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Docker'
+          value: 'Development'
         }
         {
           name: 'ASPNETCORE_HTTP_PORTS'
