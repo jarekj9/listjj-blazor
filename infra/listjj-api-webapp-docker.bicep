@@ -1,10 +1,8 @@
-@description('Appname')
 param appName string = 'listjj-api'
-
-@description('Use the Resource Group Location')
 param location string = resourceGroup().location
 
 param mssqlConnStringSecret string
+param googleAuthClientSecret string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'service-plan-listjj'
@@ -27,6 +25,11 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         {
           name: 'ConnectionStrings__MsSqlDbContext'
           value: mssqlConnStringSecret
+        }
+
+        {
+          name: 'Authentication__Google__ClientSecret'
+          value: googleAuthClientSecret
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
