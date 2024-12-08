@@ -28,6 +28,10 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
 
         {
+          name: 'Authentication__Google__ClientId'
+          value: '1034243776717-9qsk2ud7ltr621vf14dph6o0nuqbd4bq.apps.googleusercontent.com'
+        }
+        {
           name: 'Authentication__Google__ClientSecret'
           value: googleAuthClientSecret
         }
