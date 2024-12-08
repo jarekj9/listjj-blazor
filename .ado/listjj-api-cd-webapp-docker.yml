@@ -30,5 +30,6 @@ stages:
         location: '$(location)'
         templateLocation: 'Linked artifact'
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
+        csmParametersFile: 'listjj-api-webapp-docker.params.bicep'
         deploymentMode: 'Incremental'
 
