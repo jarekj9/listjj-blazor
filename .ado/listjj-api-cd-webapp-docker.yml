@@ -1,10 +1,13 @@
-trigger:
-- master
+trigger: none
 
 resources:
   repositories:
     - repository: self
       trigger: none
+  pipelines:
+    - pipeline: BuildPipeline
+      source: 'Build all images'
+      trigger: true
 
 variables:
   azureServiceConnection: 'j-jan-listjj-blazor-service-connection'
