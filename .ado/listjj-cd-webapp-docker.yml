@@ -11,11 +11,12 @@ variables:
   resourceGroup: 'RGJJ-listjj'
   location: 'westeurope'
   subscriptionId: 'c5097964-89eb-42c7-9626-accc9e7a3515'
+  blazorFrontAppName: 'listjj-blazor-front'
 
 stages:
 - stage: Deploy
   jobs:
-  - job: Deploy
+  - job: Deploy Listjj Api
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -32,16 +33,46 @@ stages:
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
         overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
         deploymentMode: 'Incremental'
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Blazor Front App Service using Bicep
-      inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: $(azureServiceConnection)
-        subscriptionId: $(subscriptionId)
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: '$(resourceGroup)'
-        location: '$(location)'
-        templateLocation: 'Linked artifact'
-        csmFile: 'infra/listjj-blazorfront-webapp-docker.bicep'
-        deploymentMode: 'Incremental'
+    # - task: AzureResourceManagerTemplateDeployment@3
+    #   displayName: Deploy Blazor Front App Service using Bicep
+    #   inputs:
+    #     deploymentScope: 'Resource Group'
+    #     azureResourceManagerConnection: $(azureServiceConnection)
+    #     subscriptionId: $(subscriptionId)
+    #     action: 'Create Or Update Resource Group'
+    #     resourceGroupName: '$(resourceGroup)'
+    #     location: '$(location)'
+    #     templateLocation: 'Linked artifact'
+    #     csmFile: 'infra/listjj-blazorfront-webapp-docker.bicep'
+    #     deploymentMode: 'Incremental'
 
+  - job: Deploy Listjj Blazor Front
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group create \
+            --resource-group $(resourceGroup) \
+            --template-file infra/listjj-blazorfront-webapp-docker.bicep \
+            --parameters appName='$(blazorFrontAppName)' location='$(location)'
+
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '7.x'
+
+    - script: |
+        cd app
+        dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
+      displayName: 'Build Blazor App'
+
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        appName: $(blazorFrontAppName)
+        package: '$(System.DefaultWorkingDirectory)/publish'
