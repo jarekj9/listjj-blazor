@@ -10,19 +10,19 @@
         <div class="container-fluid pt-1">
             <div class="row">
                 <div class="form-group col-12 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-value">Value: </label>
+                    <label class="control-label addLabel me-2" for="new-value">Value: </label>
                     <input id="new-value" @bind="@Item.Value" type="number" class="form-controll" style="width: 50px;">
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-name">Name: </label>
+                    <label class="control-label addLabel me-2" for="new-name">Name: </label>
                     <input id="new-name" @bind="@Item.Name" type="text" class="form-controll" style="width: 70%; height: 100%;">
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
-                    <label class="control-label addLabel align-top" for="new-dsc">Description: </label>
+                    <label class="control-label addLabel align-top me-2" for="new-dsc">Description: </label>
                     <textarea id="new-dsc" class="form-controll" @bind="@Item.Description" style="width: 70%; height: 100%;"/>
                 </div>
                 <div class="form-group col-12 text-nowrap addDiv">
-                    <label class="control-label addLabel" for="new-category">Category:</label>
+                    <label class="control-label addLabel me-2" for="new-category">Category:</label>
                     <select class="addBox" id="new-category" @bind="@RecentCategoryId">
                         <option value="00000000-0000-0000-0000-000000000000">---select---</option>
                         @if (Categories is null)
