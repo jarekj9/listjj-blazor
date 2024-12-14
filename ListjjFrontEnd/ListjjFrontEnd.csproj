@@ -20,11 +20,15 @@
     <ProjectReference Include="..\Listjj.Infrastructure\Listjj.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="wwwroot\lib\google-auth.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+<ItemGroup>
+  <Content Update="wwwroot\appsettings.json">
+    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </Content>
+  <Content Update="wwwroot\lib\google-auth.js">
+    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </Content>
+</ItemGroup>
 
 </Project>
