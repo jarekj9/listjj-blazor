@@ -12,11 +12,12 @@ variables:
   location: 'westeurope'
   subscriptionId: 'c5097964-89eb-42c7-9626-accc9e7a3515'
   blazorFrontAppName: 'listjj-blazor-front'
+  apiEndpoint: "https://listjj-api.azurewebsites.net/"
 
 stages:
 - stage: Deploy
   jobs:
-  - job: Deploy Listjj Api
+  - job: Deploy_Listjj_Api
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -33,8 +34,9 @@ stages:
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
         overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
         deploymentMode: 'Incremental'
+
     # - task: AzureResourceManagerTemplateDeployment@3
-    #   displayName: Deploy Blazor Front App Service using Bicep
+    #   displayName: Deploy Blazor Front App Service using docker/Bicep
     #   inputs:
     #     deploymentScope: 'Resource Group'
     #     azureResourceManagerConnection: $(azureServiceConnection)
@@ -46,7 +48,7 @@ stages:
     #     csmFile: 'infra/listjj-blazorfront-webapp-docker.bicep'
     #     deploymentMode: 'Incremental'
 
-  - job: Deploy Listjj Blazor Front
+  - job: Deploy_Listjj_Blazor_Front
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -60,14 +62,17 @@ stages:
             --resource-group $(resourceGroup) \
             --template-file infra/listjj-blazorfront-webapp-docker.bicep \
             --parameters appName='$(blazorFrontAppName)' location='$(location)'
-
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '7.x'
+        version: '8.0.x'
 
     - script: |
-        cd app
+        echo "############################## DEBUG ##############################"
+        echo ListjjFrontEnd/wwwroot/appsettings.Development.json
+        echo $(Build.SourcesDirectory)
+        ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
+        sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" ListjjFrontEnd/wwwroot/appsettings.Development.json
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
