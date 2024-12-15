@@ -15,21 +15,25 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var environment = builder.HostEnvironment.BaseAddress;
-AppSettings? appSettings = new AppSettings();
-if (environment == "Production")
-{
-    var httpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
-    appSettings = await httpClient.GetFromJsonAsync<AppSettings>($"appsettings.{environment}.json");
-}
-else
-{
-    appSettings = builder.Configuration.Get<AppSettings>();
-}
-if (appSettings == null)
-{
-    throw new Exception("appSettings must be initialized before registering services.");
-}
+//var environment = builder.HostEnvironment.BaseAddress;
+//AppSettings? appSettings = new AppSettings();
+//if (environment == "Production")
+//{
+//    var httpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
+//    appSettings = await httpClient.GetFromJsonAsync<AppSettings>($"appsettings.{environment}.json");
+//}
+//else
+//{
+//    appSettings = builder.Configuration.Get<AppSettings>();
+//}
+//if (appSettings == null)
+//{
+//    throw new Exception("appSettings must be initialized before registering services.");
+//}
+
+var configBuild = new ConfigurationBuilder();
+var configuration = configBuild.AddEnvironmentVariables().Build();
+var appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
 
 builder.Services.AddSingleton(appSettings);
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
