@@ -33,8 +33,8 @@ namespace ListjjFrontEnd.Services.Authentication
             _navigationManager = navigationManager;
             _localStorage = localStorage;
             _appsettings = appsettings;
-            _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("APPSETTING_ApiEndpoint")); 
-            apiEndpoint = Environment.GetEnvironmentVariable("APPSETTING_ApiEndpoint");
+            _httpClient.BaseAddress = new Uri("https://dupa"); 
+            apiEndpoint = "https://dupa";
         }
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)

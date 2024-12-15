@@ -43,7 +43,7 @@ var appServiceApiEndpoint = builder.Configuration.GetValue<string>("APPSETTING_A
 
 
 builder.Services.AddSingleton(appSettings);
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appServiceApiEndpoint ?? appSettings.ApiEndpoint) });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://dupa") });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
