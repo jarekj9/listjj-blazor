@@ -68,17 +68,17 @@ stages:
         version: '8.0.x'
 
     - script: |
-        echo "############################## DEBUG ##############################"
-        ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
-        sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
+        # echo "############################## DEBUG ##############################"
+        # ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
+        # sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
-    - script: |
-        echo "############################## PUBLISH OUTPUT DEBUG ##############################"
-        ls -R $(System.DefaultWorkingDirectory)/publish
-        cat $(System.DefaultWorkingDirectory)/publish/wwwroot/appsettings.Production.json
-      displayName: 'Verify Published Output'
+    # - script: |
+    #     echo "############################## PUBLISH OUTPUT DEBUG ##############################"
+    #     ls -R $(System.DefaultWorkingDirectory)/publish
+    #     cat $(System.DefaultWorkingDirectory)/publish/wwwroot/appsettings.Production.json
+    #   displayName: 'Verify Published Output'
 
     - task: AzureWebApp@1
       inputs:
