@@ -1,0 +1,36 @@
+﻿@page "/settings"
+@using ListjjFrontEnd.Data
+@using Microsoft.AspNetCore.Components.Authorization
+
+<PageTitle>settings</PageTitle>
+
+@if (appSettings != null)
+{
+    <p>Configuration ApiEndpoint: @appSettings.ApiEndpoint</p>
+}
+else
+{
+    <p>Configuration appSettings: null</p>
+
+}
+@if (appSettingsEnv != null)
+{
+    <p>Environment ApiEndpoint: @appSettingsEnv</p>
+}
+else
+{
+    <p>Environment ApiEndpoint: null</p>
+}
+
+
+@code 
+{
+    [Inject] protected IConfiguration Configuration { get; set; }
+    private AppSettings appSettings;
+    private string appSettingsEnv;
+    protected override async Task OnInitializedAsync() 
+    {
+        appSettings = Configuration.Get<AppSettings>();
+        appSettingsEnv = Environment.GetEnvironmentVariable("ApiEndpoint");
+    }
+}
