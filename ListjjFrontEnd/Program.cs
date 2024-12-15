@@ -16,7 +16,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var environment = builder.HostEnvironment.BaseAddress;
-AppSettings appSettings = new AppSettings();
+AppSettings? appSettings = new AppSettings();
 if (environment == "Production")
 {
     var httpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
@@ -25,6 +25,10 @@ if (environment == "Production")
 else
 {
     appSettings = builder.Configuration.Get<AppSettings>();
+}
+if (appSettings == null)
+{
+    throw new Exception("appSettings must be initialized before registering services.");
 }
 
 builder.Services.AddSingleton(appSettings);
