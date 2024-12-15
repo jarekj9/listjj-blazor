@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using ListjjFrontEnd.Data;
+using System.Net.Http;
 
 namespace ListjjFrontEnd.Services.Authentication
 {
@@ -32,7 +33,8 @@ namespace ListjjFrontEnd.Services.Authentication
             _navigationManager = navigationManager;
             _localStorage = localStorage;
             _appsettings = appsettings;
-            apiEndpoint = _appsettings.ApiEndpoint;
+            _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("APPSETTING_ApiEndpoint")); 
+            apiEndpoint = Environment.GetEnvironmentVariable("APPSETTING_ApiEndpoint");
         }
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)
