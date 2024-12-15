@@ -39,11 +39,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Configuration.AddEnvironmentVariables();
 var appSettings = builder.Configuration.Get<AppSettings>();
-var appServiceApiEndpoint = builder.Configuration.GetValue<string>("APPSETTING_ApiEndpoint");
+//var appServiceApiEndpoint = builder.Configuration.GetValue<string>("APPSETTING_ApiEndpoint");
 
 
-builder.Services.AddSingleton(appSettings);
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://dupa") });
+builder.Services.AddSingleton<AppSettings>(appSettings);
+builder.Services.AddScoped(sp => new HttpClient());
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();

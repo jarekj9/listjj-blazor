@@ -12,7 +12,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using ListjjFrontEnd.Data;
-using System.Net.Http;
 
 namespace ListjjFrontEnd.Services.Authentication
 {
@@ -21,7 +20,6 @@ namespace ListjjFrontEnd.Services.Authentication
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
-        private readonly AppSettings _appsettings;
         private readonly string apiEndpoint;
         private readonly NavigationManager _navigationManager;
 
@@ -32,9 +30,7 @@ namespace ListjjFrontEnd.Services.Authentication
             _authenticationStateProvider = authenticationStateProvider;
             _navigationManager = navigationManager;
             _localStorage = localStorage;
-            _appsettings = appsettings;
-            _httpClient.BaseAddress = new Uri("https://dupa"); 
-            apiEndpoint = "https://dupa";
+            apiEndpoint = appsettings.ApiEndpoint;
         }
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)

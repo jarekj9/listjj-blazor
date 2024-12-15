@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
-using Microsoft.Extensions.Options;
 using ListjjFrontEnd.Data;
 
 namespace ListjjFrontEnd.Services
@@ -16,16 +15,13 @@ namespace ListjjFrontEnd.Services
         private readonly string apiEndpoint;
         private readonly ILocalStorageService localStorage;
         private readonly IAuthService authService;
-        private readonly AppSettings _appsettings;
 
         public ApiClient(HttpClient httpClient, AppSettings appsettings, ILocalStorageService localStorage, IAuthService authService)
         {
             this.httpClient = httpClient;
             this.localStorage = localStorage;
             this.authService = authService;
-            _appsettings = appsettings;
-            apiEndpoint = _appsettings.ApiEndpoint;
-            //apiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint") ?? "https://test";
+            apiEndpoint = appsettings.ApiEndpoint;
         }
 
         public async Task<(TResponse Result, HttpResponseMessage HttpResponse)> Get<TResponse>(string urlPart)
