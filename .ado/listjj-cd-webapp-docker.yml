@@ -74,6 +74,11 @@ stages:
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
+    - script: |
+        echo "############################## PUBLISH OUTPUT DEBUG ##############################"
+        ls -R $(System.DefaultWorkingDirectory)/publish
+      displayName: 'Verify Published Output'
+
     - task: AzureWebApp@1
       inputs:
         azureSubscription: $(azureServiceConnection)
