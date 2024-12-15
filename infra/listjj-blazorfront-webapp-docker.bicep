@@ -25,7 +25,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Development'
+          value: 'Production'
         }
         {
           name: 'ASPNETCORE_HTTP_PORTS'
