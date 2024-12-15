@@ -70,14 +70,14 @@ stages:
     - script: |
         echo "############################## DEBUG ##############################"
         ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
-        sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.json
+        sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
     - script: |
         echo "############################## PUBLISH OUTPUT DEBUG ##############################"
         ls -R $(System.DefaultWorkingDirectory)/publish
-        cat $(System.DefaultWorkingDirectory)/publish/wwwroot/appsettings.json
+        cat $(System.DefaultWorkingDirectory)/publish/wwwroot/appsettings.Production.json
       displayName: 'Verify Published Output'
 
     - task: AzureWebApp@1
