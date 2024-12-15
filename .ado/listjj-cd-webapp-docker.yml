@@ -60,7 +60,7 @@ stages:
         inlineScript: |
           az deployment group create \
             --resource-group $(resourceGroup) \
-            --template-file infra/listjj-blazorfront-webapp-docker.bicep \
+            --template-file infra/listjj-blazorfront-webapp.bicep \
             --parameters appName='$(blazorFrontAppName)' location='$(location)'
     - task: UseDotNet@2
       inputs:
