@@ -1,31 +1,30 @@
 ﻿using Blazored.LocalStorage;
 using ListjjFrontEnd.Services.Abstract;
 using ListjjFrontEnd.Services.Abstract.Authentication;
-using ListjjFrontEnd.Services.Authentication;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
+using Microsoft.Extensions.Options;
+using ListjjFrontEnd.Data;
 
 namespace ListjjFrontEnd.Services
 {
     public class ApiClient : IApiClient
     {
         private readonly HttpClient httpClient;
-        private readonly IConfiguration configuration;
         private readonly string apiEndpoint;
         private readonly ILocalStorageService localStorage;
         private readonly IAuthService authService;
+        private readonly AppSettings _appsettings;
 
-        public ApiClient(HttpClient httpClient, IConfiguration configuration, ILocalStorageService localStorage, IAuthService authService)
+        public ApiClient(HttpClient httpClient, AppSettings appsettings, ILocalStorageService localStorage, IAuthService authService)
         {
             this.httpClient = httpClient;
-            this.configuration = configuration;
             this.localStorage = localStorage;
             this.authService = authService;
-            apiEndpoint = configuration.GetValue<string>("ApiEndpoint");
+            _appsettings = appsettings;
+            apiEndpoint = _appsettings.ApiEndpoint;
         }
 
         public async Task<(TResponse Result, HttpResponseMessage HttpResponse)> Get<TResponse>(string urlPart)
