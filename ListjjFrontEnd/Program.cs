@@ -35,11 +35,15 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //var configBuild = new ConfigurationBuilder();
 //var configuration = configBuild.AddEnvironmentVariables().Build();
 //var oldApps = builder.Configuration.Get<AppSettings>();
+
+
 builder.Configuration.AddEnvironmentVariables();
 var appSettings = builder.Configuration.Get<AppSettings>();
+var appServiceApiEndpoint = builder.Configuration.GetValue<string>("APPSETTING_ApiEndpoint");
+
 
 builder.Services.AddSingleton(appSettings);
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appSettings.ApiEndpoint) });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appServiceApiEndpoint ?? appSettings.ApiEndpoint) });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
