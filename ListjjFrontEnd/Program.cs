@@ -35,6 +35,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //var configBuild = new ConfigurationBuilder();
 //var configuration = configBuild.AddEnvironmentVariables().Build();
 //var oldApps = builder.Configuration.Get<AppSettings>();
+builder.Configuration.AddEnvironmentVariables();
 var appSettings = builder.Configuration.Get<AppSettings>();
 
 builder.Services.AddSingleton(appSettings);
