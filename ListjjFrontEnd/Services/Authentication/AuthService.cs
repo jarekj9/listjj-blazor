@@ -11,6 +11,7 @@ using Microsoft.JSInterop;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
+using ListjjFrontEnd.Data;
 
 namespace ListjjFrontEnd.Services.Authentication
 {
@@ -19,20 +20,19 @@ namespace ListjjFrontEnd.Services.Authentication
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
-        private readonly IConfiguration configuration;
+        private readonly AppSettings _appsettings;
         private readonly string apiEndpoint;
         private readonly NavigationManager _navigationManager;
 
-        public AuthService(HttpClient httpClient,
-                           AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager,
-                           ILocalStorageService localStorage, IConfiguration configuration)
+        public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, NavigationManager navigationManager,
+            ILocalStorageService localStorage, AppSettings appsettings)
         {
             _httpClient = httpClient;
             _authenticationStateProvider = authenticationStateProvider;
             _navigationManager = navigationManager;
             _localStorage = localStorage;
-            this.configuration = configuration;
-            apiEndpoint = configuration.GetValue<string>("ApiEndpoint");
+            _appsettings = appsettings;
+            apiEndpoint = _appsettings.ApiEndpoint;
         }
 
         public async Task<RegisterResult> Register(RegisterModel registerModel)

@@ -31,9 +31,10 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //    throw new Exception("appSettings must be initialized before registering services.");
 //}
 
-var configBuild = new ConfigurationBuilder();
-var configuration = configBuild.AddEnvironmentVariables().Build();
-var appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
+//var configBuild = new ConfigurationBuilder();
+//var configuration = configBuild.AddEnvironmentVariables().Build();
+//var oldApps = builder.Configuration.Get<AppSettings>();
+var appSettings = builder.Configuration.Get<AppSettings>();
 
 builder.Services.AddSingleton(appSettings);
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

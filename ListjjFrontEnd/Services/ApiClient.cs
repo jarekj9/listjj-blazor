@@ -24,8 +24,8 @@ namespace ListjjFrontEnd.Services
             this.localStorage = localStorage;
             this.authService = authService;
             _appsettings = appsettings;
-            //apiEndpoint = _appsettings.ApiEndpoint;
-            apiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint") ?? "https://test";
+            apiEndpoint = _appsettings.ApiEndpoint;
+            //apiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint") ?? "https://test";
         }
 
         public async Task<(TResponse Result, HttpResponseMessage HttpResponse)> Get<TResponse>(string urlPart)
