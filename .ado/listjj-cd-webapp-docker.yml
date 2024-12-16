@@ -82,8 +82,19 @@ stages:
         archiveFile: '$(System.DefaultWorkingDirectory)/publish.zip'
         replaceExistingArchive: true
 
+    # - task: AzureWebApp@1
+    #   inputs:
+    #     azureSubscription: $(azureServiceConnection)
+    #     appName: $(blazorFrontAppName)
+    #     package: '$(System.DefaultWorkingDirectory)/publish.zip'
+        
     - task: AzureWebApp@1
       inputs:
         azureSubscription: $(azureServiceConnection)
-        appName: $(blazorFrontAppName)
+        appType: 'webAppLinux'
+        appName: 'listjj-blazor-front'
+        deployToSlotOrASE: true
+        resourceGroupName: 'RGJJ-listjj'
+        slotName: 'production'
         package: '$(System.DefaultWorkingDirectory)/publish.zip'
+        runtimeStack: 'STATICSITE|1.0'
