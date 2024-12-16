@@ -12,7 +12,7 @@ variables:
   location: 'westeurope'
   subscriptionId: 'c5097964-89eb-42c7-9626-accc9e7a3515'
   blazorFrontAppName: 'listjj-blazor-front'
-  apiEndpoint: "https://listjj-api.azurewebsites.net/"
+  apiEndpoint: "https://listjj-api.azurewebsites.net"
 
 stages:
 - stage: Deploy
@@ -70,7 +70,7 @@ stages:
     - script: |
         # echo "############################## DEBUG ##############################"
         # ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
-        # sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
+        sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
         dotnet publish $(Build.SourcesDirectory)/ListjjFrontEnd/ListjjFrontEnd.csproj -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
