@@ -78,4 +78,4 @@ stages:
       inputs:
         azureSubscription: $(azureServiceConnection)
         appName: $(blazorFrontAppName)
-        package: '$(System.DefaultWorkingDirectory)/publish'
+        package: '$(System.DefaultWorkingDirectory)/publish/*'
