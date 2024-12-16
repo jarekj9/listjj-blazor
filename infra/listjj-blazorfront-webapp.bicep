@@ -32,7 +32,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
           value: '80'
         }
       ]
-      linuxFxVersion: 'DOCKER|jarekj9/listjj_frontend_blazor:latest'
+      linuxFxVersion: 'DOTNETCORE|8.0' 
     }
     serverFarmId: appServicePlan.id
   }
