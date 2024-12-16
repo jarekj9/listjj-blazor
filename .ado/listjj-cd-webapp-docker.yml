@@ -76,7 +76,7 @@ stages:
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish/wwwroot'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(System.DefaultWorkingDirectory)/publish.zip'
