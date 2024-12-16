@@ -74,8 +74,16 @@ stages:
         dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(System.DefaultWorkingDirectory)/publish.zip'
+        replaceExistingArchive: true
+
     - task: AzureWebApp@1
       inputs:
         azureSubscription: $(azureServiceConnection)
         appName: $(blazorFrontAppName)
-        package: '$(System.DefaultWorkingDirectory)/publish/*'
+        package: '$(System.DefaultWorkingDirectory)/publish/publish.zip'
