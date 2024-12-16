@@ -71,7 +71,7 @@ stages:
         # echo "############################## DEBUG ##############################"
         # ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
         # sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
-        dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/publish
+        dotnet publish $(Build.SourcesDirectory)/ListjjFrontEnd/ListjjFrontEnd.csproj -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
 
     - task: ArchiveFiles@2
