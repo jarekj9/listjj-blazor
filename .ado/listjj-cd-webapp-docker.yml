@@ -68,8 +68,6 @@ stages:
         version: '8.0.x'
 
     - script: |
-        # echo "############################## DEBUG ##############################"
-        # ls $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot
         sed -i "s|\"ApiEndpoint\":.*|\"ApiEndpoint\": \"$(apiEndpoint)\",|" $(Build.SourcesDirectory)/ListjjFrontEnd/wwwroot/appsettings.Production.json
         dotnet publish $(Build.SourcesDirectory)/ListjjFrontEnd/ListjjFrontEnd.csproj -c Release -o $(System.DefaultWorkingDirectory)/publish
       displayName: 'Build Blazor App'
@@ -82,12 +80,6 @@ stages:
         archiveFile: '$(System.DefaultWorkingDirectory)/publish.zip'
         replaceExistingArchive: true
 
-    # - task: AzureWebApp@1
-    #   inputs:
-    #     azureSubscription: $(azureServiceConnection)
-    #     appName: $(blazorFrontAppName)
-    #     package: '$(System.DefaultWorkingDirectory)/publish.zip'
-        
     - task: AzureWebApp@1
       inputs:
         azureSubscription: $(azureServiceConnection)
