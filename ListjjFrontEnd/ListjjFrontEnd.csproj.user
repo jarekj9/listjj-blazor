@@ -5,5 +5,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>ListjjFrontEnd</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>C:\MY\pliki\skrypty\web\blazor\Listjj\ListjjFrontEnd\Properties\PublishProfiles\test-static-web-appjj.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
