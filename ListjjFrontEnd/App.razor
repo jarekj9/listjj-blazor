@@ -1,7 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization;
+
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>You are not authorized to view this page.</p>
+                </LayoutView>
+            </NotAuthorized>
+            <Authorizing>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Loading authentication state...</p>
+                </LayoutView>
+            </Authorizing>
+        </AuthorizeRouteView>
     </Found>
     <NotFound>
         <CascadingAuthenticationState>
