@@ -32,21 +32,9 @@ stages:
         location: '$(location)'
         templateLocation: 'Linked artifact'
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
-        overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
+        #overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
+        overrideParameters: '-mysqlConnStringSecret "$(mysqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
         deploymentMode: 'Incremental'
-
-    # - task: AzureResourceManagerTemplateDeployment@3
-    #   displayName: Deploy Blazor Front App Service using docker/Bicep
-    #   inputs:
-    #     deploymentScope: 'Resource Group'
-    #     azureResourceManagerConnection: $(azureServiceConnection)
-    #     subscriptionId: $(subscriptionId)
-    #     action: 'Create Or Update Resource Group'
-    #     resourceGroupName: '$(resourceGroup)'
-    #     location: '$(location)'
-    #     templateLocation: 'Linked artifact'
-    #     csmFile: 'infra/listjj-blazorfront-webapp-docker.bicep'
-    #     deploymentMode: 'Incremental'
 
   - job: Deploy_Listjj_Blazor_Front
     pool:

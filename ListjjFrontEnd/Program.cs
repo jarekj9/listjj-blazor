@@ -8,38 +8,18 @@ using ListjjFrontEnd.Services.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using System.Net.Http.Json;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-//var environment = builder.HostEnvironment.BaseAddress;
-//AppSettings? appSettings = new AppSettings();
-//if (environment == "Production")
-//{
-//    var httpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
-//    appSettings = await httpClient.GetFromJsonAsync<AppSettings>($"appsettings.{environment}.json");
-//}
-//else
-//{
-//    appSettings = builder.Configuration.Get<AppSettings>();
-//}
-//if (appSettings == null)
-//{
-//    throw new Exception("appSettings must be initialized before registering services.");
-//}
-
-//var configBuild = new ConfigurationBuilder();
-//var configuration = configBuild.AddEnvironmentVariables().Build();
-//var oldApps = builder.Configuration.Get<AppSettings>();
-
-
-builder.Configuration.AddEnvironmentVariables();
-var appSettings = builder.Configuration.Get<AppSettings>();
-//var appServiceApiEndpoint = builder.Configuration.GetValue<string>("APPSETTING_ApiEndpoint");
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.HostEnvironment.Environment}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+var configuration = builder.Configuration.Build();
+var appSettings = configuration.Get<AppSettings>();
 
 
 builder.Services.AddSingleton<AppSettings>(appSettings);
