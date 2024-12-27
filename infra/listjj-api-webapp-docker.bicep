@@ -1,7 +1,7 @@
 param appName string = 'listjj-api'
 param location string = resourceGroup().location
 
-param mssqlConnStringSecret string
+//param mssqlConnStringSecret string
 param mysqlConnStringSecret string
 param googleAuthClientSecret string
 

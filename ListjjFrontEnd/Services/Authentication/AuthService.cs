@@ -77,7 +77,7 @@ namespace ListjjFrontEnd.Services.Authentication
             var loginResult = await Login(new LoginModel() { Email = email, Password = "WillBeIgnored123", GoogleJwt = googleResponse.Credential });
             if(loginResult.Successful)
             {
-                _navigationManager.NavigateTo("/list");
+                _navigationManager.NavigateTo("/list", true);
             }
             else
             {
