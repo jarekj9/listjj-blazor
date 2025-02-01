@@ -13,6 +13,15 @@ steps:
     dotnetScannerVersion: '8.0.3.99785'
     projectKey: 'j-jan_Listjj_blazor'
     projectName: 'Listjj_blazor'
+
+# Restore dependencies
+- script: dotnet restore --project Listjj/Listjj.csproj
+  displayName: 'Restore Dependencies'
+
+# Build the project (REQUIRED for SonarCloud)
+- script: dotnet build --configuration Release --project Listjj/Listjj.csproj
+  displayName: 'Build Solution'
+
 - task: SonarQubeAnalyze@7
   inputs:
     jdkversion: 'JAVA_HOME_17_X64'
