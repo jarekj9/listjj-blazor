@@ -1,27 +1,24 @@
-trigger:
-- master # or the name of your main branch
-
 steps:
-# Prepare Analysis Configuration task
-- checkout: self
-  fetchDepth: 0
-- task: SonarCloudPrepare@3
-  inputs:
-    SonarQube: 'j-jan SonarQube Cloud'
-    organization: 'j-jan'
-    scannerMode: 'dotnet'
-    dotnetScannerVersion: '8.0.3.99785'
-    projectKey: 'j-jan_Listjj_blazor'
-    projectName: 'Listjj_blazor'
+  # Prepare Analysis Configuration task
+  - checkout: self
+    fetchDepth: 0
+  - task: SonarCloudPrepare@3
+    inputs:
+      SonarQube: 'j-jan SonarQube Cloud'
+      organization: 'j-jan'
+      scannerMode: 'dotnet'
+      dotnetScannerVersion: '8.0.3.99785'
+      projectKey: 'j-jan_Listjj_blazor'
+      projectName: 'Listjj_blazor'
 
-# Restore dependencies
-- script: dotnet restore --project Listjj/Listjj.csproj
-  displayName: 'Restore Dependencies'
+  # Restore dependencies
+  - script: dotnet restore Listjj/Listjj.csproj
+    displayName: 'Restore Dependencies'
 
-# Build the project (REQUIRED for SonarCloud)
-- script: dotnet build --configuration Release --project Listjj/Listjj.csproj
-  displayName: 'Build Solution'
+  # Build the project (REQUIRED for SonarCloud)
+  - script: dotnet build --configuration Release --project Listjj/Listjj.csproj
+    displayName: 'Build Solution'
 
-- task: SonarQubeAnalyze@7
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
+  - task: SonarQubeAnalyze@7
+    inputs:
+      jdkversion: 'JAVA_HOME_17_X64'
