@@ -3,20 +3,16 @@ trigger:
 
 steps:
 # Prepare Analysis Configuration task
-- task: SonarQubePrepare@6
+- checkout: self
+  fetchDepth: 0
+- task: SonarCloudPrepare@3
   inputs:
-    SonarQube: 'YourSonarqubeServerEndpoint'
-    scannerMode: 'MSBuild'
-    projectKey: 'YourProjectKey'
-
-# Dotnet build task
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-
-# Run Code Analysis task
-- task: SonarQubeAnalyze@6
-
-# Publish Quality Gate Result task
-- task: SonarQubePublish@6
+    SonarQube: 'j-jan SonarQube Cloud'
+    organization: 'j-jan'
+    scannerMode: 'dotnet'
+    dotnetScannerVersion: '8'
+    projectKey: 'j-jan_Listjj_blazor'
+    projectName: 'Listjj_blazor'
+- task: SonarQubeAnalyze@7
   inputs:
-    pollingTimeoutSec: '300'
+    jdkversion: 'JAVA_HOME_17_X64'
