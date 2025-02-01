@@ -1,0 +1,22 @@
+trigger:
+- master # or the name of your main branch
+
+steps:
+# Prepare Analysis Configuration task
+- task: SonarQubePrepare@6
+  inputs:
+    SonarQube: 'YourSonarqubeServerEndpoint'
+    scannerMode: 'MSBuild'
+    projectKey: 'YourProjectKey'
+
+# Dotnet build task
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+
+# Run Code Analysis task
+- task: SonarQubeAnalyze@6
+
+# Publish Quality Gate Result task
+- task: SonarQubePublish@6
+  inputs:
+    pollingTimeoutSec: '300'
