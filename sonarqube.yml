@@ -10,7 +10,7 @@ steps:
     SonarQube: 'j-jan SonarQube Cloud'
     organization: 'j-jan'
     scannerMode: 'dotnet'
-    dotnetScannerVersion: '8.0.3'
+    dotnetScannerVersion: '8.0.3.99785'
     projectKey: 'j-jan_Listjj_blazor'
     projectName: 'Listjj_blazor'
 - task: SonarQubeAnalyze@7
