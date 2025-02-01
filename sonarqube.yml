@@ -11,12 +11,10 @@ steps:
       projectKey: 'j-jan_Listjj_blazor'
       projectName: 'Listjj_blazor'
 
-  # Restore dependencies
   - script: dotnet restore Listjj/Listjj.csproj
     displayName: 'Restore Dependencies'
 
-  # Build the project (REQUIRED for SonarCloud)
-  - script: dotnet build --configuration Release --project Listjj/Listjj.csproj
+  - script: dotnet build --configuration Release Listjj/Listjj.csproj
     displayName: 'Build Solution'
 
   - task: SonarQubeAnalyze@7
