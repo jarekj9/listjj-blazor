@@ -10,6 +10,9 @@ steps:
       dotnetScannerVersion: '8.0.3.99785'
       projectKey: 'j-jan_Listjj_blazor'
       projectName: 'Listjj_blazor'
+      extraProperties: |
+        sonar.sources=Listjj
+        sonar.exclusions=**/wwwroot/**,**/tests/**,**/*.md,**/*.json
 
   - script: dotnet restore Listjj/Listjj.csproj
     displayName: 'Restore Dependencies'
