@@ -54,9 +54,9 @@ namespace Listjj.APIs
                 result = (await userManager.UpdateAsync(user)).Succeeded;
             }
 
-            result = await SetUsersPassword(user, userVm.Password) & result ? result : false;
-            result = await SetUsersRole(user, userVm.Role) & result ? result : false;
-            result = (await userManager.SetUserNameAsync(user, userVm.Email)).Succeeded & result ? result : false;
+            result = await SetUsersPassword(user, userVm.Password) && result ? result : false;
+            result = await SetUsersRole(user, userVm.Role) && result ? result : false;
+            result = (await userManager.SetUserNameAsync(user, userVm.Email)).Succeeded && result ? result : false;
 
             return new JsonResult(result);
         }

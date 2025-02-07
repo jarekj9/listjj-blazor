@@ -289,13 +289,6 @@ namespace Listjj
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
             });
-
-            // execute DB Migration:
-            // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            // {
-            //     var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            //     context.Database.Migrate();
-            // }
         }
     }
 
