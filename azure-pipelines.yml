@@ -7,28 +7,43 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  IMAGE_NAME: 'jarekj9/listjj_blazor_api'
+  CONTAINER_NAME: 'listjj_blazor_ap'
+  ZAP_CONTAINER_NAME: 'owasp-zap'
+  TEST_URL: 'http://localhost:5000' 
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+- stage: TestSecurity
+  jobs:
+  - job: SecurityScan
+    steps:
+    - script: |
+        docker network create zap-net
+        docker run -d --rm --name $(CONTAINER_NAME) --network zap-net -p 5000:5000 $(IMAGE_NAME)
+        docker run -d --rm --name $(ZAP_CONTAINER_NAME) --network zap-net owasp/zap2docker-stable
+        sleep 10  # Give time for services to start
+      displayName: 'Start .NET App and OWASP ZAP'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - script: |
+        docker exec $(ZAP_CONTAINER_NAME) zap-baseline.py -t $(TEST_URL) -r zap_report.html || true
+      displayName: 'Run OWASP ZAP Scan'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - script: |
+        docker cp $(ZAP_CONTAINER_NAME):/zap/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
+      displayName: 'Copy ZAP Report'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_report.html'
+        artifactName: 'ZAPReport'
+      displayName: 'Publish ZAP Report'
+
+    - script: |
+        docker stop $(CONTAINER_NAME)
+        docker stop $(ZAP_CONTAINER_NAME)
+        docker network rm zap-net
+      displayName: 'Clean Up'
