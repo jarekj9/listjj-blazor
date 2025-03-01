@@ -34,7 +34,9 @@ stages:
 
         docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net \
           -e ConnectionStrings__MySqlDbContext="server=$(MARIADB_CONTAINER_NAME);database=listjj_db;user=root;password=Root1234*" \
+          -e Authentication__Google__ClientId="anything" \
           -e Authentication__Google__ClientSecret="anything" \
+          -e ASPNETCORE_ENVIRONMENT="Development" \
           $(Listjj_IMAGE_NAME)
 
         docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/wrk:/zap/wrk:rw  --network common-net $(ZAP_IMAGE_NAME) tail -f /dev/null
