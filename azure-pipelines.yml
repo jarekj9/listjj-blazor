@@ -40,7 +40,8 @@ stages:
           $(Listjj_IMAGE_NAME)
 
         docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/zap-reports:/zap/wrk --network common-net $(ZAP_IMAGE_NAME)
-        sleep 15  # Give time for services to start
+        sleep 60  # Give time for services to start
+        docker ps -a
       displayName: 'Start .NET App and OWASP ZAP'
 
     - script: |
