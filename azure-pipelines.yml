@@ -3,8 +3,8 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- none
+trigger: none
+pr: none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -39,7 +39,7 @@ stages:
           -e Authentication__Google__ClientSecret="anything" \
           $(Listjj_IMAGE_NAME)
 
-        docker run -d --rm --name $(ZAP_CONTAINER_NAME) --network common-net $(ZAP_IMAGE_NAME)
+        docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/zap-reports:/zap/wrk --network common-net $(ZAP_IMAGE_NAME)
         sleep 15  # Give time for services to start
       displayName: 'Start .NET App and OWASP ZAP'
 
@@ -48,7 +48,7 @@ stages:
       displayName: 'Run OWASP ZAP Scan'
 
     - script: |
-        docker cp $(ZAP_CONTAINER_NAME):/zap/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
+        docker cp $(ZAP_CONTAINER_NAME):/zap/wrk/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
       displayName: 'Copy ZAP Report'
 
     - task: PublishBuildArtifacts@1
