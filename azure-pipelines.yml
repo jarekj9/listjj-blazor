@@ -33,7 +33,7 @@ stages:
           $(MARIADB_IMAGE_NAME)
 
         docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net \
-          -e ConnectionStrings__DefaultConnection="server=$(MARIADB_CONTAINER_NAME);database=listjj_db;user=root;password=Root1234*" \
+          -e ConnectionStrings__MySqlDbContext="server=$(MARIADB_CONTAINER_NAME);database=listjj_db;user=root;password=Root1234*" \
           -e Authentication__Google__ClientSecret="anything" \
           $(Listjj_IMAGE_NAME)
 
