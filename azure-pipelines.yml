@@ -16,7 +16,7 @@ variables:
   LISTJJ_CONTAINER_NAME: 'listjj_blazor_api'
   MARIADB_CONTAINER_NAME: 'mariadb'
   ZAP_CONTAINER_NAME: 'owasp-zap'
-  TEST_URL: 'http://localhost:5000' 
+  TEST_URL: 'http://listjj_blazor_api' 
 
 stages:
 
@@ -32,13 +32,13 @@ stages:
           -e MYSQL_DATABASE=listjj_db \
           $(MARIADB_IMAGE_NAME)
 
-        docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net -p 5000:5000 \
+        docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net \
           -e ConnectionStrings__DefaultConnection="server=$(MARIADB_CONTAINER_NAME);database=listjj_db;user=root;password=root1234" \
           -e Authentication__Google__ClientSecret="anything" \
           $(Listjj_IMAGE_NAME)
 
         docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/zap-reports:/zap/wrk --network common-net $(ZAP_IMAGE_NAME) tail -f /dev/null
-        sleep 30  # Give time for services to start
+        sleep 60  # Give time for services to start
         docker ps -a
       displayName: 'Start .NET App and OWASP ZAP'
 
