@@ -12,7 +12,7 @@ pool:
 variables:
   Listjj_IMAGE_NAME: 'jarekj9/listjj_blazor_api'
   MARIADB_IMAGE_NAME: 'mariadb:latest'
-  ZAP_IMAGE_NAME: 'owasp/zap2docker-stable'
+  ZAP_IMAGE_NAME: 'zaproxy/zap-stable'
   LISTJJ_CONTAINER_NAME: 'listjj_blazor_api'
   MARIADB_CONTAINER_NAME: 'mariadb'
   ZAP_CONTAINER_NAME: 'owasp-zap'
