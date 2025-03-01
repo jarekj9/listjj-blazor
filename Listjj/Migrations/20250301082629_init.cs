@@ -297,8 +297,8 @@ namespace Listjj.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("85d995e8-8c55-4b08-8512-274a7ea665b4"), "739e92e7-588d-4e1f-9a8f-29e68c520cb5", "Admin", "ADMIN" },
-                    { new Guid("dc62fe36-a48a-4bbd-9793-205ff797696a"), "4a3bca35-d1fe-45d7-8112-3bbe2c583f9d", "User", "USER" }
+                    { new Guid("1d22eae6-2db8-4fd6-a7f8-829279bff22d"), "42efc7e2-5a62-4be8-9d12-aad3016257f4", "User", "USER" },
+                    { new Guid("a9df3ec6-9413-4f1d-a372-e51a61c05aa5"), "52bec21d-ae34-418a-a26d-57f26bc8c62f", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
