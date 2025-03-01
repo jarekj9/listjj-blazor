@@ -1,3 +1,6 @@
+trigger: none
+pr: none
+
 steps:
   # Prepare Analysis Configuration task
   - checkout: self
