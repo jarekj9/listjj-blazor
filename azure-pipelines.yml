@@ -37,9 +37,10 @@ stages:
           -e Authentication__Google__ClientSecret="anything" \
           $(Listjj_IMAGE_NAME)
 
-        docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/wrk:/zap/wrk/:rw  --network common-net $(ZAP_IMAGE_NAME) tail -f /dev/null
+        docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/wrk:/zap/wrk:rw  --network common-net $(ZAP_IMAGE_NAME) tail -f /dev/null
         sleep 60  # Give time for services to start
         docker ps -a
+        docker logs $(LISTJJ_CONTAINER_NAME)
       displayName: 'Start .NET App and OWASP ZAP'
 
     - script: |
