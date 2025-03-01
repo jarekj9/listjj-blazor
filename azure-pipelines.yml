@@ -28,10 +28,8 @@ stages:
         docker network create common-net
 
         docker run -d --rm --name $(MARIADB_CONTAINER_NAME) --network common-net \
-          -e MYSQL_ROOT_PASSWORD=root1234 \
+          -e MYSQL_ROOT_PASSWORD=Root1234* \
           -e MYSQL_DATABASE=listjj_db \
-          -e MYSQL_USER=root \
-          -e MYSQL_PASSWORD=root1234 \
           $(MARIADB_IMAGE_NAME)
 
         docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net -p 5000:5000 \
@@ -39,8 +37,8 @@ stages:
           -e Authentication__Google__ClientSecret="anything" \
           $(Listjj_IMAGE_NAME)
 
-        docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/zap-reports:/zap/wrk --network common-net $(ZAP_IMAGE_NAME)
-        sleep 60  # Give time for services to start
+        docker run -d --rm --name $(ZAP_CONTAINER_NAME) -v $(pwd)/zap-reports:/zap/wrk --network common-net $(ZAP_IMAGE_NAME) tail -f /dev/null
+        sleep 30  # Give time for services to start
         docker ps -a
       displayName: 'Start .NET App and OWASP ZAP'
 
