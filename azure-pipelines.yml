@@ -1,0 +1,65 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  Listjj_IMAGE_NAME: 'jarekj9/listjj_blazor_api'
+  MARIADB_IMAGE_NAME: 'mariadb:latest'
+  ZAP_IMAGE_NAME: 'owasp/zap2docker-stable'
+  LISTJJ_CONTAINER_NAME: 'listjj_blazor_api'
+  MARIADB_CONTAINER_NAME: 'mariadb'
+  ZAP_CONTAINER_NAME: 'owasp-zap'
+  TEST_URL: 'http://localhost:5000' 
+
+stages:
+
+- stage: TestSecurity
+  jobs:
+  - job: SecurityScan
+    steps:
+    - script: |
+        docker network create common-net
+
+        docker run -d --rm --name $(MARIADB_CONTAINER_NAME) --network common-net \
+          -e MYSQL_ROOT_PASSWORD=root1234 \
+          -e MYSQL_DATABASE=listjj_db \
+          -e MYSQL_USER=root \
+          -e MYSQL_PASSWORD=root1234 \
+          $(MARIADB_IMAGE_NAME)
+
+        docker run -d --rm --name $(LISTJJ_CONTAINER_NAME) --network common-net -p 5000:5000 \
+          -e ConnectionStrings__DefaultConnection="server=$(MARIADB_CONTAINER_NAME);database=listjj_db;user=root;password=root1234" \
+          -e Authentication__Google__ClientSecret="anything" \
+          $(Listjj_IMAGE_NAME)
+
+        docker run -d --rm --name $(ZAP_CONTAINER_NAME) --network common-net $(ZAP_IMAGE_NAME)
+        sleep 15  # Give time for services to start
+      displayName: 'Start .NET App and OWASP ZAP'
+
+    - script: |
+        docker exec $(ZAP_CONTAINER_NAME) zap-baseline.py -t $(TEST_URL) -r zap_report.html || true
+      displayName: 'Run OWASP ZAP Scan'
+
+    - script: |
+        docker cp $(ZAP_CONTAINER_NAME):/zap/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
+      displayName: 'Copy ZAP Report'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_report.html'
+        artifactName: 'ZAPReport'
+      displayName: 'Publish ZAP Report'
+
+    - script: |
+        docker stop $(LISTJJ_CONTAINER_NAME)
+        docker stop $(MARIADB_CONTAINER_NAME)
+        docker stop $(ZAP_CONTAINER_NAME)
+        docker network rm common-net
+      displayName: 'Clean Up'
