@@ -55,12 +55,12 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_outputs/zap_report.html'
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_outputs'
         artifactName: 'ZAPReport'
       displayName: 'Publish ZAP Report'
 
     - script: |
-        docker cp $(ZAP_CONTAINER_NAME):/zap/wrk/zap_report.json zap_report.json
+        cp $(Build.ArtifactStagingDirectory)/zap_outputs/zap_report.json zap_report.json
         HIGH_COUNT=$(jq '[.site[].alerts[] | select(.risk == "High")] | length' zap_report.json)
         MEDIUM_COUNT=$(jq '[.site[].alerts[] | select(.risk == "Medium")] | length' zap_report.json)
         if [ "$HIGH_COUNT" -gt 0 ]; then
