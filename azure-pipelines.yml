@@ -59,6 +59,19 @@ stages:
         artifactName: 'ZAPReport'
       displayName: 'Publish ZAP Report'
 
+    - task: SendEmail@2
+      inputs:
+        To: 'jerry.esp.sha@gmail.com'
+        From: 'jerry.esp.sha@gmail.com'
+        Subject: 'Listjj_Blazor OWASP ZAP scan results'
+        Body: 'Listjj_Blazor OWASP ZAP scan results'
+        BodyAsHtml: false
+        AddAttachment: true
+        Attachment: '$(Build.ArtifactStagingDirectory)/zap_report.html'
+        SmtpServer: 'smtp.gmail.com'
+        SmtpUsername: 'pocztonosz'
+        SmtpPassword: 'mupndxnxluisdphf'
+
     - script: |
         docker stop $(LISTJJ_CONTAINER_NAME)
         docker stop $(MARIADB_CONTAINER_NAME)
