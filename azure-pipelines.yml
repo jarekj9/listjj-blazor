@@ -50,7 +50,7 @@ stages:
       displayName: 'Run OWASP ZAP Scan'
 
     - script: |
-        docker cp $(ZAP_CONTAINER_NAME):/zap/wrk $(Build.ArtifactStagingDirectory)/
+        docker cp $(ZAP_CONTAINER_NAME):/zap/wrk $(Build.ArtifactStagingDirectory)/zap_outputs
       displayName: 'Copy ZAP Report'
 
     - task: PublishBuildArtifacts@1
