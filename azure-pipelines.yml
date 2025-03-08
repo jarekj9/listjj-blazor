@@ -53,12 +53,6 @@ stages:
         docker cp $(ZAP_CONTAINER_NAME):/zap/wrk/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
       displayName: 'Copy ZAP Report'
 
-    - script: |
-        ls $(Build.ArtifactStagingDirectory)
-        ls $(Build.ArtifactStagingDirectory)/zap_report.html
-        tail $(Build.ArtifactStagingDirectory)/zap_report.html
-      displayName: 'LS1'
-
     - task: PublishBuildArtifacts@1
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_report.html'
@@ -66,8 +60,15 @@ stages:
       displayName: 'Publish ZAP Report'
 
     - script: |
-        ls '$(Build.ArtifactStagingDirectory)'
-      displayName: 'LS2'
+        docker cp $(ZAP_CONTAINER_NAME):/zap/wrk/zap_report.json zap_report.json
+        HIGH_COUNT=$(jq '[.site[].alerts[] | select(.risk == "High")] | length' zap_report.json)
+        if [ "$HIGH_COUNT" -gt 0 ]; then
+          echo "High severity vulnerabilities found: $HIGH_COUNT"
+          exit 1
+        else
+          echo "No high severity vulnerabilities found."
+        fi
+      displayName: 'Check for High Severity Vulnerabilities'
 
     - script: |
         docker stop $(LISTJJ_CONTAINER_NAME)
