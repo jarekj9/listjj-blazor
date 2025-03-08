@@ -53,11 +53,21 @@ stages:
         docker cp $(ZAP_CONTAINER_NAME):/zap/wrk/zap_report.html $(Build.ArtifactStagingDirectory)/zap_report.html
       displayName: 'Copy ZAP Report'
 
+    - script: |
+        ls $(Build.ArtifactStagingDirectory)
+        ls $(Build.ArtifactStagingDirectory)/zap_report.html
+        tail $(Build.ArtifactStagingDirectory)/zap_report.html
+      displayName: 'LS1'
+
     - task: PublishBuildArtifacts@1
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_report.html'
         artifactName: 'ZAPReport'
       displayName: 'Publish ZAP Report'
+
+    - script: |
+        ls '$(Build.ArtifactStagingDirectory)'
+      displayName: 'LS2'
 
     - script: |
         docker stop $(LISTJJ_CONTAINER_NAME)
