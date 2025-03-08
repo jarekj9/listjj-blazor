@@ -46,7 +46,7 @@ stages:
       displayName: 'Start .NET App and OWASP ZAP'
 
     - script: |
-        docker exec $(ZAP_CONTAINER_NAME) zap-baseline.py -t $(TEST_URL) -r zap_report.html || true
+        docker exec $(ZAP_CONTAINER_NAME) zap-baseline.py -t $(TEST_URL) -J /zap/wrk/zap_report.json -r /zap/wrk/zap_report.html || true
       displayName: 'Run OWASP ZAP Scan'
 
     - script: |
