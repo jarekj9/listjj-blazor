@@ -55,7 +55,7 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)/wrk/zap_report.html'
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/zap_outputs/zap_report.html'
         artifactName: 'ZAPReport'
       displayName: 'Publish ZAP Report'
 
