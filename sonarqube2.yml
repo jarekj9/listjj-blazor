@@ -30,6 +30,8 @@ steps:
      $(POSTGRES_IMAGE)
   displayName: 'Run SonarQube container'
 
+- script: sleep 60;docker ps
+
 - script: |
     docker stop $(SONARQUBE_CONTAINERNAME)
     docker stop $(POSTGRES_CONTAINERNAME)
