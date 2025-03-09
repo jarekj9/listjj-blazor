@@ -61,14 +61,17 @@ stages:
 
     - script: |
         cp $(Build.ArtifactStagingDirectory)/zap_outputs/zap_report.json zap_report.json
-        HIGH_COUNT=$(jq '[.site[].alerts[] | select(.risk == "High")] | length' zap_report.json)
-        MEDIUM_COUNT=$(jq '[.site[].alerts[] | select(.risk == "Medium")] | length' zap_report.json)
+        HIGH_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' zap_report.json)
+        MEDIUM_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "2")] | length' zap_report.json)
+        LOW_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "1")] | length' zap_report.json)
         if [ "$HIGH_COUNT" -gt 0 ]; then
           echo "High severity vulnerabilities found: $HIGH_COUNT"
           exit 1
         else
           echo "No high severity vulnerabilities found."
-          echo "MEDIUM: $MEDIUM_COUNT"
+        echo "HIGH: $HIGH_COUNT"
+        echo "MEDIUM: $MEDIUM_COUNT"
+        echo "LOW: $LOW_COUNT"
         fi
       displayName: 'Check for High Severity Vulnerabilities'
 
