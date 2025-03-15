@@ -9,7 +9,7 @@ pool:
 variables:
   SONARQUBE_IMAGE: 'sonarqube:lts-community'
   SONARQUBE_CONTAINERNAME: 'sonarqube'
-  POSTGRES_IMAGE: 'sonarqube:lts-community'
+  POSTGRES_IMAGE: 'postgres:13'
   POSTGRES_CONTAINERNAME: 'sonar_db'
 
 steps:
