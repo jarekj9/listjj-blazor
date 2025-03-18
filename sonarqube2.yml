@@ -34,7 +34,7 @@ steps:
 - script: sleep 60;docker ps
 
 - script: |
-    TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken2" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
+    TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
     echo $TOKEN
     ls $(Build.SourcesDirectory)
     docker run \
