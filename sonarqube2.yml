@@ -50,6 +50,7 @@ steps:
     curl -u "$TOKEN:" \
      -o report.json \
      "http://localhost:9009/api/issues/search?componentKeys=my_project"
+    cp report.json $(Build.ArtifactStagingDirectory)/report.json
   displayName: 'Get scan report'
 
 - task: PublishBuildArtifacts@1
