@@ -47,7 +47,7 @@ steps:
 
 - script: |
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken2" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
-    curl -u "$TOKEN" \
+    curl -u "$TOKEN:" \
      -o report.json \
      "http://localhost:9009/api/issues/search?componentKeys=my_project"
   displayName: 'Get scan report'
