@@ -27,10 +27,24 @@ steps:
      -e SONAR_JDBC_URL=jdbc:postgresql://$(POSTGRES_CONTAINERNAME):5432/sonar \
      -e SONAR_JDBC_USERNAME=sonar \
      -e SONAR_JDBC_PASSWORD=sonar \
+     -p 9009:9000 \
      $(SONARQUBE_IMAGE)
   displayName: 'Run SonarQube container'
 
 - script: sleep 60;docker ps
+
+- script: |
+    TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken2" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
+    echo $TOKEN
+    ls $(Build.SourcesDirectory)
+    docker run \
+      --rm \
+      -v $(Build.SourcesDirectory):/usr/src \
+      --network common-net \
+      -e SONAR_HOST_URL="http://sonarqube:9000" \
+      -e SONAR_TOKEN=$TOKEN \
+      sonarsource/sonar-scanner-cli:latest \
+      sonar-scanner -Dsonar.projectKey=my_project
 
 - script: |
     docker stop $(SONARQUBE_CONTAINERNAME)
