@@ -45,7 +45,19 @@ steps:
       -e SONAR_TOKEN=$TOKEN \
       sonarsource/sonar-scanner-cli:latest \
       sonar-scanner -Dsonar.projectKey=my_project
-    displayName: 'Run SonarQube scan'
+  displayName: 'Run SonarQube scan'
+
+- script: |
+    curl -u "$TOKEN" \
+     -o report.json \
+     "http://localhost:9009/api/issues/search?componentKeys=my_project"
+  displayName: 'Get scan report'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)/report.json
+    artifactName: SonarQubeReport
+  displayName: "Publish SonarQube Report"
 
 - script: |
     docker stop $(SONARQUBE_CONTAINERNAME)
