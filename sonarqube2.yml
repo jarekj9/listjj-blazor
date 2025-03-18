@@ -31,7 +31,7 @@ steps:
      $(SONARQUBE_IMAGE)
   displayName: 'Run SonarQube container'
 
-- script: sleep 60;docker ps
+- script: sleep 60
 
 - script: |
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken1" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
@@ -44,6 +44,8 @@ steps:
       sonarsource/sonar-scanner-cli:latest \
       sonar-scanner -Dsonar.projectKey=my_project
   displayName: 'Run SonarQube scan'
+
+- script: sleep 120
 
 - script: |
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken2" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
