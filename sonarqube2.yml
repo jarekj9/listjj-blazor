@@ -45,6 +45,7 @@ steps:
       -e SONAR_TOKEN=$TOKEN \
       sonarsource/sonar-scanner-cli:latest \
       sonar-scanner -Dsonar.projectKey=my_project
+    displayName: 'Run SonarQube scan'
 
 - script: |
     docker stop $(SONARQUBE_CONTAINERNAME)
