@@ -1,8 +1,8 @@
 param appName string = 'listjj-api'
 param location string = resourceGroup().location
 
-//param mssqlConnStringSecret string
-param mysqlConnStringSecret string
+param mssqlConnStringSecret string
+//param mysqlConnStringSecret string
 param googleAuthClientSecret string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
@@ -24,10 +24,10 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
     siteConfig: {
       appSettings: [
         {
-          //name: 'ConnectionStrings__MsSqlDbContext'
-          //value: mssqlConnStringSecret
-          name: 'ConnectionStrings__MySqlDbContext'
-          value: mysqlConnStringSecret
+          name: 'ConnectionStrings__MsSqlDbContext'
+          value: mssqlConnStringSecret
+          //name: 'ConnectionStrings__MySqlDbContext'
+          //value: mysqlConnStringSecret
         }
 
         {
