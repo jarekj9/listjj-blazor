@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Listjj.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250319183148_init")]
+    [Migration("20250319193406_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -55,15 +55,15 @@ namespace Listjj.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("aa95c475-410b-4a32-8fb6-d242cc34b872"),
-                            ConcurrencyStamp = "c43c1b62-256d-4f85-a519-a5558092692c",
+                            Id = new Guid("8767bb7a-c85e-4c88-814f-b73b8cd0e1af"),
+                            ConcurrencyStamp = "48a5154a-ffd9-4af1-a666-61603587c42c",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("d24fc78f-0472-47d5-866f-55c682c48ba1"),
-                            ConcurrencyStamp = "c7452d94-da48-4090-9821-d7c510e99f04",
+                            Id = new Guid("990153b9-4872-4642-9ed5-ae5c8924b2ba"),
+                            ConcurrencyStamp = "d2c726ae-3162-43c5-91d8-e9b60ff58e8a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
