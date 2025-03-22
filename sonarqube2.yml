@@ -41,12 +41,8 @@ steps:
       --network common-net \
       -e SONAR_HOST_URL="http://sonarqube:9000" \
       -e SONAR_TOKEN=$TOKEN \
-      sonarsource/sonar-scanner-cli-dotnet:latest \
-      sonar-scanner \
-        -Dsonar.projectKey=my_project \
-        -Dsonar.language=cs \
-        -Dsonar.exclusions=**/*.min.js,**/*.min.css \
-        -Dsonar.inclusions=**/*.cs,**/*.cshtml,**/*.razor.cs
+      sonarsource/sonar-scanner-cli:latest \
+      sonar-scanner -Dsonar.projectKey=my_project
   displayName: 'Run SonarQube scan'
 
 #- script: sleep 120
