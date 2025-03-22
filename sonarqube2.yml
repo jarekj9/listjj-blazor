@@ -41,7 +41,7 @@ steps:
       --network common-net \
       -e SONAR_HOST_URL="http://sonarqube:9000" \
       -e SONAR_TOKEN=$TOKEN \
-      sonarsource/sonar-scanner-cli:latest \
+      sonarsource/sonar-scanner-cli-dotnet:latest \
       sonar-scanner \
         -Dsonar.projectKey=my_project \
         -Dsonar.language=cs \
