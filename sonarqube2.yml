@@ -45,7 +45,26 @@ steps:
       sonar-scanner -Dsonar.projectKey=my_project
   displayName: 'Run SonarQube scan'
 
-- script: sleep 120
+#- script: sleep 120
+- script: |
+    echo "Waiting for SonarQube analysis to complete..."
+    TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken3" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
+    
+    while true; do
+      STATUS=$(curl -s -u "$TOKEN:" "http://localhost:9009/api/ce/component?component=my_project" | grep -o '"status":"[^"]*' | sed 's/"status":"//')
+      
+      if [ "$STATUS" = "SUCCESS" ]; then
+        echo "Analysis completed successfully"
+        break
+      elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "CANCELED" ]; then
+        echo "Analysis failed or was canceled"
+        exit 1
+      fi
+      
+      echo "Analysis still in progress... waiting 10 seconds"
+      sleep 10
+    done
+  displayName: 'Wait for analysis completion'
 
 - script: |
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken2" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
