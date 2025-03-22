@@ -37,7 +37,7 @@ steps:
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken1" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
     ls $(Build.SourcesDirectory)
     docker run \
-      -v $(Build.SourcesDirectory):/usr/src \
+      -v $(Build.SourcesDirectory)/Listjj:/usr/src \
       --network common-net \
       -e SONAR_HOST_URL="http://sonarqube:9000" \
       -e SONAR_TOKEN=$TOKEN \
