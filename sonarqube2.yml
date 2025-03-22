@@ -55,11 +55,14 @@ steps:
     # Install dotnet-sonarscanner
     dotnet tool install --global dotnet-sonarscanner --version 5.13.0
     
+    # Change to solution directory
+    cd $(Build.SourcesDirectory)/Listjj
+    
     # Begin analysis
     dotnet-sonarscanner begin /k:"my_project" /d:sonar.host.url="http://localhost:9009" /d:sonar.login="$TOKEN"
     
     # Build and analyze
-    dotnet build $(Build.SourcesDirectory)/Listjj/Listjj.sln
+    dotnet build Listjj.sln
     
     # End analysis
     dotnet-sonarscanner end /d:sonar.login="$TOKEN"
