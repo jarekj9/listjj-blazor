@@ -36,13 +36,34 @@ steps:
 - script: |
     TOKEN=$(curl -u admin:admin -X POST "http://localhost:9009/api/user_tokens/generate" -d "name=myToken1" | grep -o '"token":"[^"]*' | sed 's/"token":"//')
     ls $(Build.SourcesDirectory)
-    docker run \
-      -v $(Build.SourcesDirectory)/Listjj:/usr/src \
-      --network common-net \
-      -e SONAR_HOST_URL="http://sonarqube:9000" \
-      -e SONAR_TOKEN=$TOKEN \
-      sonarsource/sonar-scanner-cli:latest \
-      sonar-scanner -Dsonar.projectKey=my_project
+    # docker run \
+    #   -v $(Build.SourcesDirectory)/Listjj:/usr/src \
+    #   --network common-net \
+    #   -e SONAR_HOST_URL="http://sonarqube:9000" \
+    #   -e SONAR_TOKEN=$TOKEN \
+    #   sonarsource/sonar-scanner-cli:latest \
+    #   sonar-scanner -Dsonar.projectKey=my_project
+
+    # Install .NET 8 SDK
+    wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+    sudo apt-get update
+    sudo apt-get install -y apt-transport-https
+    sudo apt-get update
+    sudo apt-get install -y dotnet-sdk-8.0
+    
+    # Install dotnet-sonarscanner
+    dotnet tool install --global dotnet-sonarscanner --version 5.13.0
+    
+    # Begin analysis
+    dotnet-sonarscanner begin /k:"my_project" /d:sonar.host.url="http://localhost:9009" /d:sonar.login="$TOKEN"
+    
+    # Build and analyze
+    dotnet build $(Build.SourcesDirectory)/Listjj/Listjj.sln
+    
+    # End analysis
+    dotnet-sonarscanner end /d:sonar.login="$TOKEN"
+  
   displayName: 'Run SonarQube scan'
 
 #- script: sleep 120
