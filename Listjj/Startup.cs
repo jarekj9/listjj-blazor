@@ -35,6 +35,8 @@ using System.Text;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using Listjj.Data.Options;
 
 
 namespace Listjj
@@ -57,7 +59,7 @@ namespace Listjj
 
             ///// Open Telemetry /////
             var openTelemetryEntpoint = Configuration.GetSection("OpenTelemetryEndpoint").Get<string>();
-            if (!openTelemetryEntpoint.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(openTelemetryEntpoint))
             { 
                 services.AddOpenTelemetry().WithTracing(b =>
                 {
@@ -100,7 +102,7 @@ namespace Listjj
             // Use mariadb or mssql, remember to change migrations
             var mysqlConnString = Configuration.GetConnectionString("MySqlDbContext");
             var mssqlConnString = Configuration.GetConnectionString("MsSqlDbContext");
-            if(!mysqlConnString.IsNullOrEmpty())
+            if(!string.IsNullOrEmpty(mysqlConnString))
             {
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseMySql(mysqlConnString, new MySqlServerVersion(new Version(10, 5, 9)))
@@ -119,7 +121,7 @@ namespace Listjj
 
             //Redis Caching:
             var redisConnString = Configuration.GetConnectionString("Redis");
-            if (!redisConnString.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(redisConnString))
             {
                 services.AddStackExchangeRedisCache(opt =>
                 {
@@ -131,6 +133,9 @@ namespace Listjj
             {
                 services.AddDistributedMemoryCache();
             }
+
+            services.Configure<GoogleAuthOptions>(Configuration.GetSection($"Authentication:{nameof(GoogleAuthOptions)}"));
+            services.Configure<MicrosoftAuthOptions>(Configuration.GetSection($"Authentication:{nameof(MicrosoftAuthOptions)}"));
 
             services.AddHttpContextAccessor();  // for user identity
             services.AddScoped<IFileService, FileService>();
@@ -172,8 +177,8 @@ namespace Listjj
             // login with google:
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                googleOptions.ClientId = Configuration[$"Authentication:{nameof(GoogleAuthOptions)}:ClientId"];
+                googleOptions.ClientSecret = Configuration[$"Authentication:{nameof(GoogleAuthOptions)}:ClientSecret"];
             });
 
             // enable JWT:

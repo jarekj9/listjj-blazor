@@ -12,5 +12,6 @@ namespace Listjj.Infrastructure.Models
 
         public bool RememberMe { get; set; }
         public string? GoogleJwt { get; set; }
+        public string? MicrosoftJwt { get; set; }
     }
 }

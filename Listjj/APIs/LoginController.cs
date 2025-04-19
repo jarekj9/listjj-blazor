@@ -13,6 +13,10 @@ using Listjj.Models;
 using System.Linq;
 using System.Collections.Generic;
 using Google.Apis.Auth;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
+using Listjj.Data.Options;
+using Microsoft.Extensions.Options;
 
 
 namespace Listjj.APIs
@@ -23,18 +27,18 @@ namespace Listjj.APIs
     {
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private ApplicationUser user;
+        private ApplicationUser _user;
+        private readonly MicrosoftAuthOptions _microsoftAuthOptions;
 
-        public LoginController(IConfiguration configuration, UserManager<ApplicationUser> userManager, 
-            SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
+        public LoginController(IConfiguration configuration, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
+            IOptions<GoogleAuthOptions> googleAuthOptions, IOptions<MicrosoftAuthOptions> microsoftAuthOptions)
         {
             _configuration = configuration;
             _signInManager = signInManager;
-            _roleManager = roleManager;
             _userManager = userManager;
-            user = null;
+            _user = null;
+            _microsoftAuthOptions = microsoftAuthOptions.Value;
         }
 
         [HttpPost]
@@ -47,11 +51,18 @@ namespace Listjj.APIs
                     return Unauthorized();
                 }
             }
+            else if (!string.IsNullOrWhiteSpace(login.MicrosoftJwt))
+            {
+                if (!(await TryAuthWithMicrosoft(login)))
+                {
+                    return Unauthorized();
+                }
+            }
             else
             {
                 var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
                 if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
-                user = await _signInManager.UserManager.FindByEmailAsync(login.Email);
+                _user = await _signInManager.UserManager.FindByEmailAsync(login.Email);
             }
 
             var token = await GenerateToken(login);
@@ -61,30 +72,47 @@ namespace Listjj.APIs
 
         private async Task<bool> TryAuthWithGoogle(LoginModel login)
         {
-            user = await _signInManager.UserManager.FindByEmailAsync(login.Email);
-            if (user == null)
+            var verifiedPayload = await GoogleJsonWebSignature.ValidateAsync(login.GoogleJwt);
+            login.Email = verifiedPayload.Email;  // because login.Email was not verified
+            var email = verifiedPayload.Email;
+            
+            _user = await _signInManager.UserManager.FindByEmailAsync(email);
+
+            if (_user == null)
             {
-                user = new ApplicationUser { UserName = login.Email, Email = login.Email };
-                var createUserResult = await _userManager.CreateAsync(user);
+                _user = new ApplicationUser { UserName = email, Email = email };
+                var createUserResult = await _userManager.CreateAsync(_user);
                 if (!createUserResult.Succeeded)
                 {
                     return false;
                 }
             }
-            try
+            await _signInManager.SignInAsync(_user, isPersistent: false);
+            return true;
+        }
+
+        private async Task<bool> TryAuthWithMicrosoft(LoginModel login)
+        {
+            var claimsPrincipal = await ValidateMicrosoftTokenAsync(login.MicrosoftJwt);
+            var verifiedEmail = claimsPrincipal != null && claimsPrincipal.Identity.IsAuthenticated ? 
+                claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value : null;
+            if (verifiedEmail == null)
             {
-                var verifiedPayload = await GoogleJsonWebSignature.ValidateAsync(login.GoogleJwt);
-                if (verifiedPayload != null)
+                return false;
+            }
+            login.Email = verifiedEmail;  // because login.Email was not verified
+            _user = await _signInManager.UserManager.FindByEmailAsync(verifiedEmail);
+            if (_user == null)
+            {
+                _user = new ApplicationUser { UserName = verifiedEmail, Email = verifiedEmail };
+                var createUserResult = await _userManager.CreateAsync(_user);
+                if (!createUserResult.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return true;
+                    return false;
                 }
-                return false;
             }
-            catch (InvalidJwtException ex)
-            {
-                return false;
-            }
+            await _signInManager.SignInAsync(_user, isPersistent: false);
+            return true;
         }
 
         private async Task<JwtSecurityToken> GenerateToken(LoginModel login)
@@ -93,10 +121,10 @@ namespace Listjj.APIs
             {
                 new Claim("username", login.Email),
                 new Claim(ClaimTypes.Name, login.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, _user.Id.ToString())
             };
 
-            var usersRole = (await _signInManager.UserManager.GetRolesAsync(user)).FirstOrDefault();
+            var usersRole = (await _signInManager.UserManager.GetRolesAsync(_user)).FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(usersRole))
             {
                 claims.Add(new Claim("role", usersRole));
@@ -118,5 +146,38 @@ namespace Listjj.APIs
             return token;
         }
 
+        public async Task<ClaimsPrincipal> ValidateMicrosoftTokenAsync(string token)
+        {
+            var discoveryUrl = $"https://login.microsoftonline.com/{_microsoftAuthOptions.TenantId}/v2.0/.well-known/openid-configuration";
+            Console.WriteLine($"DISCOVERY URL {discoveryUrl}");
+
+            var mgr = new ConfigurationManager<OpenIdConnectConfiguration>(
+                discoveryUrl,
+                new OpenIdConnectConfigurationRetriever()
+            );
+            var cfg = await mgr.GetConfigurationAsync();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = cfg.Issuer,
+                ValidAudience = _microsoftAuthOptions.ClientId,
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                IssuerSigningKeys = cfg.SigningKeys
+            };
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
+                return principal;
+            }
+             catch (Exception ex)
+            {
+                Console.WriteLine("Token validation failed: " + ex.Message);
+                return null;
+            }
+        }
     }
 }
