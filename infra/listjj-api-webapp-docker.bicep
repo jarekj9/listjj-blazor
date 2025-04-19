@@ -4,6 +4,8 @@ param location string = resourceGroup().location
 param mssqlConnStringSecret string
 //param mysqlConnStringSecret string
 param googleAuthClientSecret string
+param microsoftTenantId string
+param microsoftClientId string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'service-plan-listjj'
@@ -31,12 +33,20 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
 
         {
-          name: 'Authentication__Google__ClientId'
+          name: 'Authentication__GoogleAuthOptions__ClientId'
           value: '1034243776717-9qsk2ud7ltr621vf14dph6o0nuqbd4bq.apps.googleusercontent.com'
         }
         {
-          name: 'Authentication__Google__ClientSecret'
+          name: 'Authentication__GoogleAuthOptions__ClientSecret'
           value: googleAuthClientSecret
+        }
+        {
+          name: 'Authentication__MicrosoftAuthOptions__TenantId'
+          value: microsoftTenantId
+        }
+        {
+          name: 'Authentication__MicrosoftAuthOptions__ClientId'
+          value: microsoftClientId
         }
         {
           name: 'ASPNETCORE_ENVIRONMENT'
