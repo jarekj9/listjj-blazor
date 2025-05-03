@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols;
 using Listjj.Data.Options;
 using Microsoft.Extensions.Options;
+using Blazorise.Extensions;
 
 
 namespace Listjj.APIs
@@ -73,22 +74,13 @@ namespace Listjj.APIs
         private async Task<bool> TryAuthWithGoogle(LoginModel login)
         {
             var verifiedPayload = await GoogleJsonWebSignature.ValidateAsync(login.GoogleJwt);
-            login.Email = verifiedPayload.Email;  // because login.Email was not verified
-            var email = verifiedPayload.Email;
-            
-            _user = await _signInManager.UserManager.FindByEmailAsync(email);
-
-            if (_user == null)
+            var verifiedEmail = verifiedPayload.Email;
+            if (verifiedEmail.IsNullOrEmpty())
             {
-                _user = new ApplicationUser { UserName = email, Email = email };
-                var createUserResult = await _userManager.CreateAsync(_user);
-                if (!createUserResult.Succeeded)
-                {
-                    return false;
-                }
+                return false;
             }
-            await _signInManager.SignInAsync(_user, isPersistent: false);
-            return true;
+            var signInResult = await HandleVerifiedEmailSignIn(verifiedEmail);
+            return signInResult;
         }
 
         private async Task<bool> TryAuthWithMicrosoft(LoginModel login)
@@ -96,11 +88,16 @@ namespace Listjj.APIs
             var claimsPrincipal = await ValidateMicrosoftTokenAsync(login.MicrosoftJwt);
             var verifiedEmail = claimsPrincipal != null && claimsPrincipal.Identity.IsAuthenticated ? 
                 claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value : null;
-            if (verifiedEmail == null)
+            if (verifiedEmail.IsNullOrEmpty())
             {
                 return false;
             }
-            login.Email = verifiedEmail;  // because login.Email was not verified
+            var signInResult = await HandleVerifiedEmailSignIn(verifiedEmail);
+            return signInResult;
+        }
+
+        private async Task<bool> HandleVerifiedEmailSignIn(string verifiedEmail)
+        {
             _user = await _signInManager.UserManager.FindByEmailAsync(verifiedEmail);
             if (_user == null)
             {
