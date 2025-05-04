@@ -29,7 +29,7 @@ namespace Listjj.APIs
             this.userManager = userManager;
         }
 
-        [Route("api/[controller]/get")]
+        [Route("api/externalapikey/get")]
         [HttpGet]
         public async Task<JsonResult> Get()
         {
@@ -38,13 +38,23 @@ namespace Listjj.APIs
             return new JsonResult(user.ApiKey);
         }
 
-        [Route("api/[controller]/generate")]
+        [Route("api/externalapikey/generate")]
         [HttpGet]
         public async Task<JsonResult> Generate()
         {
             var userId = GetUserId();
             var user = await userManager.FindByIdAsync(userId.ToString());
             var apiKey = await unitOfWork.Users.CreateApiKey(user);
+            return new JsonResult(apiKey);
+        }
+
+        [Route("api/externalapikey/set")]
+        [HttpPost]
+        public async Task<JsonResult> SetApiKey([FromBody] string apikey)
+        {
+            var userId = GetUserId();
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            var apiKey = await unitOfWork.Users.SetApiKey(user, apikey);
             return new JsonResult(apiKey);
         }
 

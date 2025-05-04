@@ -9,5 +9,6 @@ namespace Listjj.Abstract
     {
         Task<ApplicationUser> GetByApiKey(Guid apiKey);
         Task<Guid> CreateApiKey(ApplicationUser user);
+        Task<Guid> SetApiKey(ApplicationUser user, string apikey);
     }
 }

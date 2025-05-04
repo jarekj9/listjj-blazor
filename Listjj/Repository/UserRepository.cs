@@ -30,5 +30,13 @@ namespace Listjj.Repository
             return newKey;
         }
 
+        public async Task<Guid> SetApiKey(ApplicationUser user, string apikey)
+        {
+            var newKey = Guid.TryParse(apikey, out var parsed) ? parsed : Guid.Empty;
+            user.ApiKey = newKey;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return newKey;
+        }
     }
 }
