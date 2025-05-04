@@ -37,6 +37,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Listjj.Data.Options;
+using Ganss.Xss;
 
 
 namespace Listjj
@@ -134,6 +135,7 @@ namespace Listjj
                 services.AddDistributedMemoryCache();
             }
 
+            services.AddSingleton<HtmlSanitizer>();
             services.Configure<GoogleAuthOptions>(Configuration.GetSection($"Authentication:{nameof(GoogleAuthOptions)}"));
             services.Configure<MicrosoftAuthOptions>(Configuration.GetSection($"Authentication:{nameof(MicrosoftAuthOptions)}"));
 

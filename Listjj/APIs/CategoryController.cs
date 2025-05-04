@@ -11,79 +11,85 @@ using Listjj.Infrastructure.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Ganss.Xss;
 
 namespace Listjj.APIs
 {
     [Authorize(Roles = "Admin,User")]
     public class CategoryController : Controller
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly ILogger<CategoryController> logger;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<CategoryController> _logger;
         private readonly IMapper mapper;
-        private readonly ICategoryCacheService categoryCacheService;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly ICategoryCacheService _categoryCacheService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly HtmlSanitizer _htmlSanitizer;
 
-        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper, ICategoryCacheService categoryCacheService, UserManager<ApplicationUser> userManager)
+        public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger, IMapper mapper, ICategoryCacheService categoryCacheService, UserManager<ApplicationUser> userManager, HtmlSanitizer htmlSanitizer)
         {
-            this.unitOfWork = unitOfWork;
-            this.logger = logger;
+            this._unitOfWork = unitOfWork;
+            this._logger = logger;
             this.mapper = mapper;
-            this.categoryCacheService = categoryCacheService;
-            this.userManager = userManager;
+            this._categoryCacheService = categoryCacheService;
+            this._userManager = userManager;
+            _htmlSanitizer = htmlSanitizer;
         }
 
-        [Route("api/[controller]/all")]
+        [Route("api/category/all")]
         [HttpGet]
         public async Task<JsonResult> GetAllCategories()
         {
-            var categories = await unitOfWork.Categories.GetAll();
+            var categories = await _unitOfWork.Categories.GetAll();
             var categoriesVms = mapper.Map<List<CategoryViewModel>>(categories);
             return new JsonResult(categoriesVms);
         }
 
-        [Route("api/[controller]/category_by_id")]
+        [Route("api/category/category_by_id")]
         [HttpGet]
         public async Task<JsonResult> GetCategoryById(string id)
         {
             var categoryId = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
-            var category = await unitOfWork.Categories.GetById(categoryId);
+            var category = await _unitOfWork.Categories.GetById(categoryId);
             var categoryVm = mapper.Map<CategoryViewModel>(category);
             return new JsonResult(categoryVm);
         }
 
-        [Route("api/[controller]/categories_by_userid")]
+        [Route("api/category/categories_by_userid")]
         [HttpGet]
         public async Task<JsonResult> GetCategoriesByUserId()
         {
             var userIdGuid = GetUserId();
-            var categories = await unitOfWork.Categories.GetAllByUserId(userIdGuid);
+            var categories = await _unitOfWork.Categories.GetAllByUserId(userIdGuid);
             var categoriesVms = mapper.Map<List<CategoryViewModel>>(categories);
             return new JsonResult(categoriesVms);
         }
 
-        [Route("api/[controller]/recent_categoryid_by_userid")]
+        [Route("api/category/recent_categoryid_by_userid")]
         [HttpGet]
         public async Task<JsonResult> GetRecentCategoryIdByUserId()
         {
             var userIdGuid = GetUserId();
-            var recentCategoryId = await categoryCacheService.GetRecentCategoryAsync(userIdGuid);
+            var recentCategoryId = await _categoryCacheService.GetRecentCategoryAsync(userIdGuid);
             return new JsonResult(recentCategoryId);
         }
 
-        [Route("api/[controller]/update_recent_category")]
+        [Route("api/category/update_recent_category")]
         [HttpPost]
         public async Task<JsonResult> GetRecentCategoryIdByUserId([FromBody]UpdateCategoryRequest updateCategoryRequest)
         {
             var userIdGuid = GetUserId();
-            await categoryCacheService.UpdateRecentCategoryCache(userIdGuid, updateCategoryRequest.RecentCategoryId);
+            await _categoryCacheService.UpdateRecentCategoryCache(userIdGuid, updateCategoryRequest.RecentCategoryId);
             return new JsonResult(true);
         }
 
-        [Route("api/[controller]/addorupdate")]
+        [Route("api/category/addorupdate")]
         [HttpPost]
         public async Task<JsonResult> AddorUpdateCategory([FromBody] CategoryViewModel categoryVm)
         {
-            var existingCategory = await unitOfWork.Categories.GetById(categoryVm.Id);
+            categoryVm.Name = _htmlSanitizer.Sanitize(categoryVm.Name);
+            categoryVm.Description = _htmlSanitizer.Sanitize(categoryVm.Description);
+
+            var existingCategory = await _unitOfWork.Categories.GetById(categoryVm.Id);
             categoryVm.UserId = GetUserId();
             if (categoryVm.UserId == Guid.Empty)
             {
@@ -92,24 +98,24 @@ namespace Listjj.APIs
             if (existingCategory != null)
             {
                 mapper.Map<CategoryViewModel, Category>(categoryVm, existingCategory);
-                unitOfWork.Categories.Update(existingCategory);
+                _unitOfWork.Categories.Update(existingCategory);
             }
             else
             {
                 var newCategory = mapper.Map<Category>(categoryVm);
-                unitOfWork.Categories.Add(newCategory);
+                _unitOfWork.Categories.Add(newCategory);
             }
 
-            await unitOfWork.Save();
+            await _unitOfWork.Save();
             return new JsonResult(true);
         }
 
-        [Route("api/[controller]/delete")]
+        [Route("api/category/delete")]
         [HttpPost]
         public async Task<JsonResult> DeleteCategory([FromBody] Guid id)
         {
-            unitOfWork.Categories.Delete(id);
-            await unitOfWork.Save();
+            _unitOfWork.Categories.Delete(id);
+            await _unitOfWork.Save();
             return new JsonResult(true);
         }
         private Guid GetUserId()

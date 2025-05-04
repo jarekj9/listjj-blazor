@@ -15,63 +15,66 @@ using List.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Listjj.Infrastructure.Enums;
+using Ganss.Xss;
 
 namespace Listjj.APIs
 {
     [Authorize(Roles = "Admin,User")]
     public class ItemController : Controller
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly ILogger<ItemController> logger;
-        private readonly IMapper mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<ItemController> _logger;
+        private readonly IMapper _apper;
+        private readonly HtmlSanitizer _htmlSanitizer;
 
-        public ItemController(IUnitOfWork unitOfWork, ILogger<ItemController> logger, IMapper mapper)
+        public ItemController(IUnitOfWork unitOfWork, ILogger<ItemController> logger, IMapper mapper, HtmlSanitizer htmlSanitizer)
         {
-            this.unitOfWork = unitOfWork;
-            this.logger = logger;
-            this.mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+            _apper = mapper;
+            _htmlSanitizer = htmlSanitizer;
         }
 
-        [Route("api/[controller]/all")]
+        [Route("api/item/all")]
         [HttpGet]
         public async Task<JsonResult> GetAllItems()
         {
-            var items = await unitOfWork.ListItems.GetAll();
-            var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
+            var items = await _unitOfWork.ListItems.GetAll();
+            var itemsVms = _apper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
 
-        [Route("api/[controller]/items_by_userid")]
+        [Route("api/item/items_by_userid")]
         [HttpGet]
         public async Task<JsonResult> GetItemsByUserId()
         {
             var userId = GetUserId();
-            var items = await unitOfWork.ListItems.GetAllByUserId(userId);
-            var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
+            var items = await _unitOfWork.ListItems.GetAllByUserId(userId);
+            var itemsVms = _apper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
 
-        [Route("api/[controller]/get_by_id")]
+        [Route("api/item/get_by_id")]
         [HttpGet]
         public async Task<JsonResult> GetById(string id)
         {
             var itemIdGuid = Guid.TryParse(id, out var guid) ? guid : Guid.Empty;
-            var item = await unitOfWork.ListItems.GetByIdWithFiles(itemIdGuid);
-            var itemVm = mapper.Map<ListItemViewModel>(item);
+            var item = await _unitOfWork.ListItems.GetByIdWithFiles(itemIdGuid);
+            var itemVm = _apper.Map<ListItemViewModel>(item);
             return new JsonResult(itemVm);
         }
 
-        [Route("api/[controller]/items_by_categoryid")]
+        [Route("api/item/items_by_categoryid")]
         [HttpGet]
         public async Task<JsonResult> GetItemsByCategoryId(string categoryId)
         {
             var categoryIdGuid = Guid.TryParse(categoryId, out var guid) ? guid : Guid.Empty;
-            var items = await unitOfWork.ListItems.GetAllByCategoryId(categoryIdGuid);
-            var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
+            var items = await _unitOfWork.ListItems.GetAllByCategoryId(categoryIdGuid);
+            var itemsVms = _apper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
 
-        [Route("api/[controller]/items_by_filter")]
+        [Route("api/item/items_by_filter")]
         [HttpGet]
         public async Task<JsonResult> GetItemsByFilter(string searchWords, string fromDateStr, string toDateStr, string categoryId)
         {
@@ -80,8 +83,8 @@ namespace Listjj.APIs
             var toDate = DateTime.TryParse(HttpUtility.UrlDecode(toDateStr), out var parsedTo) ? parsedTo : DateTime.MaxValue;
             var categoryIdGuid = Guid.TryParse(categoryId, out var parsedCategoryId) ? parsedCategoryId : Guid.Empty;
             var filter = MakeSearchFilter(categoryIdGuid, fromDate, toDate, searchWords);
-            var items = await unitOfWork.ListItems.ExecuteQuery(filter);
-            var itemsVms = mapper.Map<List<ListItemViewModel>>(items);
+            var items = await _unitOfWork.ListItems.ExecuteQuery(filter);
+            var itemsVms = _apper.Map<List<ListItemViewModel>>(items);
             return new JsonResult(itemsVms);
         }
         private Expression<Func<ListItem, bool>> MakeSearchFilter(Guid categoryId, DateTime fromDate, DateTime toDate, string searchText)
@@ -118,11 +121,15 @@ namespace Listjj.APIs
             return filter;
         }
 
-        [Route("api/[controller]/addorupdate")]
+        [Route("api/item/addorupdate")]
         [HttpPost]
         public async Task<JsonResult> AddorUpdateItem([FromBody] ListItemViewModel itemVm)
         {
-            var existingItem = await unitOfWork.ListItems.GetById(itemVm.Id);
+            itemVm.Name = _htmlSanitizer.Sanitize(itemVm.Name);
+            itemVm.Description = _htmlSanitizer.Sanitize(itemVm.Description);
+            itemVm.Tags = itemVm.Tags?.Select(tag => _htmlSanitizer.Sanitize(tag)).ToList();
+
+            var existingItem = await _unitOfWork.ListItems.GetById(itemVm.Id);
             itemVm.UserId = GetUserId();
             if (itemVm.UserId == Guid.Empty)
             {
@@ -131,33 +138,33 @@ namespace Listjj.APIs
 
             if (existingItem != null)
             {
-                mapper.Map<ListItemViewModel, ListItem>(itemVm, existingItem);
+                _apper.Map<ListItemViewModel, ListItem>(itemVm, existingItem);
                 existingItem.Modified = DateTime.UtcNow;
-                unitOfWork.ListItems.Update(existingItem);
+                _unitOfWork.ListItems.Update(existingItem);
             }
             else
             {
-                var newItem = mapper.Map<ListItem>(itemVm);
+                var newItem = _apper.Map<ListItem>(itemVm);
                 newItem.Modified = DateTime.UtcNow;
-                var allSequenceNumbers = (await unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
+                var allSequenceNumbers = (await _unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
                 newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
-                unitOfWork.ListItems.Add(newItem);
+                _unitOfWork.ListItems.Add(newItem);
             }
 
-            await unitOfWork.Save();
+            await _unitOfWork.Save();
             return new JsonResult(true);
         }
 
-        [Route("api/[controller]/move")]
+        [Route("api/item/move")]
         [HttpPost]
         public async Task<JsonResult> Move([FromBody] Guid id, [FromQuery] MoveDirection direction)
         {
-            var movedItem = await unitOfWork.ListItems.GetById(id);
+            var movedItem = await _unitOfWork.ListItems.GetById(id);
             var movedItemSequence = movedItem?.SequenceNumber ?? 0;
 
             if (direction == MoveDirection.Up && movedItem != null)
             {
-                var previousItem = (await unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
+                var previousItem = (await _unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
                     .Where(i => i.SequenceNumber < movedItemSequence)
                     .OrderBy(i => i.SequenceNumber).LastOrDefault();
                 var previousItemSequence = previousItem?.SequenceNumber ?? -1;
@@ -167,13 +174,13 @@ namespace Listjj.APIs
                 }
                 movedItem.SequenceNumber = previousItemSequence;
                 previousItem.SequenceNumber = movedItemSequence;
-                unitOfWork.ListItems.Update(movedItem);
-                unitOfWork.ListItems.Update(previousItem);
+                _unitOfWork.ListItems.Update(movedItem);
+                _unitOfWork.ListItems.Update(previousItem);
             }
 
             if (direction == MoveDirection.Down && movedItem != null)
             {
-                var nextItem = (await unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
+                var nextItem = (await _unitOfWork.ListItems.GetAllByCategoryId(movedItem.CategoryId))
                     .Where(i => i.SequenceNumber > movedItemSequence)
                     .OrderBy(i => i.SequenceNumber).FirstOrDefault();
                 var nextItemSequence = nextItem?.SequenceNumber ?? -1;
@@ -183,12 +190,12 @@ namespace Listjj.APIs
                 }
                 movedItem.SequenceNumber = nextItemSequence;
                 nextItem.SequenceNumber = movedItemSequence;
-                unitOfWork.ListItems.Update(movedItem);
-                unitOfWork.ListItems.Update(nextItem);
+                _unitOfWork.ListItems.Update(movedItem);
+                _unitOfWork.ListItems.Update(nextItem);
             }
             try
             {
-                await unitOfWork.Save();
+                await _unitOfWork.Save();
                 return new JsonResult(true);
             }
             catch (Exception ex)
@@ -198,12 +205,12 @@ namespace Listjj.APIs
         }
 
 
-        [Route("api/[controller]/delete")]
+        [Route("api/item/delete")]
         [HttpPost]
         public async Task<JsonResult> DeleteItem([FromBody] Guid id)
         {
-            unitOfWork.ListItems.Delete(id);
-            await unitOfWork.Save();
+            _unitOfWork.ListItems.Delete(id);
+            await _unitOfWork.Save();
             return new JsonResult(true);
         }
         private Guid GetUserId()
