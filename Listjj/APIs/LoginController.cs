@@ -18,6 +18,8 @@ using Microsoft.IdentityModel.Protocols;
 using Listjj.Data.Options;
 using Microsoft.Extensions.Options;
 using Blazorise.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Listjj.APIs
@@ -67,8 +69,54 @@ namespace Listjj.APIs
             }
 
             var token = await GenerateToken(login);
+            var strToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new LoginResult { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
+            Response.Cookies.Append("token", new JwtSecurityTokenHandler().WriteToken(token), new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7),
+                Path = "/"
+            });
+
+            return Ok(new LoginResult { Successful = true, Token = strToken });
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("verify")]
+        public IActionResult VerifyLogin()
+        {
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("get_user_info")]
+        public IActionResult GetUserInfo()
+        {
+            if (User?.Identity?.Name == null)
+            {
+                return BadRequest("User not authenticated");
+            }
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (role == null)
+            {
+                return BadRequest("User role not found");
+            }
+
+            return Ok(new { username = User.Identity.Name, role = role });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("token", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/"
+            });
+            return Ok();
         }
 
         private async Task<bool> TryAuthWithGoogle(LoginModel login)
