@@ -38,7 +38,6 @@ using System.Linq;
 using Microsoft.Extensions.Options;
 using Listjj.Data.Options;
 using Ganss.Xss;
-using Listjj.Middleware;
 
 
 namespace Listjj
@@ -201,7 +200,7 @@ namespace Listjj
                 });
 
             ////////////////////////// Masstransit TLS
-            if (Configuration.GetSection("RabbitMqTlsConfig").Value != null)
+            if(Configuration.GetSection("RabbitMqTlsConfig").Value != null)
             { 
                 services.AddScoped<IProducerService, ProducerService>();
                 var queuePrefix = "listjj";
@@ -280,7 +279,6 @@ namespace Listjj
             //Auth:
             app.UseCors("CORSOrigins");
 
-            app.UseMiddleware<TokenToHeaderMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 
