@@ -74,6 +74,7 @@ namespace Listjj.APIs
         private async Task<bool> TryAuthWithGoogle(LoginModel login)
         {
             var verifiedPayload = await GoogleJsonWebSignature.ValidateAsync(login.GoogleJwt);
+            login.Email = verifiedPayload.Email; // before that it is none, necessary for main Login method
             var verifiedEmail = verifiedPayload.Email;
             if (verifiedEmail.IsNullOrEmpty())
             {
@@ -88,6 +89,7 @@ namespace Listjj.APIs
             var claimsPrincipal = await ValidateMicrosoftTokenAsync(login.MicrosoftJwt);
             var verifiedEmail = claimsPrincipal != null && claimsPrincipal.Identity.IsAuthenticated ? 
                 claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value : null;
+            login.Email = verifiedEmail; // before that it is none, necessary for main Login method
             if (verifiedEmail.IsNullOrEmpty())
             {
                 return false;
