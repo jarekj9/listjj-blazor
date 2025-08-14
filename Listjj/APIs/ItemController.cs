@@ -155,6 +155,24 @@ namespace Listjj.APIs
             return new JsonResult(true);
         }
 
+        [Route("api/item/sort_by_tags")]
+        [HttpPost]
+        public async Task<JsonResult> SortByTags([FromQuery] string categoryId)
+        {
+            var categoryIdGuid = Guid.TryParse(categoryId, out var guid) ? guid : Guid.Empty;
+            var items = await _unitOfWork.ListItems.GetAllByCategoryId(categoryIdGuid);
+            items = items.OrderBy(i => i.Tags).ToList();
+            var nextSequenceNumber = 0;
+            foreach (var item in items)
+            {
+                item.SequenceNumber = nextSequenceNumber;
+                nextSequenceNumber++;
+                _unitOfWork.ListItems.Update(item);
+            }
+            await _unitOfWork.Save();
+            return new JsonResult(true);
+        }
+
         [Route("api/item/move")]
         [HttpPost]
         public async Task<JsonResult> Move([FromBody] Guid id, [FromQuery] MoveDirection direction)
