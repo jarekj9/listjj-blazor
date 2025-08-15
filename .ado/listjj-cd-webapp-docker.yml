@@ -1,8 +1,11 @@
-trigger: none
-pr: none
+# trigger: none
+# pr: none
 
-# trigger:
-# - master
+trigger:
+ branches:
+  include:
+   - master
+ batch: true
 
 resources:
   repositories:
