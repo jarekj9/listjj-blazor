@@ -157,7 +157,7 @@ namespace Listjj.APIs
 
         [Route("api/item/sort_by_tags")]
         [HttpPost]
-        public async Task<JsonResult> SortByTags([FromQuery] string categoryId)
+        public async Task<JsonResult> SortByTags([FromBody] string categoryId)
         {
             var categoryIdGuid = Guid.TryParse(categoryId, out var guid) ? guid : Guid.Empty;
             var items = await _unitOfWork.ListItems.GetAllByCategoryId(categoryIdGuid);
