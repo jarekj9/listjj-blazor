@@ -27,10 +27,10 @@ steps:
   inputs:
     repository: $(apiImageName)
     command: build
-    arguments: '--platform linux/arm64'
+    arguments: '--platform linux/amd64,linux/arm64'
     Dockerfile: ./Dockerfile_multiarch
     tags: |
-      arm
+      latest
 
 - task: Docker@2
   displayName: Push api image
@@ -39,17 +39,17 @@ steps:
    repository: $(apiImageName)
    command: 'push'
    tags: |
-     arm
+     latest
 
 - task: Docker@2
   displayName: Build blazor frontend image
   inputs:
     repository: $(frontendBlazorImageName)
     command: build
-    arguments: '--platform linux/arm64'
+    arguments: '--platform linux/amd64,linux/arm64'
     Dockerfile: ./Dockerfile_frontend_multiarch
     tags: |
-      arm
+      latest
 
 - task: Docker@2
   displayName: Push blazor frontend image
@@ -58,4 +58,4 @@ steps:
    repository: $(frontendBlazorImageName)
    command: 'push'
    tags: |
-     arm
+     latest
