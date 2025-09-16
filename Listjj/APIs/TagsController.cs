@@ -37,11 +37,13 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/get_tags_by_user_and_category")]
         [HttpGet]
-        public async Task<JsonResult> GetTagsByUserAndCategory([FromQuery] Guid categoryId)
+        public async Task<IActionResult> GetTagsByUserAndCategory([FromQuery] Guid categoryId)
         {
             var userId = GetUserId();
             var usersTags = await _listItemRepository.GetTagsByCategoryAndUser(categoryId, userId);
-            return new JsonResult(usersTags);
+
+            // Return Ok() instead of JsonResult()
+            return Ok(usersTags ?? new List<string>());
         }
 
         [Route("api/[controller]/update")]
