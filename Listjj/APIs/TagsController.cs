@@ -15,13 +15,15 @@ namespace Listjj.APIs
     {
         private readonly ILogger<TagsController> _logger;
         private readonly ITagsCacheService _tagsCacheService;
+        private readonly IListItemRepository _listItemRepository;
         private readonly HtmlSanitizer _htmlSanitizer;
 
-        public TagsController(ILogger<TagsController> logger, ITagsCacheService tagsCacheService, HtmlSanitizer htmlSanitizer)
+        public TagsController(ILogger<TagsController> logger, ITagsCacheService tagsCacheService, HtmlSanitizer htmlSanitizer, IListItemRepository listItemRepository)
         {
             this._logger = logger;
             this._tagsCacheService = tagsCacheService;
             _htmlSanitizer = htmlSanitizer;
+            _listItemRepository = listItemRepository;
         }
 
         [Route("api/[controller]/get_by_userid")]
@@ -30,6 +32,15 @@ namespace Listjj.APIs
         {
             var userId = GetUserId();
             var usersTags = await _tagsCacheService.GetTagsSelectionAsync(userId);
+            return new JsonResult(usersTags);
+        }
+
+        [Route("api/[controller]/get_tags_by_user_and_category")]
+        [HttpGet]
+        public async Task<JsonResult> GetTagsByUserAndCategory([FromQuery] Guid categoryId)
+        {
+            var userId = GetUserId();
+            var usersTags = await _listItemRepository.GetTagsByCategoryAndUser(categoryId, userId);
             return new JsonResult(usersTags);
         }
 

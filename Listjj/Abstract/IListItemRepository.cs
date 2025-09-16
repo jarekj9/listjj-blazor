@@ -13,5 +13,6 @@ namespace Listjj.Abstract
         Task<ListItem> GetByIdWithFiles(Guid id);
         Task<List<ListItem>> ExecuteQuery(Expression<Func<ListItem, bool>> filter);
         Task<bool> Move(Guid id, string direction);
+        Task<List<string>> GetTagsByCategoryAndUser(Guid categoryId, Guid userId);
     }
 }

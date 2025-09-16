@@ -70,5 +70,18 @@ namespace Listjj.Repository
             return await _context.ListItems.Include(i => i.Files).Include(i => i.Category).Where(filter).OrderBy(i => i.SequenceNumber).ToListAsync();
         }
 
+        public async Task<List<string>> GetTagsByCategoryAndUser(Guid categoryId, Guid userId)
+        {
+            var tagsLists = await _context.ListItems.Where(x => x.UserId == userId).Include(i => i.Category)
+                .Where(i => i.CategoryId == categoryId)
+                .Select(i => i.Tags)
+                .ToListAsync();
+            var usedTags = tagsLists.SelectMany(t => t?.Split(','))
+                .Distinct()
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .ToList();
+            return usedTags;
+        }
+
     }
 }

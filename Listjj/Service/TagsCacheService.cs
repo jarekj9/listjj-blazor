@@ -34,6 +34,7 @@ namespace Listjj.Service
             alltags.AddRange(listItems.SelectMany(i => i.Tags?.Split(',')).Distinct().ToList());
             return alltags;
         }
+
         public async Task UpdateCache(Guid userId, List<string> tagsSelection)
         {
             var tagsSelectionKey = $"TagsSelection:{userId}";
