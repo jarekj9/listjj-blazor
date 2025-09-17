@@ -5,7 +5,8 @@ trigger:
   include:
    - '*'
  branches:
-  include: []
+  include:
+   - none
  batch: true
 
 
