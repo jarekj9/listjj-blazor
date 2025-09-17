@@ -2,9 +2,11 @@
 # pr: none
 
 trigger:
- branches:
+ tags:
   include:
-   - master
+   - '*'
+ branches:
+  include: []
  batch: true
 
 resources:
