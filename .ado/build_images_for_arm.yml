@@ -1,9 +1,12 @@
 # trigger: none
 # pr: none
 trigger:
+ tags:
+  include:
+   - '*'
  branches:
   include:
-   - master
+   - none
  batch: true
 
 
