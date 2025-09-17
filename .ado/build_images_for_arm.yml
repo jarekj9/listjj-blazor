@@ -23,6 +23,13 @@ steps:
       sudo apt-get update
       sudo apt-get install -y qemu-user-static binfmt-support
 
+- script: |
+    VERSION="${BUILD_SOURCEBRANCH#refs/tags/}"
+    echo "Tag detected: $VERSION"
+    sed -i "s/^\"Version\":.*/\"Version\": \"${VERSION}\";/ ./Listjj/appsettings.json" 
+    grep -n "Version" ./Listjj/appsettings.json
+  displayName: "Update version in appsettings.json"
+
 - task: Docker@2
   displayName: Build api image
   inputs:

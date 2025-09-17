@@ -1,15 +1,19 @@
+@using Microsoft.Extensions.Configuration
 @inject NavigationManager NavManager
 @layout MainLayout
-
 @page "/"
 
-<h1>backend page</h1>
 
-<p>v1.2</p>
+<h1>backend page</h1>
+<p>@version</p>
 
 
 @code {
-    protected override void OnAfterRender(bool firstRender)
+    [Inject] IConfiguration configuration { get; set; }
+    private string version = "";
+
+    protected override async Task OnInitializedAsync()
     {
+        version = configuration.GetValue<string>("Version");   
     }
 }
