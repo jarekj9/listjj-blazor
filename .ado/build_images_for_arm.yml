@@ -29,7 +29,8 @@ steps:
 - script: |
     VERSION="${BUILD_SOURCEBRANCH#refs/tags/}"
     echo "Tag detected: $VERSION"
-    sed -i "s/^\"Version\":.*/\"Version\": \"${VERSION}\";/ ./Listjj/appsettings.json" 
+    sed -i "s/^\"Version\":.*/\"Version\": \"${VERSION}\";/ ./Listjj/appsettings.json"
+    sed -i "s/^\s*\"Version\"\s*:\s*\"[^\"]*\"/\"Version\": \"${VERSION}\",/" ./Listjj/appsettings.json 
     grep -n "Version" ./Listjj/appsettings.json
   displayName: "Update version in appsettings.json"
 
