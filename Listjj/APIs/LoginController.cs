@@ -1,23 +1,24 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Blazorise.Extensions;
+using Google.Apis.Auth;
+using Listjj.Abstract;
+using Listjj.Data.Options;
+using Listjj.Infrastructure.Data;
+using Listjj.Infrastructure.Models;
+using Listjj.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System;
-using Listjj.Infrastructure.Models;
-using Listjj.Infrastructure.Data;
-using Listjj.Models;
-using System.Linq;
-using System.Collections.Generic;
-using Google.Apis.Auth;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols;
-using Listjj.Data.Options;
-using Microsoft.Extensions.Options;
-using Blazorise.Extensions;
 
 
 namespace Listjj.APIs
@@ -29,15 +30,17 @@ namespace Listjj.APIs
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
         private ApplicationUser _user;
         private readonly MicrosoftAuthOptions _microsoftAuthOptions;
 
-        public LoginController(IConfiguration configuration, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
+        public LoginController(IConfiguration configuration, UserManager<ApplicationUser> userManager, IUserService userService,  SignInManager<ApplicationUser> signInManager, 
             IOptions<GoogleAuthOptions> googleAuthOptions, IOptions<MicrosoftAuthOptions> microsoftAuthOptions)
         {
             _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
+            _userService = userService;
             _user = null;
             _microsoftAuthOptions = microsoftAuthOptions.Value;
         }
@@ -68,6 +71,20 @@ namespace Listjj.APIs
 
             var token = await GenerateToken(login);
 
+            return Ok(new LoginResult { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
+        }
+
+        [Route("serviceclientlogin")]
+
+        [HttpPost]
+        public async Task<IActionResult> ServiceClientLogin([FromBody] LoginModel login)
+        {
+            _user = await _userService.GetByApiKey(login.Password);
+            if (_user == null)
+            {
+                return Unauthorized();
+            }
+            var token = await GenerateToken(login);
             return Ok(new LoginResult { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
 
