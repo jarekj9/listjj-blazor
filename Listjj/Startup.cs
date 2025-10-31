@@ -100,18 +100,27 @@ namespace Listjj
             }
 
 
-            // Use mariadb or mssql, remember to change migrations
+            // Use mariadb or mssql or pgsql, remember to change migrations
             var mysqlConnString = Configuration.GetConnectionString("MySqlDbContext");
             var mssqlConnString = Configuration.GetConnectionString("MsSqlDbContext");
+            var pgsqlConnString = Configuration.GetConnectionString("PgSqlDbContext");
             if(!string.IsNullOrEmpty(mysqlConnString))
             {
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseMySql(mysqlConnString, new MySqlServerVersion(new Version(10, 5, 9)))
                 );
             }
-            else
+            else if(!string.IsNullOrEmpty(mssqlConnString))
             {
                 services.AddDbContext<AppDbContext>(options => options.UseSqlServer(mssqlConnString));
+            }
+            else if(!string.IsNullOrEmpty(pgsqlConnString))
+            {
+                services.AddDbContext<AppDbContext>(options => options.UseNpgsql(pgsqlConnString));
+            }
+            else
+            {
+                throw new Exception("No database connection string configured.");
             }
 
             services.AddDefaultIdentity<ApplicationUser>()
