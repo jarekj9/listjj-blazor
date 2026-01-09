@@ -145,7 +145,7 @@ namespace Listjj.APIs
             else
             {
                 var newItem = _apper.Map<ListItem>(itemVm);
-                existingItem.Created = DateTime.UtcNow;
+                newItem.Created = DateTime.UtcNow;
                 newItem.Modified = DateTime.UtcNow;
                 var allSequenceNumbers = (await _unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
                 newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
