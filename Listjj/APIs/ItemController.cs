@@ -139,13 +139,13 @@ namespace Listjj.APIs
             if (existingItem != null)
             {
                 _apper.Map<ListItemViewModel, ListItem>(itemVm, existingItem);
-                existingItem.Created = DateTime.UtcNow;
                 existingItem.Modified = DateTime.UtcNow;
                 _unitOfWork.ListItems.Update(existingItem);
             }
             else
             {
                 var newItem = _apper.Map<ListItem>(itemVm);
+                existingItem.Created = DateTime.UtcNow;
                 newItem.Modified = DateTime.UtcNow;
                 var allSequenceNumbers = (await _unitOfWork.ListItems.GetAllByCategoryId(itemVm.CategoryId)).Select(i => i.SequenceNumber).ToList();
                 newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
