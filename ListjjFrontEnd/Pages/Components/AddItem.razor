@@ -98,7 +98,7 @@
             }
         }
         Item.UserId = appState.UserId;
-        Item.Created = Item.Modified = DateTime.Now;
+        Item.Created = Item.Modified = DateTime.UtcNow;
         Items = await ItemService.GetAllByUserId();
         Item.SequenceNumber = Items.Count > 0 ? Items.Max(i => i.SequenceNumber) + 1 : 1;
         await ItemService.AddorUpdateItem(Item);

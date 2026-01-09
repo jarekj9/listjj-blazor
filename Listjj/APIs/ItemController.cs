@@ -139,6 +139,7 @@ namespace Listjj.APIs
             if (existingItem != null)
             {
                 _apper.Map<ListItemViewModel, ListItem>(itemVm, existingItem);
+                existingItem.Created = DateTime.UtcNow;
                 existingItem.Modified = DateTime.UtcNow;
                 _unitOfWork.ListItems.Update(existingItem);
             }
@@ -225,7 +226,8 @@ namespace Listjj.APIs
 
         [Route("api/item/delete")]
         [HttpPost]
-        public async Task<JsonResult> DeleteItem([FromBody] Guid id)
+        public async Task<JsonResult> DeleteItem([FromBody] Guid id
+            )
         {
             _unitOfWork.ListItems.Delete(id);
             await _unitOfWork.Save();
