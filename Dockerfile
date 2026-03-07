@@ -1,8 +1,8 @@
-From mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim AS base
+From mcr.microsoft.com/dotnet/aspnet:10.0-bookworm-slim AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-bookworm-slim AS build
 WORKDIR /src
 COPY Listjj/Listjj.csproj .
 RUN dotnet restore "Listjj.csproj"
