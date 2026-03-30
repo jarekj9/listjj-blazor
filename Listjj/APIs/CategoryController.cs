@@ -15,8 +15,9 @@ using Ganss.Xss;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin,User")]
-    public class CategoryController : Controller
+    public class CategoryController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<CategoryController> _logger;
@@ -75,11 +76,11 @@ namespace Listjj.APIs
 
         [Route("api/category/update_recent_category")]
         [HttpPost]
-        public async Task<JsonResult> GetRecentCategoryIdByUserId([FromBody]UpdateCategoryRequest updateCategoryRequest)
+        public async Task<IActionResult> GetRecentCategoryIdByUserId([FromBody]UpdateCategoryRequest updateCategoryRequest)
         {
             var userIdGuid = GetUserId();
             await _categoryCacheService.UpdateRecentCategoryCache(userIdGuid, updateCategoryRequest.RecentCategoryId);
-            return new JsonResult(true);
+            return Ok(true);
         }
 
         [Route("api/category/addorupdate")]

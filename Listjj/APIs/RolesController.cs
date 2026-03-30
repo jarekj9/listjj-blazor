@@ -11,8 +11,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin,User")]
-    public class RolesController : Controller
+    public class RolesController : ControllerBase
     {
         private readonly ILogger<RolesController> logger;
         private readonly IMapper mapper;
@@ -27,11 +28,11 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/all")]
         [HttpGet]
-        public async Task<JsonResult> GetAllRoles()
+        public async Task<IActionResult> GetAllRoles()
         {
             var roles = roleManager.Roles.ToList();
             var roleVms = mapper.Map<List<RoleViewModel>>(roles);
-            return Json(roleVms);
+            return Ok(roleVms);
         }
     }
 }

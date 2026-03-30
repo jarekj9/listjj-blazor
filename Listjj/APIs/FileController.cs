@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin,User")]
-    public class FileController : Controller
+    public class FileController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<FileController> logger;

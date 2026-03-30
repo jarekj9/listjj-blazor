@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-
-namespace Listjj.Infrastructure.ViewModels
+﻿namespace Listjj.Infrastructure.ViewModels
 {
     public class ListItemViewModel : BaseViewModel
     {
@@ -14,7 +10,7 @@ namespace Listjj.Infrastructure.ViewModels
         public Guid CategoryId { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
         public bool IsEditing { get; set; }
-        public CategoryViewModel Category { get; set; }
-        public List<FileSimpleViewModel> Files { get; set; }
+        public CategoryViewModel? Category { get; set; }
+        public List<FileSimpleViewModel> Files { get; set; } = new List<FileSimpleViewModel>();
     }
 }

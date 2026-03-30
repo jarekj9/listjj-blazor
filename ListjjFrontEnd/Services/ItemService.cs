@@ -1,4 +1,5 @@
-﻿using Listjj.Infrastructure.Enums;
+﻿using Listjj.Infrastructure.DTOs;
+using Listjj.Infrastructure.Enums;
 using Listjj.Infrastructure.ViewModels;
 using ListjjFrontEnd.Services.Abstract;
 using System.Web;
@@ -15,7 +16,16 @@ namespace ListjjFrontEnd.Services
 
         public async Task<bool> AddorUpdateItem(ListItemViewModel item)
         {
-            var response = await apiClient.Post<ListItemViewModel, bool>($"/api/item/addorupdate", item);
+            var request = new ListItemAddOrUpdateRequest
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                CategoryId = item.CategoryId,
+                Active = item.Active,
+                Tags = item.Tags
+            };
+            var response = await apiClient.Post<ListItemAddOrUpdateRequest, bool>($"/api/item/addorupdate", request);
             return response.HttpResponse.IsSuccessStatusCode;
         }
 

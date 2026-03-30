@@ -12,8 +12,9 @@ using System;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin")]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> logger;
         private readonly IMapper mapper;
@@ -29,11 +30,11 @@ namespace Listjj.APIs
 
         [Route("api/[controller]/all")]
         [HttpGet]
-        public async Task<JsonResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
             var users = userManager.Users.ToList();
             var userVms = mapper.Map<List<UserViewModel>>(users);
-            return Json(userVms);
+            return Ok(userVms);
         }
 
         [Route("api/[controller]/addorupdate")]

@@ -10,8 +10,9 @@ using Ganss.Xss;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin,User")]
-    public class TagsController : Controller
+    public class TagsController : ControllerBase
     {
         private readonly ILogger<TagsController> _logger;
         private readonly ITagsCacheService _tagsCacheService;

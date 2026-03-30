@@ -11,8 +11,9 @@ using Listjj.Models;
 
 namespace Listjj.APIs
 {
+    [ApiController]
     [Authorize(Roles = "Admin,User")]
-    public class ExternalApiKeyController : Controller
+    public class ExternalApiKeyController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<ExternalApiKeyController> logger;
