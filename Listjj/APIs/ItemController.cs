@@ -3,6 +3,7 @@ using Listjj.Abstract;
 using Listjj.Infrastructure.DTOs;
 using Listjj.Infrastructure.ViewModels;
 using Listjj.Models;
+using Listjj.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,14 +28,14 @@ namespace Listjj.APIs
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ItemController> _logger;
         private readonly IMapper _apper;
-        private readonly HtmlSanitizer _htmlSanitizer;
+        private readonly IItemService _itemService;
 
-        public ItemController(IUnitOfWork unitOfWork, ILogger<ItemController> logger, IMapper mapper, HtmlSanitizer htmlSanitizer)
+        public ItemController(IUnitOfWork unitOfWork, ILogger<ItemController> logger, IMapper mapper, IItemService itemService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _apper = mapper;
-            _htmlSanitizer = htmlSanitizer;
+            _itemService = itemService;
         }
 
         [Route("api/item/all")]
@@ -127,47 +128,13 @@ namespace Listjj.APIs
         [HttpPost]
         public async Task<JsonResult> AddorUpdateItem([FromBody] ListItemAddOrUpdateRequest request)
         {
-            request.Name = _htmlSanitizer.Sanitize(request.Name);
-            request.Description = _htmlSanitizer.Sanitize(request.Description);
-            request.Tags = request.Tags?.Select(tag => _htmlSanitizer.Sanitize(tag)).ToList();
-
-            var existingItem = await _unitOfWork.ListItems.GetById(request.Id);
             var userId = GetUserId();
             if (userId == Guid.Empty)
             {
                 return new JsonResult(false);
             }
-
-            if (existingItem != null)
-            {
-                existingItem.Name = request.Name;
-                existingItem.Description = request.Description;
-                existingItem.Tags = string.Join(",", request.Tags ?? new List<string>());
-                existingItem.CategoryId = request.CategoryId;
-                existingItem.Active = request.Active;
-                existingItem.Modified = DateTime.UtcNow;
-                _unitOfWork.ListItems.Update(existingItem);
-            }
-            else
-            {
-                var newItem = new ListItem
-                {
-                    Id = request.Id == Guid.Empty ? Guid.NewGuid() : request.Id,
-                    Name = request.Name,
-                    Description = request.Description,
-                    Tags = string.Join(",", request.Tags ?? new List<string>()),
-                    CategoryId = request.CategoryId,
-                    Active = request.Active,
-                    UserId = userId,
-                    Created = DateTime.UtcNow,
-                    Modified = DateTime.UtcNow
-                };
-                var allSequenceNumbers = (await _unitOfWork.ListItems.GetAllByCategoryId(request.CategoryId)).Select(i => i.SequenceNumber).ToList();
-                newItem.SequenceNumber = allSequenceNumbers.Count > 0 ? allSequenceNumbers.Max() + 1 : 1;
-                _unitOfWork.ListItems.Add(newItem);
-            }
-
-            await _unitOfWork.Save();
+            request.UserId = userId;
+            await _itemService.AddOrUpdateItemAsync(request);
             return new JsonResult(true);
         }
 

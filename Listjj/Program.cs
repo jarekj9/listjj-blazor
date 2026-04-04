@@ -3,12 +3,13 @@ using Listjj.Abstract;
 using Listjj.Consumers;
 using Listjj.Data;
 using Listjj.Data.Options;
-using Listjj.Infrastructure.Events;
+using Listjj.Infrastructure.Messaging;
+using Listjj.Infrastructure.Services.Credentials;
 using Listjj.Models;
 using Listjj.Repository;
 using Listjj.Service;
+using Listjj.Services;
 using Listjj.Transaction;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,7 +17,6 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-// Auth:
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,11 +29,7 @@ using Scalar.AspNetCore;
 using StackExchange.Redis;
 using System;
 using System.Linq;
-using System.Net;
-using System.Net.Security;
 using System.Reflection;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -140,9 +136,16 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<IItemService, ItemService>();
 
 //monitoring number of users connections
 builder.Services.AddSingleton<CircuitHandler, CircuitHandlerService>();
+
+// Event messaging
+builder.Services.AddSingleton<ICredentialProvider, AzureCredentialProvider>();
+builder.Services.AddSingleton<IMessageHandler, AzureServiceBusMessageHandler>();
+builder.Services.AddSingleton<AddItemEventConsumer>();
+builder.Services.AddHostedService<EventConsumerHostedService>();
 
 //for APIs:
 builder.Services.AddMvc();

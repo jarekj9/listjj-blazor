@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 
 namespace Listjj.APIs
 {
@@ -16,7 +15,7 @@ namespace Listjj.APIs
 
         [Route("api/version")]
         [HttpGet]
-        public async Task<IActionResult> GetVersion()
+        public IActionResult GetVersion()
         {
             var version = new
             {

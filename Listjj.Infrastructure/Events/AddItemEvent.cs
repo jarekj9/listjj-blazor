@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-
-namespace Listjj.Infrastructure.DTOs
+﻿namespace Listjj.Infrastructure.Events
 {
-    public class ListItemAddOrUpdateRequest
+    public class AddItemEvent : BaseEvent
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public double Value { get; set; }
         public Guid CategoryId { get; set; }
-        public bool Active { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
         public Guid UserId { get; set; } = Guid.Empty;
     }
