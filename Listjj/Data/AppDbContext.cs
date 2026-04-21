@@ -24,8 +24,8 @@ namespace Listjj.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<ApplicationRole>().HasData(new ApplicationRole { Name = "User", NormalizedName = "USER", Id = Guid.NewGuid(), ConcurrencyStamp = Guid.NewGuid().ToString() });
-            builder.Entity<ApplicationRole>().HasData(new ApplicationRole { Name = "Admin", NormalizedName = "ADMIN", Id = Guid.NewGuid(), ConcurrencyStamp = Guid.NewGuid().ToString() });
+            builder.Entity<ApplicationRole>().HasData(new ApplicationRole { Name = "User", NormalizedName = "USER", Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"), ConcurrencyStamp = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567111").ToString() });
+            builder.Entity<ApplicationRole>().HasData(new ApplicationRole { Name = "Admin", NormalizedName = "ADMIN", Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567891"), ConcurrencyStamp = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567222").ToString() });
 
             builder.Entity<ListItem>()
                 .HasMany(i => i.Files)
