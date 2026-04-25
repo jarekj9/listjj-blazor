@@ -41,8 +41,7 @@ stages:
         location: '$(location)'
         templateLocation: 'Linked artifact'
         csmFile: 'infra/listjj-api-webapp-docker.bicep'
-        overrideParameters: '-mssqlConnStringSecret "$(mssqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
-        #overrideParameters: '-mysqlConnStringSecret "$(mysqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
+        overrideParameters: '-pgsqlConnStringSecret "$(pgsqlConnString)" -googleAuthClientSecret "$(googleAuthClientSecret)"'
         deploymentMode: 'Incremental'
 
   - job: Deploy_Listjj_Blazor_Front
